@@ -13,6 +13,7 @@
     "firebase-admin": "^8.11.0",
     "querystring": "^0.2.0",
     "react": "^16.13.1",
+    "react-autosuggest": "^10.0.2",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "react-spotify-login": "^0.9.1",
