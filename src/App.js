@@ -36,11 +36,29 @@ function App() {
           console.log(res)
           // removes 'code' query param to clean up URL
           window.history.replaceState(null, null, window.location.pathname)
+          setToken(res.data.access_token)
+          console.log(token)
         })
         .catch((err) => console.log(err))
     }
   })
 
+  const getSampleData = async (token, episodeId) => {
+    try {
+      const episode = await axios.get(
+        `https://api.spotify.com/v1/episodes/${episodeId}`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      console.log("EPISODE", episode)
+      return episode
+    } catch (err) {
+      console.log(err)
+    }
+  }
   const buttonClick = () => {
     createNewRoom({
       name: "room11",
@@ -49,10 +67,10 @@ function App() {
         { name: "Alona", accessTocken: token, email: "some email" },
         { name: "Justin", accessTocken: "token", email: "email" },
       ],
-      currentPodcast: { apiData: episodeUrl },
+      currentPodcast: { apiData: "" },
     })
     getRoom("room11", "123").then((res) => getCurrentRoomData(res))
-    //getSampleData(token, "1oLdBqEIgphJN3O6ULyw4T")
+    getSampleData(token, "1oLdBqEIgphJN3O6ULyw4T")
   }
 
   return (
