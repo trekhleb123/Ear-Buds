@@ -5,10 +5,11 @@ import { createNewRoom, getRoom, getCurrentRoomData } from "./firebase/firebase"
 //import SpotifyLogin from "react-spotify-login"
 import axios from "axios"
 import queryString from "querystring"
+import Rooms from "./Rooms";
 
 const redirectUri = "http://localhost:3000"
-const clientId = "5831023fb4004d61a610f092f1e612b4"
-const clientSecret = "a0174569adec4c988e845ace473ae66a"
+const clientId = "33df8c09f715445bbe190001081175e9"
+const clientSecret = "7d233a1577dc47df9ac8f81fed144945"
 const scopes = ["user-read-currently-playing", "user-read-playback-state"]
 
 function App() {
@@ -95,6 +96,7 @@ function App() {
           Login to Spotify
         </a>
       </header>
+      <Rooms />
     </div>
   )
 }
