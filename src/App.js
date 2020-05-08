@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import Routes from './routes'
 import "./App.css"
 import { createNewRoom, getRoom, getCurrentRoomData } from "./firebase/firebase"
 import { spotfityLogin, getNewToken, getMyData } from "./spotifyLogin"
@@ -62,6 +63,7 @@ function App() {
 
   return (
     <div className="App">
+      <Routes />
       <header className="App-header">
         <button onClick={buttonClick}>Button</button>
         {mySpotifyData && <div>Hello, {mySpotifyData.display_name}</div>}
