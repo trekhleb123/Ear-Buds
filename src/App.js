@@ -1,70 +1,34 @@
-import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import Spotify from "spotify-web-api-js";
+import React from "react"
+import logo from "./logo.svg"
+import "./App.css"
+import { createNewRoom, getRoom, getCurrentRoomData } from "./firebase/firebase"
 
-const spotifyWebApi = new Spotify();
-
-class App extends React.Component {
-  constructor() {
-    super();
-    const params = this.getHashParams();
-    this.state = {
-      loggedIn: params.access_token ? true : false,
-      nowPlaying: { name: "Not Checked", image: "" },
-    };
-    if (params.access_token) {
-      spotifyWebApi.setAccessToken(params.access_token);
-    }
+function App() {
+  const buttonClick = () => {
+    createNewRoom({
+      name: "room11",
+      password: "123",
+      users: [
+        { name: "Alona", accessTocken: "someTocken", email: "some email" },
+        { name: "Justin", accessTocken: "tocken", email: "email" },
+      ],
+      currentPodcast: { apiData: "somedata" },
+    })
+    getRoom("room11", "123").then((res) => getCurrentRoomData(res))
   }
 
-  getHashParams() {
-    var hashParams = {};
-    var e,
-      r = /([^&;=]+)=?([^&;]*)/g,
-      //adding the access token to URL
-      q = window.location.hash.substring(1);
-    while ((e = r.exec(q))) {
-      //updating URL bar
-      hashParams[e[1]] = decodeURIComponent(e[2]);
-    }
-    return hashParams;
-
-    //instead, make a call to write it to firebase
-  }
-
-  getNowPlaying() {
-    console.log("clicked");
-    spotifyWebApi.getMyCurrentPlaybackState().then((response) => {
-      this.setState({
-        nowPlaying: {
-          name: response.item.name,
-          image: response.item.album.images[0].url,
-        },
-      });
-      console.log("response", response);
-    });
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <div>Now Playing: {this.state.nowPlaying.name}</div>
-          <img src={this.state.nowPlaying.image} style={{ width: 100 }} />
-          <a href="http://localhost:8888">
-            <button>Login with Spotify</button>
-          </a>
-          <a>
-            <button onClick={() => this.getNowPlaying()}>
-              Get Now Playing
-            </button>
-          </a>
-        </header>
-      </div>
-    );
-  }
+  return (
+    <div className="App">
+      <header className="App-header">
+        <button onClick={buttonClick}>Button</button>
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a href="http://localhost:8888/login">Log in to Spotify</a>
+      </header>
+    </div>
+  )
 }
 
-export default App;
+export default App
