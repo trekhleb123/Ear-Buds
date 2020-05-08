@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from "react"
-import logo from "./logo.svg"
+import logo from "../logo.svg"
 import "./App.css"
-import { createNewRoom, getRoom, getCurrentRoomData } from "./firebase/firebase"
+import { createNewRoom, getRoom, getCurrentRoomData } from "../firebase/firebase"
 
 import axios from "axios"
 import queryString from "querystring"
 import Rooms from "./Rooms";
 
 const redirectUri = "http://localhost:3000"
-<<<<<<< HEAD
 const clientId = "33df8c09f715445bbe190001081175e9"
 const clientSecret = "7d233a1577dc47df9ac8f81fed144945"
 const scopes = ["user-read-currently-playing", "user-read-playback-state"]
 
-=======
-const clientId = "74b86e0094c34c8b9a76145e822d2e96"
-const clientSecret = "7daca85fa8e14fdc9605e0f88d9c8329"
-const scopes = ["user-read-playback-state","user-read-currently-playing",  "user-library-read", "user-library-modify", "user-read-email", "user-read-playback-state", "user-modify-playback-state"]
-//'user-read-currently-playing user-read-playback-state user-library-read user-library-modify user-read-email user-read-playback-state user-modify-playback-state'
->>>>>>> cebe9169c19aec15c462ea6b2025dced2eedd516
 function App() {
   const [token, setToken] = useState("")
   const [refreshToken, setRefreshToken] = useState()
@@ -106,9 +99,10 @@ function App() {
     createNewRoom({
       name: "room11",
       password: "123",
+      roomCode: 'ndjkfhdjkshjkfshjkdfs',
       users: [
         { name: "Alona", accessToken: token, email: "some email" },
-        { name: "Justin", accessToken: "token", email: "email" },
+        { name: "Justin", accessToken: "token", email: "email"},
       ],
       currentPodcast: { apiData: "" },
     })

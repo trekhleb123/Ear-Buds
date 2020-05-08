@@ -53,3 +53,13 @@ export async function getCurrentRoomData(docId) {
     console.error(err)
   }
 }
+// export async function getRooms() {
+//   const doc = db.collection('Rooms')
+//  const docs = await doc.get()
+//      let res = {}
+//   docs.forEach((el) => {
+//     res = el
+//   })
+//   console.log(res)
+//   return res
+// }
