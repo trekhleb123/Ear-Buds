@@ -2,18 +2,24 @@ import React, { useState, useEffect } from "react"
 import logo from "./logo.svg"
 import "./App.css"
 import { createNewRoom, getRoom, getCurrentRoomData } from "./firebase/firebase"
-//import SpotifyLogin from "react-spotify-login"
+
 import axios from "axios"
 import queryString from "querystring"
 
 const redirectUri = "http://localhost:3000"
 const clientId = "5831023fb4004d61a610f092f1e612b4"
 const clientSecret = "a0174569adec4c988e845ace473ae66a"
-const scopes = ["user-read-currently-playing", "user-read-playback-state"]
+const scopes = [
+  "user-read-currently-playing",
+  "user-read-playback-state",
+  "app-remote-control",
+]
 
 function App() {
   const [token, setToken] = useState("")
+  const [refreshToken, setRefreshToken] = useState()
   const [episodeUrl, setEpisodeUrl] = useState()
+  const [mySpotifyData, setMySpotifyData] = useState()
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("code")
@@ -37,11 +43,43 @@ function App() {
           // removes 'code' query param to clean up URL
           window.history.replaceState(null, null, window.location.pathname)
           setToken(res.data.access_token)
+          setRefreshToken(res.data.refresh_token)
           console.log(token)
         })
         .catch((err) => console.log(err))
     }
   })
+
+  const getNewToken = () => {
+    const accessForm = queryString.stringify({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+    })
+    const auth = btoa(`${clientId}:${clientSecret}`)
+    axios
+      .post("https://accounts.spotify.com/api/token", accessForm, {
+        headers: {
+          "content-type": "application/x-www-form-urlencoded;charset=utf-8",
+          Authorization: `Basic ${auth}`,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+        setToken(res.data.access_token)
+      })
+  }
+  setTimeout(getNewToken, 3600 * 1000)
+
+  const getMyData = () => {
+    if (token) {
+      fetch("https://api.spotify.com/v1/me", {
+        headers: { Authorization: "Bearer " + token },
+      })
+        .then((res) => res.json())
+        .catch((err) => console.log(err))
+        .then((data) => setMySpotifyData(data))
+    }
+  }
 
   const getSampleData = async (token, episodeId) => {
     try {
@@ -59,28 +97,28 @@ function App() {
       console.log(err)
     }
   }
+
   const buttonClick = () => {
     createNewRoom({
       name: "room11",
       password: "123",
       users: [
-        { name: "Alona", accessTocken: token, email: "some email" },
-        { name: "Justin", accessTocken: "token", email: "email" },
+        { name: "Alona", accessToken: token, email: "some email" },
+        { name: "Justin", accessToken: "token", email: "email" },
       ],
       currentPodcast: { apiData: "" },
     })
     getRoom("room11", "123").then((res) => getCurrentRoomData(res))
     getSampleData(token, "1oLdBqEIgphJN3O6ULyw4T")
+    getMyData()
+    getNewToken()
   }
 
   return (
     <div className="App">
       <header className="App-header">
         <button onClick={buttonClick}>Button</button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+        {mySpotifyData && <div>Hello, {mySpotifyData.display_name}</div>}
         <a
           href={
             "https://accounts.spotify.com/authorize?" +
