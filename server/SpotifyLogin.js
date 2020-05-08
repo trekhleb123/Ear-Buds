@@ -1,14 +1,14 @@
 'use strict';
-
+//NOT USING AT ALL, FOR REFERENCE ONLY
 const functions = require('firebase-functions');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 var admin = require('firebase-admin');
-var serviceAccount = require("./serviceAccountKey.json");
+var serviceAccount = require("../serviceAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://podcastparty-402e2.firebaseio.com"
+  databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`
 });
 
 // Spotify OAuth 2 setup
@@ -17,11 +17,11 @@ const SpotifyWebApi = require('spotify-web-api-node');
 const Spotify = new SpotifyWebApi({
   clientId: functions.config().spotify.client_id,
   clientSecret: functions.config().spotify.client_secret,
-  redirectUri: `https://podcastparty-402e2.firebaseapp.com/popup.html`,
+  redirectUri: `https://${serviceAccount.project_id}.firebaseapp.com/`,
 });
 
 // Scopes to request.
-const OAUTH_SCOPES = ['user-read-email'];
+const OAUTH_SCOPES = ['user-library-read user-library-modify user-read-email user-read-playback-state user-modify-playback-state user-read-currently-playing'];
 
 /**
  * Redirects the User to the Spotify authentication consent screen. Also the 'state' cookie is set for later state
