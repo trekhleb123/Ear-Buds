@@ -13,6 +13,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
+    "react-spotify-login": "^0.9.1",
     "react-spotify-player": "^1.0.4",
     "request": "^2.88.2"
   },

@@ -2,6 +2,10 @@ import React from "react"
 import logo from "./logo.svg"
 import "./App.css"
 import { createNewRoom, getRoom, getCurrentRoomData } from "./firebase/firebase"
+import SpotifyLogin from "react-spotify-login"
+
+const clientId = ""
+const redirectUri = "http://localhost:3000"
 
 function App() {
   const buttonClick = () => {
@@ -25,7 +29,12 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <a href="http://localhost:8888/login">Log in to Spotify</a>
+        <SpotifyLogin
+          clientId={clientId}
+          redirectUri={redirectUri}
+          onSuccess={(response) => console.log(response)}
+          onFailure={(response) => console.log(response)}
+        />
       </header>
     </div>
   )
