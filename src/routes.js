@@ -3,7 +3,8 @@ import { BrowserRouter, Route, Switch} from 'react-router-dom'
 
 import {
  Navbar,
- SignIn
+ SignIn,
+ Player
 } from './components'
 
 /**
@@ -16,6 +17,7 @@ class Routes extends Component {
             <Navbar />
             <Switch>
                 <Route path="/signin" component={SignIn} />
+                <Route path="/player" component={Player} />
             </Switch>
             </BrowserRouter>
     )

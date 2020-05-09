@@ -6,3 +6,4 @@
 export {default as Navbar} from './Navbar'
 export {default as SignIn} from './SignIn'
 export {default as SearchBar} from './SearchBar'
+export {default as Player} from './Player'
