@@ -9,6 +9,14 @@ import {
 } from "../firebase/firebase";
 
 const Player = (props) => {
+  let usersArr = [
+    { name: "Michael", token: props.token },
+    {
+      name: "Sam",
+      token:
+        "BQBUsxLv0fjLNRYoz-utiuF2FG04_2srMZUxpFyLB6clqQwxR3YmFeYdmczlnj6ZD3tsYvr0R9pTNirLrDzI4pBB71-U9vkF5aYJExZXRevpqY9m5whQkYqkVEvAzxQW7bEDGP8v-kDxc3-r-ByXfofQb1MfOSMD1_QB69mUYllN",
+    },
+  ];
   let player = "";
   let deviceId = null;
   let checkInterval = null;
@@ -38,6 +46,7 @@ const Player = (props) => {
           Authorization: "Bearer " + token,
         },
       });
+      console.log("timeStamp", Date.now());
     } catch (err) {
       console.log(err);
     }
@@ -55,6 +64,24 @@ const Player = (props) => {
           position_ms: 0,
         }),
       });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const startPodcastAnywhere = async (token, podcastUri) => {
+    try {
+      fetch(`https://api.spotify.com/v1/me/player/play`, {
+        method: "PUT",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({
+          uris: [podcastUri],
+          position_ms: 0,
+        }),
+      });
+      console.log("timeStamp", Date.now());
     } catch (err) {
       console.log(err);
     }
@@ -86,6 +113,26 @@ const Player = (props) => {
     getNowPlaying(props.token);
     pausePlayback(props.token);
     playing = false;
+  };
+
+  const pauseAll = async () => {
+    let [firstUser, secondUser] = await Promise.all(
+      usersArr.map((user) => pausePlayback(user.token))
+    );
+    console.log("firstPa", firstUser);
+    console.log("secondPa", secondUser);
+  };
+  const startAll = async () => {
+    let [firstUser, secondUser] = await Promise.all(
+      usersArr.map((user) =>
+        startPodcastAnywhere(
+          user.token,
+          "spotify:episode:1oLdBqEIgphJN3O6ULyw4T"
+        )
+      )
+    );
+    console.log("firstPl", firstUser);
+    console.log("secondPl", secondUser);
   };
 
   const start = () => {
@@ -132,7 +179,7 @@ const Player = (props) => {
     });
     player.on("authentication_error", (e) => {
       console.error(e);
-      this.setState({ loggedIn: false });
+      // this.setState({ loggedIn: false });
     });
     player.on("account_error", (e) => {
       console.error(e);
@@ -162,6 +209,8 @@ const Player = (props) => {
         <PauseCircleFilled onClick={pause} />
         <PlayCircleFilled onClick={play} />
         <Sync onClick={start} />
+        <button onClick={pauseAll}>Pause All</button>
+        <button onClick={startAll}>Start All</button>
       </div>
     </div>
   );
