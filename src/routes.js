@@ -7,6 +7,7 @@ import {
 } from './components'
 import Rooms from './components/Rooms';
 import App from './components/App';
+import SingleRoom from './components/SingleRoom';
 
 /**
  * COMPONENT
@@ -17,9 +18,9 @@ class Routes extends Component {
         <BrowserRouter>
             <Navbar />
             <Switch>
-            <Route exact path='/' Component={App} />
-              <Route path='/rooms' Component={Rooms} />
-                <Route path="/signin" component={SignIn} />
+            <Route exact path='/room/:roomId' component={SingleRoom} />
+              <Route exact path='/rooms' component={Rooms} />
+                <Route exact path="/signin" component={SignIn} />
             </Switch>
             </BrowserRouter>
     )
