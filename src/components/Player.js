@@ -1,11 +1,18 @@
 import React from "react";
 import axios from "axios";
-import Spotify from "react-spotify-player";
+import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
+import {
+  createNewRoom,
+  getRoom,
+  getCurrentRoomData,
+  getCurrentUserData,
+} from "../firebase/firebase";
 
 const Player = (props) => {
   let player = "";
   let deviceId = null;
   let checkInterval = null;
+  let playing = null;
   const getNowPlaying = async (token) => {
     try {
       const episode = await axios.get(
@@ -71,11 +78,14 @@ const Player = (props) => {
 
   const play = () => {
     resumePlayback(props.token);
+    playing = true;
+    getRoom("room1", "420").then((res) => getCurrentUserData(res));
   };
 
   const pause = () => {
     getNowPlaying(props.token);
     pausePlayback(props.token);
+    playing = false;
   };
 
   const start = () => {
@@ -149,11 +159,10 @@ const Player = (props) => {
       {loadScript("https://sdk.scdn.co/spotify-player.js")}
       {handleLogin()}
       <div>
-        <button onClick={play}>Play</button>
-        <button onClick={pause}>Pause</button>
-        <button onClick={start}>Start</button>
+        <PauseCircleFilled onClick={pause} />
+        <PlayCircleFilled onClick={play} />
+        <Sync onClick={start} />
       </div>
-      )
     </div>
   );
 };
