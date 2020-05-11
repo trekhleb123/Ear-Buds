@@ -39,10 +39,6 @@ function App(props) {
   //     console.log(err)
   //   }
   // }
-
-  const loginLinkClick = async () => {
-    props.getSpotifyCode()
-  }
   const buttonClick = () => {
     if (mySpotifyData && token) {
       console.log("sending data")
@@ -71,7 +67,7 @@ function App(props) {
       <header className="App-header">
         <button onClick={buttonClick}>Button</button>
         {mySpotifyData && <div>Hello, {mySpotifyData.display_name}</div>}
-        <button onClick={loginLinkClick}>Login to Spotify</button>
+        <button onClick={props.getSpotifyCode}>Login to Spotify</button>
       </header>
     </div>
   )

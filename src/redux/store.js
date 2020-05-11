@@ -58,11 +58,12 @@ export const getSpotifyCode = () => {
   return async (dispatch) => {
     try {
       const code = await spotifyLogin()
-      const res = await loginHelper(code)
-      console.log(res)
-      dispatch(setSpotifyCode(code))
-      dispatch(setAccessToken(res.access_token))
-      dispatch(setRefreshToken(res.refresh_token))
+      console.log('GETTING SPOTIFY CODE ---->', code)
+      // const res = await loginHelper(code)
+      // console.log(res)
+      // dispatch(setSpotifyCode(code))
+      // dispatch(setAccessToken(res.access_token))
+      // dispatch(setRefreshToken(res.refresh_token))
     } catch (err) {
       console.error(err)
     }
