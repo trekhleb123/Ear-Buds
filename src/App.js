@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import Routes from './routes'
+import SearchBar from './components/SearchBar'
 import "./App.css"
 import { createNewRoom, getRoom, getCurrentRoomData } from "./firebase/firebase"
 import { spotfityLogin, getNewToken, getMyData } from "./spotifyLogin"
@@ -10,7 +11,6 @@ const redirectUri = "http://localhost:3000"
 const clientId = "74b86e0094c34c8b9a76145e822d2e96"
 const clientSecret = "7daca85fa8e14fdc9605e0f88d9c8329"
 const scopes = ["user-read-playback-state","user-read-currently-playing",  "user-library-read", "user-library-modify", "user-read-email", "user-read-playback-state", "user-modify-playback-state"]
-//'user-read-currently-playing user-read-playback-state user-library-read user-library-modify user-read-email user-read-playback-state user-modify-playback-state'
 function App() {
   const [token, setToken] = useState("")
   const [refreshToken, setRefreshToken] = useState()
@@ -64,6 +64,7 @@ function App() {
   return (
     <div className="App">
       <Routes />
+      <SearchBar token={token} />
       <header className="App-header">
         <button onClick={buttonClick}>Button</button>
         {mySpotifyData && <div>Hello, {mySpotifyData.display_name}</div>}

@@ -2,8 +2,8 @@ import axios from "axios"
 import queryString from "querystring"
 
 const redirectUri = "http://localhost:3000"
-const clientId = "5831023fb4004d61a610f092f1e612b4"
-const clientSecret = "a0174569adec4c988e845ace473ae66a"
+const clientId = "74b86e0094c34c8b9a76145e822d2e96"
+const clientSecret = "7daca85fa8e14fdc9605e0f88d9c8329"
 
 export const spotfityLogin = (setToken, setRefreshToken) => {
   const code = new URLSearchParams(window.location.search).get("code")

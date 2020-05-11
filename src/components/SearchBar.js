@@ -1,104 +1,71 @@
-  
-// 'use strict';
+import React, { useState, useEffect } from "react";
+import Select from 'react-select'
+import AsyncSelect from 'react-select/async';
+import axios from 'axios'
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+ const SearchBar = props => {
+  const token = props.token;
+  let [search, setSearch] = useState("");
+  let [results, setResults] = useState([]);
+  const searchHandler = async () => {
+    const q = encodeURIComponent(`${search}`);
+    const response = await fetch(
+        // `https://api.spotify.com/v1/episodes/1oLdBqEIgphJN3O6ULyw4T`,
+      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    const searchJSON = await response.json();
+    setResults(searchJSON);
+  };
 
-// import React, {Component} from 'react';
-// import Autosuggest from 'react-autosuggest';
+  const activeSearch = async text => {
+    setSearch(text);
+    await searchHandler();
+  }; 
+  const options = [
+    { value: 'chocolate', label: 'Chocolate' },
+    { value: 'strawberry', label: 'Strawberry' },
+    { value: 'vanilla', label: 'Vanilla' }
+  ]
 
-// import {newSearch} from '../actions/SearchActions';
-// import PlaylistActions from '../actions/PlaylistActions';
+  console.log(results)
+  return (
+    <div>
+        {/* <h1>{results.map(result => result.name)}</h1> */}
+        
+        <input 
+        type="text"
+        onChange={text => activeSearch(text)}
+        options={results.shows}
+        />
 
-// import Spotify from '../core/Spotify';
+    <Autocomplete
+        freeSolo
+        id="free-solo-2-demo"
+        disableClearable
+        onChange={text => activeSearch(text)}
+        // options={results.shows.items.map(item => item.name )}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Search input"
+            margin="normal"
+            variant="outlined"
+            InputProps={{ ...params.InputProps, type: 'search' }}
+        />
+        )}
+      />
+        {/* <p>{results}</p> */}
+        {/* {results} */}
+    </div>
+  )
+}
 
-// class SearchBox extends Component {
 
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       initialValue: this.props.value
-//     };
-//   }
-
-//   _search(text) {
-//     newSearch(text);
-//     PlaylistActions.search(text, this.props.country);
-//   }
-
-//   _handleSearch() {
-//     // I know that's ugly :(
-//     const text = document.querySelector('#search-input').value;
-//     if (text.length > 3) {
-//       this._search(text);
-//     }
-//   }
-
-//   _handleKeyPress(event) {
-//     if (event.key === 'Enter') {
-//       const text = event.target.value;
-//       if (text.length > 3) {
-//         this._search(text);
-//       }
-//     }
-//   }
-
-//   render() {
-//     let country = this.props.country;
-//     let time;
-//     let getSuggestions = (input, callback) => {
-//       if (time) {
-//         clearTimeout(time);
-//       }
-//       time = setTimeout(() => {
-//         Spotify.autocomplete(input, country).then((tracks) => {
-//           callback(null, tracks);
-//         });
-//       }, 500);
-//     };
-
-//     let suggestionRenderer = (track) => {
-//       return <span>{track.name}, {track.artists.first().name}</span>;
-//     };
-
-//     let getSuggestionValue = (track) => {
-//       return `${track.name}, ${track.artists.first().name}`;
-//     };
-
-//     let showWhen = (input) => {
-//       return input.trim().length > 3;
-//     };
-
-//     let onSuggestionSelected = (suggestion) => {
-//       this._search(suggestion);
-//     };
-
-//     const inputAttributes = {
-//       id: 'search-input',
-//       type: 'text',
-//       ref: 'searchInput',
-//       className: 'input-search',
-//       placeholder: 'What is your favorite song?',
-//       onKeyPress: this._handleKeyPress.bind(this)
-//     };
-
-//     return <div className='search-box'>
-//             <div className='search-group'>
-//               <span className='input-group-btn'>
-//                 <div className='btn-search' onClick={this._handleSearch.bind(this)}>
-//                 </div>
-//               </span>
-//               <Autosuggest
-//                 suggestions={getSuggestions}
-//                 onSuggestionSelected={onSuggestionSelected.bind(this)}
-//                 inputAttributes={inputAttributes}
-//                 defaultValue={this.state.initialValue}
-//                 suggestionRenderer={suggestionRenderer}
-//                 suggestionValue={getSuggestionValue}
-//                 showWhen={showWhen}
-//                 cache={true}
-//               />
-//             </div>
-//           </div>;
-//   }
-
-// }
-
-// export default SearchBox;
+export default SearchBar
