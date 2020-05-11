@@ -121,7 +121,7 @@ console.log('in app', props)
   return (
     <div className="App">
       <Routes />
-      {/* <Rooms history={props.history}/> */}
+      <Rooms history={props.history}/>
       <header className="App-header">
         {/* <button onClick={buttonClick}>Button</button> */}
         {mySpotifyData && <div>Hello, {mySpotifyData.display_name}</div>}

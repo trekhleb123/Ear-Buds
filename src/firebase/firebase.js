@@ -35,7 +35,7 @@ export async function getRoom(roomName, roomPassword) {
     currentRoom.forEach((el) => {
       res = el.id
     })
-    console.log(res)
+    //console.log(res)
     return res
   } catch (err) {
     console.error(err)
@@ -63,3 +63,33 @@ export async function getCurrentRoomData(docId) {
 //   console.log(res)
 //   return res
 // }
+
+export async function createRoom () {
+  //event.preventDefault()
+  const code =
+    Math.random()
+      .toString(36)
+      .substring(2, 7) +
+    Math.random()
+      .toString(36)
+      .substring(2, 7);
+  console.log('in handle submit', code);
+  const newRoom = await db
+    .collection('Rooms')
+    .add({ name: 'room1', roomCode: code });
+  console.log('newRoom', newRoom);
+  await db.collection('Rooms')
+    .doc(newRoom.id)
+    .collection('Users')
+    .add({
+      accessToken: 'hey',
+      email: 'you@email.com',
+      name: 'Bob',
+      roomCode: code,
+    });
+    // console.log('this.props in submit', newRoom.id);
+  // this.props.history.push(`/room/${newRoom.id}`);
+    return newRoom.id
+
+  //this.setState({roomCode: code})
+}

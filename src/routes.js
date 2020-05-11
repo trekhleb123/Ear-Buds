@@ -15,14 +15,16 @@ import SingleRoom from './components/SingleRoom';
 class Routes extends Component {
   render() {
     return (
-        <BrowserRouter>
+        // <BrowserRouter>
+        <>
             <Navbar />
             <Switch>
             <Route exact path='/room/:roomId' component={SingleRoom} />
-              <Route exact path='/rooms' component={Rooms} />
+              {/* <Route exact path='/rooms' component={Rooms} /> */}
                 <Route exact path="/signin" component={SignIn} />
             </Switch>
-            </BrowserRouter>
+          {/* </BrowserRouter> */}
+            </>
     )
   }
 }
