@@ -6,6 +6,8 @@ import { createNewRoom, getRoom, getCurrentRoomData } from "../firebase/firebase
 import axios from "axios"
 import queryString from "querystring"
 import Rooms from "./Rooms";
+import Navbar from "./Navbar";
+import Routes from "../routes";
 
 const redirectUri = "http://localhost:3000"
 const clientId = "33df8c09f715445bbe190001081175e9"
@@ -115,6 +117,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <Routes />
         <button onClick={buttonClick}>Button</button>
         {mySpotifyData && <div>Hello, {mySpotifyData.display_name}</div>}
         <a
@@ -131,7 +134,7 @@ function App() {
           Login to Spotify
         </a>
       </header>
-      <Rooms />
+      <Rooms/>
     </div>
   )
 }

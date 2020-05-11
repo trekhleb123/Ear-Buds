@@ -17,6 +17,7 @@ class Rooms extends React.Component {
   }
   componentDidMount() {
     this.getRooms()
+    console.log('this.props',this.props)
   }
   async getRooms() {
     const doc = db.collection('Rooms')
@@ -37,11 +38,10 @@ class Rooms extends React.Component {
     db.collection('Rooms').add({name:'room1', roomCode: code})
   }
   render() {
-    console.log(this.state)
+
     return(
       <div>
         {/* redirect when room is created */}
-        {/* <Route exact path='/rooms' Component={Rooms} /> */}
        <button onClick={this.handleSubmit} type='button'>Create Room</button>
         <br />
         {/* <div>
