@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import "./App.css"
 import { createNewRoom, getRoom, getCurrentRoomData } from "./firebase/firebase"
 import { spotfityLogin, getNewToken, getMyData } from "./spotifyLogin"
-import { getAccessToken } from "./redux/store"
+import { getAccessToken, getSpotifyCode, getUserData } from "./redux/store"
 import axios from "axios"
 import queryString from "querystring"
 import { connect } from "react-redux"
@@ -21,7 +21,7 @@ function App(props) {
 
   useEffect(() => {
     console.log(props)
-  }, [props])
+  }, [props.userData])
 
   // const getSampleData = async (token, episodeId) => {
   //   try {
@@ -39,9 +39,9 @@ function App(props) {
   //     console.log(err)
   //   }
   // }
-  const loginLinkClick = () => {
-    props.getAccessToken()
-    console.log(props)
+
+  const loginLinkClick = async () => {
+    props.getSpotifyCode()
   }
   const buttonClick = () => {
     if (mySpotifyData && token) {
@@ -63,7 +63,7 @@ function App(props) {
 
     getRoom("room11", "123").then((res) => getCurrentRoomData(res))
     //getSampleData(token, "1oLdBqEIgphJN3O6ULyw4T")
-    //getMyData(token, setMySpotifyData)
+    props.getUserData(props.access_token)
   }
 
   return (
@@ -78,12 +78,16 @@ function App(props) {
 }
 
 const stateToProps = (state) => ({
+  code: state.code,
   access_token: state.access_token,
   refresh_token: state.refresh_token,
+  userData: state.userData,
 })
 
 const dispatchToProps = (dispatch) => ({
-  getAccessToken: () => dispatch(getAccessToken()),
+  getAccessToken: (code) => dispatch(getAccessToken(code)),
+  getSpotifyCode: () => dispatch(getSpotifyCode()),
+  getUserData: (token) => dispatch(getUserData(token)),
 })
 
 export default connect(stateToProps, dispatchToProps)(App)
