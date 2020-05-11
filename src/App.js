@@ -11,6 +11,7 @@ const redirectUri = "http://localhost:3000"
 const clientId = "74b86e0094c34c8b9a76145e822d2e96"
 const clientSecret = "7daca85fa8e14fdc9605e0f88d9c8329"
 const scopes = ["user-read-playback-state","user-read-currently-playing",  "user-library-read", "user-library-modify", "user-read-email", "user-read-playback-state", "user-modify-playback-state"]
+//'user-read-currently-playing user-read-playback-state user-library-read user-library-modify user-read-email user-read-playback-state user-modify-playback-state'
 function App() {
   const [token, setToken] = useState("")
   const [refreshToken, setRefreshToken] = useState()

@@ -7,11 +7,14 @@ import TextField from '@material-ui/core/TextField';
  const SearchBar = props => {
   const token = props.token;
   let [search, setSearch] = useState("");
+  let [result, setResult] = useState([]);
+  let [episodes, setEpisodes] = useState([]);
+  let [id, setId] = useState("");
   let [results, setResults] = useState([{ value: 'chocolate', label: 'Chocolate' }]);
   const searchHandler = async () => {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
-      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US`,
+      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=50&offset=5`,
       {
         method: "GET",
         headers: {
@@ -20,16 +23,18 @@ import TextField from '@material-ui/core/TextField';
       }
     );
     const searchJSON = await response.json();
-    // console.log(searchJSON)
+    console.log(searchJSON)
     let searchArr = [{ value: 'chocolate', label: 'Chocolate' }]
     
     if(searchJSON.shows) {
       searchArr = searchJSON.shows.items.map(item => {
-        return {value: item.uri, label: item.name}
+        return {value: item.id, label: item.name}
       })
     }
-
     setResults(searchArr);
+    // var result = results.filter(item => item.label === search)
+    // setResult(result)
+
   };
 
   useEffect(() => {
@@ -40,48 +45,83 @@ import TextField from '@material-ui/core/TextField';
   }, [props.search])
   
   
-  
   const activeSearch = async text => {
     setSearch(text);
     await searchHandler();
   }; 
-  
+  const getEpisodes = async () => {
+    for(var i = 0; i < results.length; i++) {
+        if (results[i].label === search) {
+            setResult(results[i])
+            setId(result.value)
+            break;
+        }
+    }
+    if(id !== ""){
+        const episodes = await fetch(
+            `https://api.spotify.com/v1/shows/${id}/episodes`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+          );
+          const episodesJSON = await episodes.json();
+          try{
+              let episodesArr = episodesJSON.items.map(item => {
+                  return {uri: item.uri, name: item.name, date: item.release_date}
+                })
+              setEpisodes(episodesArr)
+          }catch(err){
+              console.log(err)
+          }
+    }
+        
+   
+    
+    
+    // let searchArr = [{ value: 'chocolate', label: 'Chocolate' }]
+    
+    // if(searchJSON.shows) {
+    //   searchArr = searchJSON.shows.items.map(item => {
+    //     return {value: item.id, label: item.name}
+    //   })
+    // }
+    // setResults(searchArr);
+  };
+
   const options = [
     { value: 'chocolate', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },
     { value: 'vanilla', label: 'Vanilla' }
   ]
-
+  
   console.log(results)
+  console.log(search)
+  console.log('RESULT ', result.value)
+  console.log('ID ', id)
+  console.log('Episodes ', episodes)
   return (
     <div>
-        {/* <h1>{results.map(result => result.name)}</h1> */}
-        
-        <input 
-        type="text"
-        onChange={text => activeSearch(text)}
-        options={results.shows}
-        />
-
     <Autocomplete
         freeSolo
         id="free-solo-2-demo"
         disableClearable
-        // value={text => activeSearch(text)}
+        onChange={(e,v) => activeSearch(v)}
         options={results.map(item => item.label )}
         renderInput={(params) => (
           <TextField
             {...params}
-            onChange={setSearch}
+            onChange={({ target }) => {activeSearch(target.value)}} 
             label="Search input"
             margin="normal"
             variant="outlined"
-            // InputProps={{ ...params, type: 'search' }}
         />
         )}
     /> 
-        {/* <p>{results}</p> */}
-        {/* {results} */}
+    <button onClick={getEpisodes}>Get Episodes</button>
+    {episodes.map(episode => <li>{episode.name}</li>)}
     </div>
   )
 }
