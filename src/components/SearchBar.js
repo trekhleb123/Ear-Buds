@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Select from "react-select";
-import AsyncSelect from "react-select/async";
-import axios from "axios";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import TextField from "@material-ui/core/TextField";
-
-const SearchBar = (props) => {
+import Select from 'react-select'
+import AsyncSelect from 'react-select/async';
+import axios from 'axios'
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+const SearchBar = props => {
   const token = props.token;
+//   console.log("token", token)
   let [search, setSearch] = useState("");
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
@@ -16,7 +16,7 @@ const SearchBar = (props) => {
   const searchHandler = async () => {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
-      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=50&offset=5`,
+      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=50`,
       {
         method: "GET",
         headers: {
@@ -25,13 +25,13 @@ const SearchBar = (props) => {
       }
     );
     const searchJSON = await response.json();
-    console.log(searchJSON);
-    let searchArr = [{ value: "chocolate", label: "Chocolate" }];
+    console.log(searchJSON)
+    let searchArr = [{ value: 'chocolate', label: 'Chocolate' }]
 
     if (searchJSON.shows) {
-      searchArr = searchJSON.shows.items.map((item) => {
-        return { value: item.id, label: item.name };
-      });
+      searchArr = searchJSON.shows.items.map(item => {
+        return { value: item.id, label: item.name }
+      })
     }
     setResults(searchArr);
     // var result = results.filter(item => item.label === search)
@@ -40,43 +40,66 @@ const SearchBar = (props) => {
 
   useEffect(() => {
     const foo = async function () {
-      await searchHandler();
-    };
-    foo();
-  }, [props.search]);
+      await searchHandler()
+    }
+    foo()
+  }, [props.search])
 
-  const activeSearch = async (text) => {
+
+  const activeSearch = async text => {
     setSearch(text);
     await searchHandler();
   };
   const getEpisodes = async () => {
-    for (var i = 0; i < results.length; i++) {
-      if (results[i].label === search) {
-        setResult(results[i]);
-        break;
+    const q = encodeURIComponent(`${search}`);
+    const response = await fetch(
+      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=1`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
+      
+    );
+    const searchJSON = await response.json();
+    console.log(searchJSON)
+    if (searchJSON.shows) {
+        result = searchJSON.shows.items.map(item => {
+          return item.id 
+        })
     }
-    if (result.value !== undefined) {
-      console.log("getting episodes");
+    setResult(result)
+    // for (var i = 0; i < results.length; i++) {
+    //   if (results[i].label === search) {
+    //     setResult(results[i])
+    //     break;
+    //   }
+    // }
+    if (result) {
+      console.log('getting episodes')
       const episodes = await fetch(
-        `https://api.spotify.com/v1/shows/${result.value}/episodes`,
+        `https://api.spotify.com/v1/shows/${result}/episodes`,
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         }
       );
       const episodesJSON = await episodes.json();
       try {
-        let episodesArr = episodesJSON.items.map((item) => {
-          return { uri: item.uri, name: item.name, date: item.release_date };
-        });
-        setEpisodes(episodesArr);
+        let episodesArr = episodesJSON.items.map(item => {
+          return { uri: item.uri, name: item.name, date: item.release_date }
+        })
+        setEpisodes(episodesArr)
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     }
+
+
+
 
     // let searchArr = [{ value: 'chocolate', label: 'Chocolate' }]
 
@@ -89,15 +112,15 @@ const SearchBar = (props) => {
   };
 
   const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
+    { value: 'chocolate', label: 'Chocolate' },
+    { value: 'strawberry', label: 'Strawberry' },
+    { value: 'vanilla', label: 'Vanilla' }
+  ]
 
-  console.log(results);
-  console.log(search);
-  console.log("RESULT ", result.value);
-  console.log("Episodes ", episodes);
+  console.log('ALL SHOWS ', results)
+  console.log(search)
+  console.log('RESULT ', result)
+  console.log('Episodes ', episodes)
   return (
     <div>
       <Autocomplete
@@ -105,13 +128,11 @@ const SearchBar = (props) => {
         id="free-solo-2-demo"
         disableClearable
         onChange={(e, v) => activeSearch(v)}
-        options={results.map((item) => item.label)}
+        options={results.map(item => item.label)}
         renderInput={(params) => (
           <TextField
             {...params}
-            onChange={({ target }) => {
-              activeSearch(target.value);
-            }}
+            onChange={({ target }) => { activeSearch(target.value) }}
             label="Search input"
             margin="normal"
             variant="outlined"
@@ -119,7 +140,7 @@ const SearchBar = (props) => {
         )}
       />
       <button onClick={getEpisodes}>Get Episodes</button>
-      {episodes !== [] && episodes.map((episode) => <li>{episode.name}</li>)}
+      {episodes !== [] && episodes.map(episode => <li>{episode.name}</li>)}
     </div>
   );
 };
