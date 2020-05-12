@@ -4,8 +4,9 @@ import AsyncSelect from 'react-select/async';
 import axios from 'axios'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
- const SearchBar = props => {
+const SearchBar = props => {
   const token = props.token;
+//   console.log("token", token)
   let [search, setSearch] = useState("");
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
@@ -13,7 +14,7 @@ import TextField from '@material-ui/core/TextField';
   const searchHandler = async () => {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
-      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=50&offset=5`,
+      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=50`,
       {
         method: "GET",
         headers: {
@@ -24,10 +25,10 @@ import TextField from '@material-ui/core/TextField';
     const searchJSON = await response.json();
     console.log(searchJSON)
     let searchArr = [{ value: 'chocolate', label: 'Chocolate' }]
-    
-    if(searchJSON.shows) {
+
+    if (searchJSON.shows) {
       searchArr = searchJSON.shows.items.map(item => {
-        return {value: item.id, label: item.name}
+        return { value: item.id, label: item.name }
       })
     }
     setResults(searchArr);
@@ -42,46 +43,65 @@ import TextField from '@material-ui/core/TextField';
     }
     foo()
   }, [props.search])
-  
-  
+
+
   const activeSearch = async text => {
     setSearch(text);
     await searchHandler();
-  }; 
+  };
   const getEpisodes = async () => {
-    for(var i = 0; i < results.length; i++) {
-        if (results[i].label === search) {
-            setResult(results[i])
-            break;
+    const q = encodeURIComponent(`${search}`);
+    const response = await fetch(
+      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=1`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      }
+      
+    );
+    const searchJSON = await response.json();
+    console.log(searchJSON)
+    if (searchJSON.shows) {
+        result = searchJSON.shows.items.map(item => {
+          return item.id 
+        })
     }
-    if(result.value !== undefined){
-        console.log('getting episodes')
-        const episodes = await fetch(
-            `https://api.spotify.com/v1/shows/${result.value}/episodes`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }
-          );
-          const episodesJSON = await episodes.json();
-          try{
-              let episodesArr = episodesJSON.items.map(item => {
-                  return {uri: item.uri, name: item.name, date: item.release_date}
-                })
-              setEpisodes(episodesArr)
-          }catch(err){
-              console.log(err)
+    setResult(result)
+    // for (var i = 0; i < results.length; i++) {
+    //   if (results[i].label === search) {
+    //     setResult(results[i])
+    //     break;
+    //   }
+    // }
+    if (result) {
+      console.log('getting episodes')
+      const episodes = await fetch(
+        `https://api.spotify.com/v1/shows/${result}/episodes`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`
           }
+        }
+      );
+      const episodesJSON = await episodes.json();
+      try {
+        let episodesArr = episodesJSON.items.map(item => {
+          return { uri: item.uri, name: item.name, date: item.release_date }
+        })
+        setEpisodes(episodesArr)
+      } catch (err) {
+        console.log(err)
+      }
     }
-        
-   
-    
-    
+
+
+
+
     // let searchArr = [{ value: 'chocolate', label: 'Chocolate' }]
-    
+
     // if(searchJSON.shows) {
     //   searchArr = searchJSON.shows.items.map(item => {
     //     return {value: item.id, label: item.name}
@@ -95,31 +115,31 @@ import TextField from '@material-ui/core/TextField';
     { value: 'strawberry', label: 'Strawberry' },
     { value: 'vanilla', label: 'Vanilla' }
   ]
-  
-  console.log(results)
+
+  console.log('ALL SHOWS ', results)
   console.log(search)
-  console.log('RESULT ', result.value)
+  console.log('RESULT ', result)
   console.log('Episodes ', episodes)
   return (
     <div>
-    <Autocomplete
+      <Autocomplete
         freeSolo
         id="free-solo-2-demo"
         disableClearable
-        onChange={(e,v) => activeSearch(v)}
-        options={results.map(item => item.label )}
+        onChange={(e, v) => activeSearch(v)}
+        options={results.map(item => item.label)}
         renderInput={(params) => (
           <TextField
             {...params}
-            onChange={({ target }) => {activeSearch(target.value)}} 
+            onChange={({ target }) => { activeSearch(target.value) }}
             label="Search input"
             margin="normal"
             variant="outlined"
-        />
+          />
         )}
-    /> 
-    <button onClick={getEpisodes}>Get Episodes</button>
-    {episodes !== [] && episodes.map(episode => <li>{episode.name}</li>)}
+      />
+      <button onClick={getEpisodes}>Get Episodes</button>
+      {episodes !== [] && episodes.map(episode => <li>{episode.name}</li>)}
     </div>
   )
 }
