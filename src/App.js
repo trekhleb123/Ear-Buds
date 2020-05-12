@@ -12,8 +12,8 @@ import queryString from "querystring";
 import Player from "./components/Player";
 
 const redirectUri = "http://localhost:3000";
-const clientId = "101d0a7fe97d422c82d77f1db036f484";
-const clientSecret = "60ecde3741104c5996693c9c6c9cc179";
+const clientId = process.env.REACT_APP_CLIENT_ID;
+const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
 const scopes =
   "user-read-currently-playing user-read-playback-state user-modify-playback-state streaming user-read-email user-read-private";
 //'user-read-currently-playing user-read-playback-state user-library-read user-library-modify user-read-email user-read-playback-state user-modify-playback-state'
@@ -45,6 +45,9 @@ function App() {
   };
 
   const buttonClick = () => {
+    {
+      console.log(process.env.REACT_APP_CLIENT_ID);
+    }
     if (mySpotifyData && token) {
       console.log("sending data");
       createNewRoom({
