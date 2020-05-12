@@ -122,6 +122,7 @@ const Player = (props) => {
     console.log("firstPa", firstUser);
     console.log("secondPa", secondUser);
   };
+
   const startAll = async () => {
     let [firstUser, secondUser] = await Promise.all(
       usersArr.map((user) =>
