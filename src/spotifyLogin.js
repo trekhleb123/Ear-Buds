@@ -2,26 +2,24 @@ import axios from "axios"
 import queryString from "querystring"
 
 const redirectUri = "http://localhost:3000"
-const clientId = "5831023fb4004d61a610f092f1e612b4"
-const clientSecret = "a0174569adec4c988e845ace473ae66a"
-const scopes = [
-  "user-read-currently-playing",
-  "user-read-playback-state",
-  "app-remote-control",
-]
+const clientId = process.env.REACT_APP_CLIENT_ID
+const clientSecret = process.env.REACT_APP_CLIENT_SECRET
+const scopes = ["user-read-playback-state", "user-read-currently-playing", "user-library-read",
+  "user-library-modify", "user-read-playback-state",
+  "user-modify-playback-state", "app-remote-control"]
 
 export const spotifyLogin = (code) => {
-  if(code) {
+  if (code) {
     return
   } else {
     window.location.replace(
       "https://accounts.spotify.com/authorize?" +
-        queryString.stringify({
-          response_type: "code",
-          client_id: clientId,
-          scope: scopes,
-          redirect_uri: redirectUri,
-        })
+      queryString.stringify({
+        response_type: "code",
+        client_id: clientId,
+        scope: scopes,
+        redirect_uri: redirectUri,
+      })
     )
   }
 }

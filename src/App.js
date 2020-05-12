@@ -1,4 +1,6 @@
-import React, { useEffect } from "react"
+import React, { useState, useEffect } from "react"
+import Routes from './routes'
+import SearchBar from './components/SearchBar'
 import "./App.css"
 import { spotifyLogin } from "./spotifyLogin"
 import { getAccessToken, setSpotifyCode, getUserData } from "./redux/store"
@@ -22,6 +24,8 @@ function App(props) {
 
   return (
     <div className="App">
+      <Routes />
+      <SearchBar token={props.access_token} />
       <header className="App-header">
         <button onClick={() => spotifyLogin(props.code)}>
           Login to Spotify
