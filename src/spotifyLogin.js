@@ -10,9 +10,10 @@ const scopes = [
   "app-remote-control",
 ]
 
-const getCode1 = async () => {
-  axios.get()
-  return new Promise((resolve, reject) => {
+export const spotifyLogin = (code) => {
+  if(code) {
+    return
+  } else {
     window.location.replace(
       "https://accounts.spotify.com/authorize?" +
         queryString.stringify({
@@ -22,34 +23,6 @@ const getCode1 = async () => {
           redirect_uri: redirectUri,
         })
     )
-    window.location.reload(false)
-    resolve('got code')
-  })
-}
-
-export const spotifyLogin = async () => {
-  let code = new URLSearchParams(window.location.search).get("code")
-  if(code) {
-    console.log('code exists', code)
-    return code
-  } else {
-      await getCode1()
-      let newCode = new URLSearchParams(window.location.search).get("code")
-      return newCode
-      // return newCode
-      // code = await new Promise((resolve, reject) => {
-      //   window.location.replace(
-      //     "https://accounts.spotify.com/authorize?" +
-      //       queryString.stringify({
-      //         response_type: "code",
-      //         client_id: clientId,
-      //         scope: scopes,
-      //         redirect_uri: redirectUri,
-      //       })
-      //   )
-      //   console.log("in promise")
-      //   resolve(new URLSearchParams(window.location.search).get("code"))
-      // })
   }
 }
 

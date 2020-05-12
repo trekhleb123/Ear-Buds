@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react"
 import "./App.css"
 import { createNewRoom, getRoom, getCurrentRoomData } from "./firebase/firebase"
-import { spotfityLogin, getNewToken, getMyData } from "./spotifyLogin"
-import { getAccessToken, getSpotifyCode, getUserData } from "./redux/store"
+import { spotifyLogin, getNewToken, getMyData } from "./spotifyLogin"
+import { getAccessToken, setSpotifyCode, getUserData } from "./redux/store"
 import axios from "axios"
 import queryString from "querystring"
 import { connect } from "react-redux"
@@ -20,8 +20,17 @@ function App(props) {
   const [mySpotifyData, setMySpotifyData] = useState()
 
   useEffect(() => {
-    console.log(props)
-  }, [props.userData])
+    if(!props.code) {
+      console.log('no props.code --> need to set')
+      let code = new URLSearchParams(window.location.search).get("code")
+      if(code) {
+        console.log('SPOTIFY CODE FROM URL', code)
+        props.setSpotifyCode(code)
+        props.getAccessToken(code)
+      }
+    }
+    console.log('inside useEffect', props)
+  }, [])
 
   // const getSampleData = async (token, episodeId) => {
   //   try {
@@ -67,7 +76,7 @@ function App(props) {
       <header className="App-header">
         <button onClick={buttonClick}>Button</button>
         {mySpotifyData && <div>Hello, {mySpotifyData.display_name}</div>}
-        <button onClick={props.getSpotifyCode}>Login to Spotify</button>
+        <button onClick={() => spotifyLogin(props.code)}>Login to Spotify</button>
       </header>
     </div>
   )
@@ -82,7 +91,7 @@ const stateToProps = (state) => ({
 
 const dispatchToProps = (dispatch) => ({
   getAccessToken: (code) => dispatch(getAccessToken(code)),
-  getSpotifyCode: () => dispatch(getSpotifyCode()),
+  setSpotifyCode: (code) => dispatch(setSpotifyCode(code)),
   getUserData: (token) => dispatch(getUserData(token)),
 })
 
