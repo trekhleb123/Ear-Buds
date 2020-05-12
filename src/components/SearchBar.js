@@ -4,15 +4,16 @@ import AsyncSelect from 'react-select/async';
 import axios from 'axios'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
+import ListItem from '@material-ui/core/ListItem';
+
 const SearchBar = props => {
   const token = props.token;
 //   console.log("token", token)
   let [search, setSearch] = useState("");
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
-  let [results, setResults] = useState([
-    { value: "chocolate", label: "Chocolate" },
-  ]);
+  let [chosenEpisode, setEpisode] = useState()
+  let [results, setResults] = useState([{ value: 'chocolate', label: 'Chocolate' }]);
   const searchHandler = async () => {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
@@ -70,12 +71,6 @@ const SearchBar = props => {
         })
     }
     setResult(result)
-    // for (var i = 0; i < results.length; i++) {
-    //   if (results[i].label === search) {
-    //     setResult(results[i])
-    //     break;
-    //   }
-    // }
     if (result) {
       console.log('getting episodes')
       const episodes = await fetch(
@@ -90,7 +85,7 @@ const SearchBar = props => {
       const episodesJSON = await episodes.json();
       try {
         let episodesArr = episodesJSON.items.map(item => {
-          return { uri: item.uri, name: item.name, date: item.release_date }
+          return { uri: item.uri, name: item.name, date: item.release_date, id: item.id}
         })
         setEpisodes(episodesArr)
       } catch (err) {
@@ -111,16 +106,17 @@ const SearchBar = props => {
     // setResults(searchArr);
   };
 
-  const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' }
-  ]
+//   const options = [
+//     { value: 'chocolate', label: 'Chocolate' },
+//     { value: 'strawberry', label: 'Strawberry' },
+//     { value: 'vanilla', label: 'Vanilla' }
+//   ]
 
-  console.log('ALL SHOWS ', results)
-  console.log(search)
-  console.log('RESULT ', result)
-  console.log('Episodes ', episodes)
+//   console.log('ALL SHOWS ', results)
+//   console.log(search)
+//   console.log('RESULT ', result)
+//   console.log('Episodes ', episodes)
+console.log('CHOSEN EPISODE URI ', chosenEpisode)
   return (
     <div>
       <Autocomplete
@@ -140,7 +136,7 @@ const SearchBar = props => {
         )}
       />
       <button onClick={getEpisodes}>Get Episodes</button>
-      {episodes !== [] && episodes.map(episode => <li>{episode.name}</li>)}
+      {episodes.map(episode => <ListItem button onClick={() => setEpisode(episode.uri)} key={episode.id}>{episode.name}</ListItem>)}
     </div>
   );
 };
