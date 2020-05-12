@@ -1,104 +1,127 @@
-  
-// 'use strict';
+import React, { useState, useEffect } from "react";
+import Select from "react-select";
+import AsyncSelect from "react-select/async";
+import axios from "axios";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
 
-// import React, {Component} from 'react';
-// import Autosuggest from 'react-autosuggest';
+const SearchBar = (props) => {
+  const token = props.token;
+  let [search, setSearch] = useState("");
+  let [result, setResult] = useState([]);
+  let [episodes, setEpisodes] = useState([]);
+  let [results, setResults] = useState([
+    { value: "chocolate", label: "Chocolate" },
+  ]);
+  const searchHandler = async () => {
+    const q = encodeURIComponent(`${search}`);
+    const response = await fetch(
+      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=50&offset=5`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const searchJSON = await response.json();
+    console.log(searchJSON);
+    let searchArr = [{ value: "chocolate", label: "Chocolate" }];
 
-// import {newSearch} from '../actions/SearchActions';
-// import PlaylistActions from '../actions/PlaylistActions';
+    if (searchJSON.shows) {
+      searchArr = searchJSON.shows.items.map((item) => {
+        return { value: item.id, label: item.name };
+      });
+    }
+    setResults(searchArr);
+    // var result = results.filter(item => item.label === search)
+    // setResult(result)
+  };
 
-// import Spotify from '../core/Spotify';
+  useEffect(() => {
+    const foo = async function () {
+      await searchHandler();
+    };
+    foo();
+  }, [props.search]);
 
-// class SearchBox extends Component {
+  const activeSearch = async (text) => {
+    setSearch(text);
+    await searchHandler();
+  };
+  const getEpisodes = async () => {
+    for (var i = 0; i < results.length; i++) {
+      if (results[i].label === search) {
+        setResult(results[i]);
+        break;
+      }
+    }
+    if (result.value !== undefined) {
+      console.log("getting episodes");
+      const episodes = await fetch(
+        `https://api.spotify.com/v1/shows/${result.value}/episodes`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const episodesJSON = await episodes.json();
+      try {
+        let episodesArr = episodesJSON.items.map((item) => {
+          return { uri: item.uri, name: item.name, date: item.release_date };
+        });
+        setEpisodes(episodesArr);
+      } catch (err) {
+        console.log(err);
+      }
+    }
 
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       initialValue: this.props.value
-//     };
-//   }
+    // let searchArr = [{ value: 'chocolate', label: 'Chocolate' }]
 
-//   _search(text) {
-//     newSearch(text);
-//     PlaylistActions.search(text, this.props.country);
-//   }
+    // if(searchJSON.shows) {
+    //   searchArr = searchJSON.shows.items.map(item => {
+    //     return {value: item.id, label: item.name}
+    //   })
+    // }
+    // setResults(searchArr);
+  };
 
-//   _handleSearch() {
-//     // I know that's ugly :(
-//     const text = document.querySelector('#search-input').value;
-//     if (text.length > 3) {
-//       this._search(text);
-//     }
-//   }
+  const options = [
+    { value: "chocolate", label: "Chocolate" },
+    { value: "strawberry", label: "Strawberry" },
+    { value: "vanilla", label: "Vanilla" },
+  ];
 
-//   _handleKeyPress(event) {
-//     if (event.key === 'Enter') {
-//       const text = event.target.value;
-//       if (text.length > 3) {
-//         this._search(text);
-//       }
-//     }
-//   }
+  console.log(results);
+  console.log(search);
+  console.log("RESULT ", result.value);
+  console.log("Episodes ", episodes);
+  return (
+    <div>
+      <Autocomplete
+        freeSolo
+        id="free-solo-2-demo"
+        disableClearable
+        onChange={(e, v) => activeSearch(v)}
+        options={results.map((item) => item.label)}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            onChange={({ target }) => {
+              activeSearch(target.value);
+            }}
+            label="Search input"
+            margin="normal"
+            variant="outlined"
+          />
+        )}
+      />
+      <button onClick={getEpisodes}>Get Episodes</button>
+      {episodes !== [] && episodes.map((episode) => <li>{episode.name}</li>)}
+    </div>
+  );
+};
 
-//   render() {
-//     let country = this.props.country;
-//     let time;
-//     let getSuggestions = (input, callback) => {
-//       if (time) {
-//         clearTimeout(time);
-//       }
-//       time = setTimeout(() => {
-//         Spotify.autocomplete(input, country).then((tracks) => {
-//           callback(null, tracks);
-//         });
-//       }, 500);
-//     };
-
-//     let suggestionRenderer = (track) => {
-//       return <span>{track.name}, {track.artists.first().name}</span>;
-//     };
-
-//     let getSuggestionValue = (track) => {
-//       return `${track.name}, ${track.artists.first().name}`;
-//     };
-
-//     let showWhen = (input) => {
-//       return input.trim().length > 3;
-//     };
-
-//     let onSuggestionSelected = (suggestion) => {
-//       this._search(suggestion);
-//     };
-
-//     const inputAttributes = {
-//       id: 'search-input',
-//       type: 'text',
-//       ref: 'searchInput',
-//       className: 'input-search',
-//       placeholder: 'What is your favorite song?',
-//       onKeyPress: this._handleKeyPress.bind(this)
-//     };
-
-//     return <div className='search-box'>
-//             <div className='search-group'>
-//               <span className='input-group-btn'>
-//                 <div className='btn-search' onClick={this._handleSearch.bind(this)}>
-//                 </div>
-//               </span>
-//               <Autosuggest
-//                 suggestions={getSuggestions}
-//                 onSuggestionSelected={onSuggestionSelected.bind(this)}
-//                 inputAttributes={inputAttributes}
-//                 defaultValue={this.state.initialValue}
-//                 suggestionRenderer={suggestionRenderer}
-//                 suggestionValue={getSuggestionValue}
-//                 showWhen={showWhen}
-//                 cache={true}
-//               />
-//             </div>
-//           </div>;
-//   }
-
-// }
-
-// export default SearchBox;
+export default SearchBar;

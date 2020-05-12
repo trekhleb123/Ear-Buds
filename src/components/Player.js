@@ -13,8 +13,7 @@ const Player = (props) => {
     { name: "Michael", token: props.token },
     {
       name: "Sam",
-      token:
-        "BQBUsxLv0fjLNRYoz-utiuF2FG04_2srMZUxpFyLB6clqQwxR3YmFeYdmczlnj6ZD3tsYvr0R9pTNirLrDzI4pBB71-U9vkF5aYJExZXRevpqY9m5whQkYqkVEvAzxQW7bEDGP8v-kDxc3-r-ByXfofQb1MfOSMD1_QB69mUYllN",
+      token: "INSERT",
     },
   ];
   let player = "";

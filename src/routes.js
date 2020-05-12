@@ -1,11 +1,7 @@
-import React, {Component} from 'react'
-import { BrowserRouter, Route, Switch} from 'react-router-dom'
+import React, { Component } from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import {
- Navbar,
- SignIn,
- Player
-} from './components'
+import { Navbar } from "./components";
 
 /**
  * COMPONENT
@@ -13,14 +9,11 @@ import {
 class Routes extends Component {
   render() {
     return (
-        <BrowserRouter>
-            <Navbar />
-            <Switch>
-                <Route path="/signin" component={SignIn} />
-                <Route path="/player" component={Player} />
-            </Switch>
-            </BrowserRouter>
-    )
+      <BrowserRouter>
+        <Navbar />
+        <Switch>{/* <Route path="/signin" component={SignIn} /> */}</Switch>
+      </BrowserRouter>
+    );
   }
 }
-export default Routes
+export default Routes;
