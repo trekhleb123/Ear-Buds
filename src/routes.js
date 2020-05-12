@@ -1,9 +1,7 @@
-import React, { Component } from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import React, { Component } from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import {
-  Navbar,
-} from './components'
+import { Navbar } from "./components";
 
 /**
  * COMPONENT
@@ -13,11 +11,9 @@ class Routes extends Component {
     return (
       <BrowserRouter>
         <Navbar />
-        <Switch>
-          {/* <Route path="/signin" component={SignIn} /> */}
-        </Switch>
+        <Switch>{/* <Route path="/signin" component={SignIn} /> */}</Switch>
       </BrowserRouter>
-    )
+    );
   }
 }
-export default Routes
+export default Routes;

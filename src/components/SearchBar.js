@@ -21,8 +21,8 @@ const SearchBar = props => {
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
     const searchJSON = await response.json();
@@ -37,7 +37,6 @@ const SearchBar = props => {
     setResults(searchArr);
     // var result = results.filter(item => item.label === search)
     // setResult(result)
-
   };
 
   useEffect(() => {
@@ -139,8 +138,7 @@ console.log('CHOSEN EPISODE URI ', chosenEpisode)
       <button onClick={getEpisodes}>Get Episodes</button>
       {episodes.map(episode => <ListItem button onClick={() => setEpisode(episode.uri)} key={episode.id}>{episode.name}</ListItem>)}
     </div>
-  )
-}
+  );
+};
 
-
-export default SearchBar
+export default SearchBar;
