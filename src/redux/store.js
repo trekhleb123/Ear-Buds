@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware } from "redux"
 import { createLogger } from "redux-logger"
 import thunkMiddleware from "redux-thunk"
-import { getNewToken, getMyData, loginHelper } from "../spotifyLogin"
+import { getNewToken, loginHelper } from "../spotifyLogin"
 
 const SET_ACCESS_TOKEN = "SET_ACCESS_TOKEN"
 const SET_REFRESH_TOKEN = "SET_REFRESH_TOKEN"
@@ -63,8 +63,15 @@ export const getNewAccessToken = (refreshToken) => {
 export const getUserData = (token) => {
   return async (dispatch) => {
     try {
-      const { data } = await getMyData(token)
-      dispatch(setUserData(data))
+      fetch("https://api.spotify.com/v1/me", {
+        headers: { Authorization: "Bearer " + token },
+      })
+        .then((res) => res.json())
+        .catch((err) => console.log(err))
+        .then((data) => {
+          console.log("data", data)
+          dispatch(setUserData(data))
+        })
     } catch (err) {
       console.error(err)
     }
