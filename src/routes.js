@@ -15,7 +15,6 @@ import SingleRoom from './components/SingleRoom';
 class Routes extends Component {
   render() {
     return (
-        // <BrowserRouter>
         <>
             <Navbar />
             <Switch>
@@ -23,7 +22,6 @@ class Routes extends Component {
               {/* <Route exact path='/rooms' component={Rooms} /> */}
                 <Route exact path="/signin" component={SignIn} />
             </Switch>
-          {/* </BrowserRouter> */}
             </>
     )
   }

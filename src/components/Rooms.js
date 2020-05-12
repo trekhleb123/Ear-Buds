@@ -50,6 +50,15 @@ class Rooms extends React.Component {
     currentRoom.forEach((el) => {
       res = el.id
     })
+    // await db.collection('Rooms')
+    // .doc(currentRoom.id)
+    // .collection('Users')
+    // .add({
+    //   accessToken: 'hey',
+    //   email: 'you@email.com',
+    //   name: 'Bob',
+    //   roomCode: this.state.roomCode,
+    // });
     // const room = await db.collection('Rooms').doc()
     // room.where('roomCode', '==', this.state.roomCode)
     console.log('room', res, currentRoom)
@@ -92,4 +101,3 @@ handleChange(event) {
   }
 }
 export default withRouter(Rooms);
-//  <Link to={`/room/${this.state.roomCode}`}></Link>

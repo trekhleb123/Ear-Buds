@@ -2,11 +2,16 @@ import React from 'react';
 import { db } from '../firebase/firebase';
 import { Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { getMyData } from '../spotifyLogin';
+import { getAccessToken } from '../redux/store';
 
 class SingleRoom extends React.Component {
   constructor() {
     super();
     this.data = this.data.bind(this)
+  }
+  componentDidMount() {
+    //getAccessToken()
   }
   async data() {
     const stuff = await db.collection('Rooms').doc(this.props.match.params.roomId).get()
@@ -21,7 +26,7 @@ class SingleRoom extends React.Component {
     }).catch(function(error) {
       console.log("Error getting document:", error);
     });
-console.log('stuff', stuff)
+console.log('stuff', stuff, getMyData()) //need access token
   }
   render() {
     return (
