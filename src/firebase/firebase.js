@@ -64,7 +64,7 @@ export async function getCurrentRoomData(docId) {
 //   return res
 // }
 
-export async function createRoom () {
+export async function createRoom (token) {
   //event.preventDefault()
   const code =
     Math.random()

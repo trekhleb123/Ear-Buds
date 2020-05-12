@@ -50,19 +50,24 @@ class Rooms extends React.Component {
     currentRoom.forEach((el) => {
       res = el.id
     })
-    // await db.collection('Rooms')
-    // .doc(currentRoom.id)
-    // .collection('Users')
-    // .add({
-    //   accessToken: 'hey',
-    //   email: 'you@email.com',
-    //   name: 'Bob',
-    //   roomCode: this.state.roomCode,
-    // });
+    console.log('currentroom', res,currentRoom)
+    await db.collection('Rooms')
+    .doc(res)
+    .collection('Users')
+    .add({
+      accessToken: 'hey',
+      email: 'you@email.com',
+      name: 'Bob',
+      roomCode: this.state.roomCode,
+    });
     // const room = await db.collection('Rooms').doc()
     // room.where('roomCode', '==', this.state.roomCode)
     console.log('room', res, currentRoom)
   this.props.history.push(`/room/${res}`)
+  this.setState({
+    joinForm: false,
+    roomCode: ''
+  })
   }
 showForm() {
   this.setState({

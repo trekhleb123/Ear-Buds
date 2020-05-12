@@ -1,12 +1,7 @@
 import { createStore, applyMiddleware } from "redux"
 import { createLogger } from "redux-logger"
 import thunkMiddleware from "redux-thunk"
-import {
-  spotifyLogin,
-  getNewToken,
-  getMyData,
-  loginHelper,
-} from "../spotifyLogin"
+import { getNewToken, getMyData, loginHelper } from "../spotifyLogin"
 
 const SET_ACCESS_TOKEN = "SET_ACCESS_TOKEN"
 const SET_REFRESH_TOKEN = "SET_REFRESH_TOKEN"
@@ -53,21 +48,6 @@ export const getAccessToken = (code) => {
     }
   }
 }
-
-// export const getSpotifyCode = () => {
-//   return async (dispatch) => {
-//     try {
-//       const code = await spotifyLogin()
-//       // const res = await loginHelper(code)
-//       // console.log(res)
-//       // dispatch(setSpotifyCode(code))
-//       // dispatch(setAccessToken(res.access_token))
-//       // dispatch(setRefreshToken(res.refresh_token))
-//     } catch (err) {
-//       console.error(err)
-//     }
-//   }
-// }
 
 export const getNewAccessToken = (refreshToken) => {
   return async (dispatch) => {
