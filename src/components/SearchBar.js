@@ -10,7 +10,9 @@ const SearchBar = props => {
   let [search, setSearch] = useState("");
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
-  let [results, setResults] = useState([{ value: 'chocolate', label: 'Chocolate' }]);
+  let [results, setResults] = useState([
+    { value: "chocolate", label: "Chocolate" },
+  ]);
   const searchHandler = async () => {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
@@ -18,8 +20,8 @@ const SearchBar = props => {
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
     const searchJSON = await response.json();
@@ -34,7 +36,6 @@ const SearchBar = props => {
     setResults(searchArr);
     // var result = results.filter(item => item.label === search)
     // setResult(result)
-
   };
 
   useEffect(() => {
@@ -141,8 +142,7 @@ const SearchBar = props => {
       <button onClick={getEpisodes}>Get Episodes</button>
       {episodes !== [] && episodes.map(episode => <li>{episode.name}</li>)}
     </div>
-  )
-}
+  );
+};
 
-
-export default SearchBar
+export default SearchBar;
