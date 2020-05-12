@@ -9,7 +9,6 @@ import TextField from '@material-ui/core/TextField';
   let [search, setSearch] = useState("");
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
-  let [id, setId] = useState("");
   let [results, setResults] = useState([{ value: 'chocolate', label: 'Chocolate' }]);
   const searchHandler = async () => {
     const q = encodeURIComponent(`${search}`);
@@ -53,13 +52,13 @@ import TextField from '@material-ui/core/TextField';
     for(var i = 0; i < results.length; i++) {
         if (results[i].label === search) {
             setResult(results[i])
-            setId(result.value)
             break;
         }
     }
-    if(id !== ""){
+    if(result.value !== undefined){
+        console.log('getting episodes')
         const episodes = await fetch(
-            `https://api.spotify.com/v1/shows/${id}/episodes`,
+            `https://api.spotify.com/v1/shows/${result.value}/episodes`,
             {
               method: "GET",
               headers: {
@@ -100,7 +99,6 @@ import TextField from '@material-ui/core/TextField';
   console.log(results)
   console.log(search)
   console.log('RESULT ', result.value)
-  console.log('ID ', id)
   console.log('Episodes ', episodes)
   return (
     <div>
@@ -121,7 +119,7 @@ import TextField from '@material-ui/core/TextField';
         )}
     /> 
     <button onClick={getEpisodes}>Get Episodes</button>
-    {episodes.map(episode => <li>{episode.name}</li>)}
+    {episodes !== [] && episodes.map(episode => <li>{episode.name}</li>)}
     </div>
   )
 }
