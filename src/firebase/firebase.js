@@ -1,13 +1,13 @@
-import firebase from "firebase";
+import firebase from 'firebase';
 
 const firebaseApp = firebase.initializeApp({
   // copy and paste your firebase credential here
-  apiKey: "AIzaSyBYMe0vrHWmvoWoMrZGB62EXeEhgdNVZvM",
-  authDomain: "podcastparty-402e2.web.app",
-  databaseURL: "https://podcastparty-402e2.firebaseio.com",
-  projectId: "podcastparty-402e2",
-  storageBucket: "gs://podcastparty-402e2.appspot.com",
-  messagingSenderId: "311285409494",
+  apiKey: 'AIzaSyBYMe0vrHWmvoWoMrZGB62EXeEhgdNVZvM',
+  authDomain: 'podcastparty-402e2.web.app',
+  databaseURL: 'https://podcastparty-402e2.firebaseio.com',
+  projectId: 'podcastparty-402e2',
+  storageBucket: 'gs://podcastparty-402e2.appspot.com',
+  messagingSenderId: '311285409494',
 });
 
 const db = firebaseApp.firestore();
@@ -17,7 +17,7 @@ export { db };
 
 export async function createNewRoom(newRoom) {
   try {
-    const room = await db.collection("Rooms").add(newRoom);
+    const room = await db.collection('Rooms').add(newRoom);
     console.log(room);
   } catch (err) {
     console.error(err);
@@ -26,13 +26,13 @@ export async function createNewRoom(newRoom) {
 
 export async function getRoom(roomName, roomPassword) {
   try {
-    const rooms = db.collection("Rooms");
+    const rooms = db.collection('Rooms');
     const currentRoom = await rooms
-      .where("name", "==", roomName)
-      .where("password", "==", roomPassword)
+      .where('name', '==', roomName)
+      .where('password', '==', roomPassword)
       .get();
     let res = {};
-    currentRoom.forEach((el) => {
+    currentRoom.forEach(el => {
       res = el.id;
     });
     console.log(res);
@@ -44,7 +44,7 @@ export async function getRoom(roomName, roomPassword) {
 
 export async function getCurrentRoomData(docId) {
   try {
-    const doc = db.collection("Rooms").doc(docId);
+    const doc = db.collection('Rooms').doc(docId);
     const result = await doc.get();
 
     console.log(result.data());
@@ -56,10 +56,13 @@ export async function getCurrentRoomData(docId) {
 
 export async function getCurrentUserData(docId, callback) {
   try {
-    const users = db.collection("Rooms").doc(docId).collection("Users");
+    const users = db
+      .collection('Rooms')
+      .doc(docId)
+      .collection('Users');
     const result = await users.get();
 
-    result.forEach((user) => console.log(user.id, "=>", user.data()));
+    result.forEach(user => console.log(user.id, '=>', user.data()));
 
     // console.log(result.data());
     return result;
@@ -78,7 +81,7 @@ export async function getCurrentUserData(docId, callback) {
 //   return res
 // }
 
-export async function createRoom (token) {
+export async function createRoom(token) {
   //event.preventDefault()
   const code =
     Math.random()
@@ -92,7 +95,8 @@ export async function createRoom (token) {
     .collection('Rooms')
     .add({ name: 'room1', roomCode: code });
   console.log('newRoom', newRoom);
-  await db.collection('Rooms')
+  await db
+    .collection('Rooms')
     .doc(newRoom.id)
     .collection('Users')
     .add({
@@ -101,9 +105,9 @@ export async function createRoom (token) {
       name: 'Bob',
       roomCode: code,
     });
-    // console.log('this.props in submit', newRoom.id);
+  // console.log('this.props in submit', newRoom.id);
   // this.props.history.push(`/room/${newRoom.id}`);
-    return newRoom.id
+  return newRoom.id;
 
   //this.setState({roomCode: code})
 }

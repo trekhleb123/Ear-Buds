@@ -16,7 +16,7 @@ class Routes extends Component {
         <Navbar />
         <Switch>
           <Route exact path="/room/:roomId" component={SingleRoom} />
-          {/* <Route exact path='/rooms' component={Rooms} /> */}
+          {/* <Route exact path='/home' component={App} /> */}
           {/* <Route exact path="/signin" component={SignIn} /> */}
         </Switch>
       </>

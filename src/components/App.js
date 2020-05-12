@@ -7,7 +7,7 @@ import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
 import Rooms from './Rooms'
 function App(props) {
-  console.log(props)
+  //console.log(props)
   useEffect(() => {
     if (!props.code) {
       console.log("no props.code --> need to set")
