@@ -1,26 +1,47 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react"
+import "./App.css"
+import { spotifyLogin } from "./spotifyLogin"
+import { getAccessToken, setSpotifyCode, getUserData } from "./redux/store"
+import { connect } from "react-redux"
 
-function App() {
+function App(props) {
+  console.log(props)
+
+  useEffect(() => {
+    if (!props.code) {
+      console.log("no props.code --> need to set")
+      let code = new URLSearchParams(window.location.search).get("code")
+      if (code) {
+        console.log("SPOTIFY CODE FROM URL", code)
+        props.setSpotifyCode(code)
+        props.getAccessToken(code)
+      }
+    }
+    console.log("inside useEffect", props)
+  }, [])
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <button onClick={() => spotifyLogin(props.code)}>
+          Login to Spotify
+        </button>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+const stateToProps = (state) => ({
+  code: state.code,
+  access_token: state.access_token,
+  refresh_token: state.refresh_token,
+  userData: state.userData,
+})
+
+const dispatchToProps = (dispatch) => ({
+  getAccessToken: (code) => dispatch(getAccessToken(code)),
+  setSpotifyCode: (code) => dispatch(setSpotifyCode(code)),
+  getUserData: (token) => dispatch(getUserData(token)),
+})
+
+export default connect(stateToProps, dispatchToProps)(App)
