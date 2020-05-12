@@ -29,7 +29,7 @@ export async function getRoom(roomName, roomPassword) {
     const rooms = db.collection("Rooms");
     const currentRoom = await rooms
       .where("name", "==", roomName)
-      .where("password", "==", roomPassword)
+      .where("roomCode", "==", roomPassword)
       .get();
     let res = {};
     currentRoom.forEach((el) => {

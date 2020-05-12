@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
-import Select from 'react-select'
-import AsyncSelect from 'react-select/async';
-import axios from 'axios'
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import ListItem from '@material-ui/core/ListItem';
+import Select from "react-select";
+import AsyncSelect from "react-select/async";
+import axios from "axios";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+import ListItem from "@material-ui/core/ListItem";
 
-const SearchBar = props => {
+const SearchBar = (props) => {
   const token = props.token;
-//   console.log("token", token)
+  //   console.log("token", token)
   let [search, setSearch] = useState("");
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
-  let [chosenEpisode, setEpisode] = useState()
-  let [results, setResults] = useState([{ value: 'chocolate', label: 'Chocolate' }]);
+  let [chosenEpisode, setEpisode] = useState();
+  let [results, setResults] = useState([
+    { value: "chocolate", label: "Chocolate" },
+  ]);
   const searchHandler = async () => {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
@@ -26,13 +28,13 @@ const SearchBar = props => {
       }
     );
     const searchJSON = await response.json();
-    console.log(searchJSON)
-    let searchArr = [{ value: 'chocolate', label: 'Chocolate' }]
+    console.log(searchJSON);
+    let searchArr = [{ value: "chocolate", label: "Chocolate" }];
 
     if (searchJSON.shows) {
-      searchArr = searchJSON.shows.items.map(item => {
-        return { value: item.id, label: item.name }
-      })
+      searchArr = searchJSON.shows.items.map((item) => {
+        return { value: item.id, label: item.name };
+      });
     }
     setResults(searchArr);
     // var result = results.filter(item => item.label === search)
@@ -41,13 +43,12 @@ const SearchBar = props => {
 
   useEffect(() => {
     const foo = async function () {
-      await searchHandler()
-    }
-    foo()
-  }, [props.search])
+      await searchHandler();
+    };
+    foo();
+  }, [props.search]);
 
-
-  const activeSearch = async text => {
+  const activeSearch = async (text) => {
     setSearch(text);
     await searchHandler();
   };
@@ -58,43 +59,44 @@ const SearchBar = props => {
       {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       }
-      
     );
     const searchJSON = await response.json();
-    console.log(searchJSON)
+    console.log(searchJSON);
     if (searchJSON.shows) {
-        result = searchJSON.shows.items.map(item => {
-          return item.id 
-        })
+      result = searchJSON.shows.items.map((item) => {
+        return item.id;
+      });
     }
-    setResult(result)
+    setResult(result);
     if (result) {
-      console.log('getting episodes')
+      console.log("getting episodes");
       const episodes = await fetch(
         `https://api.spotify.com/v1/shows/${result}/episodes`,
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       const episodesJSON = await episodes.json();
       try {
-        let episodesArr = episodesJSON.items.map(item => {
-          return { uri: item.uri, name: item.name, date: item.release_date, id: item.id}
-        })
-        setEpisodes(episodesArr)
+        let episodesArr = episodesJSON.items.map((item) => {
+          return {
+            uri: item.uri,
+            name: item.name,
+            date: item.release_date,
+            id: item.id,
+          };
+        });
+        setEpisodes(episodesArr);
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     }
-
-
-
 
     // let searchArr = [{ value: 'chocolate', label: 'Chocolate' }]
 
@@ -106,17 +108,17 @@ const SearchBar = props => {
     // setResults(searchArr);
   };
 
-//   const options = [
-//     { value: 'chocolate', label: 'Chocolate' },
-//     { value: 'strawberry', label: 'Strawberry' },
-//     { value: 'vanilla', label: 'Vanilla' }
-//   ]
+  //   const options = [
+  //     { value: 'chocolate', label: 'Chocolate' },
+  //     { value: 'strawberry', label: 'Strawberry' },
+  //     { value: 'vanilla', label: 'Vanilla' }
+  //   ]
 
-//   console.log('ALL SHOWS ', results)
-//   console.log(search)
-//   console.log('RESULT ', result)
-//   console.log('Episodes ', episodes)
-console.log('CHOSEN EPISODE URI ', chosenEpisode)
+  //   console.log('ALL SHOWS ', results)
+  //   console.log(search)
+  //   console.log('RESULT ', result)
+  //   console.log('Episodes ', episodes)
+  console.log("CHOSEN EPISODE URI ", chosenEpisode);
   return (
     <div>
       <Autocomplete
@@ -124,11 +126,13 @@ console.log('CHOSEN EPISODE URI ', chosenEpisode)
         id="free-solo-2-demo"
         disableClearable
         onChange={(e, v) => activeSearch(v)}
-        options={results.map(item => item.label)}
+        options={results.map((item) => item.label)}
         renderInput={(params) => (
           <TextField
             {...params}
-            onChange={({ target }) => { activeSearch(target.value) }}
+            onChange={({ target }) => {
+              activeSearch(target.value);
+            }}
             label="Search input"
             margin="normal"
             variant="outlined"
@@ -136,7 +140,15 @@ console.log('CHOSEN EPISODE URI ', chosenEpisode)
         )}
       />
       <button onClick={getEpisodes}>Get Episodes</button>
-      {episodes.map(episode => <ListItem button onClick={() => setEpisode(episode.uri)} key={episode.id}>{episode.name}</ListItem>)}
+      {episodes.map((episode) => (
+        <ListItem
+          button
+          onClick={() => setEpisode(episode.uri)}
+          key={episode.id}
+        >
+          {episode.name}
+        </ListItem>
+      ))}
     </div>
   );
 };
