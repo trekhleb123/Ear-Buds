@@ -10,25 +10,20 @@ const scopes = [
   "app-remote-control",
 ]
 
-export const spotifyLogin = async () => {
-  let code = new URLSearchParams(window.location.search).get("code")
-  console.log(code)
-  if (code === null) {
-    code = await new Promise((resolve, reject) => {
-      window.location.replace(
-        "https://accounts.spotify.com/authorize?" +
-          queryString.stringify({
-            response_type: "code",
-            client_id: clientId,
-            scope: scopes,
-            redirect_uri: redirectUri,
-          })
-      )
-      console.log("in promise")
-      resolve(new URLSearchParams(window.location.search).get("code"))
-    })
+export const spotifyLogin = (code) => {
+  if(code) {
+    return
+  } else {
+    window.location.replace(
+      "https://accounts.spotify.com/authorize?" +
+        queryString.stringify({
+          response_type: "code",
+          client_id: clientId,
+          scope: scopes,
+          redirect_uri: redirectUri,
+        })
+    )
   }
-  return await code
 }
 
 export const loginHelper = async (code) => {
