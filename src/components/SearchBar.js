@@ -5,6 +5,7 @@ import axios from "axios";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import ListItem from "@material-ui/core/ListItem";
+import Player from "./Player";
 
 const SearchBar = (props) => {
   const token = props.token;
@@ -97,28 +98,8 @@ const SearchBar = (props) => {
         console.log(err);
       }
     }
-
-    // let searchArr = [{ value: 'chocolate', label: 'Chocolate' }]
-
-    // if(searchJSON.shows) {
-    //   searchArr = searchJSON.shows.items.map(item => {
-    //     return {value: item.id, label: item.name}
-    //   })
-    // }
-    // setResults(searchArr);
   };
-
-  //   const options = [
-  //     { value: 'chocolate', label: 'Chocolate' },
-  //     { value: 'strawberry', label: 'Strawberry' },
-  //     { value: 'vanilla', label: 'Vanilla' }
-  //   ]
-
-  //   console.log('ALL SHOWS ', results)
-  //   console.log(search)
-  //   console.log('RESULT ', result)
-  //   console.log('Episodes ', episodes)
-  console.log("CHOSEN EPISODE URI ", chosenEpisode);
+  // console.log('CHOSEN EPISODE URI ', chosenEpisode)
   return (
     <div>
       <Autocomplete
@@ -149,6 +130,7 @@ const SearchBar = (props) => {
           {episode.name}
         </ListItem>
       ))}
+      <Player token={token} uri={chosenEpisode} />
     </div>
   );
 };

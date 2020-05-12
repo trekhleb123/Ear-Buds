@@ -136,7 +136,7 @@ const Player = (props) => {
       usersArr.map((user) =>
         startPodcastAnywhere(
           user.token,
-          "spotify:episode:1oLdBqEIgphJN3O6ULyw4T"
+          props.uri
         )
       )
     );
@@ -146,7 +146,7 @@ const Player = (props) => {
     startPodcast(
       props.token,
       deviceId,
-      "spotify:episode:1oLdBqEIgphJN3O6ULyw4T"
+      props.uri
     );
   };
 
