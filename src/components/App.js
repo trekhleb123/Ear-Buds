@@ -6,6 +6,8 @@ import { spotifyLogin } from "../spotifyLogin"
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
 import Rooms from "./Rooms"
+import Messages from "./Messages"
+
 function App(props) {
   //console.log(props)
   useEffect(() => {
@@ -21,6 +23,12 @@ function App(props) {
     console.log("inside useEffect", props)
   }, [])
 
+  useEffect(() => {
+    if (props.access_token) {
+      props.getUserData(props.access_token)
+    }
+  }, [props.access_token])
+
   return (
     <div className="App">
       <Routes />
@@ -31,6 +39,7 @@ function App(props) {
           Login to Spotify
         </button>
         {/* {props.access_token && <Player token={props.access_token} />} */}
+        <Messages />
       </header>
     </div>
   )

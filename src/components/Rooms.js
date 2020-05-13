@@ -22,6 +22,7 @@ class Rooms extends React.Component {
   componentDidMount() {
     this.getRooms()
     console.log("this.props in Rooms Component", this.props)
+    //this.props.getUserData(this.props.access_token)
   }
   async getRooms() {
     const doc = db.collection("Rooms")
@@ -38,8 +39,8 @@ class Rooms extends React.Component {
   async handleSubmit() {
     const id = await createRoom()
     console.log("id in handleSubmit", id)
+    console.log("PROPS in handle submit", this.props)
     this.props.history.push(`/room/${id}`)
-    this.props.getUserData(this.props.access_token)
   }
 
   async joinSubmit(event) {
