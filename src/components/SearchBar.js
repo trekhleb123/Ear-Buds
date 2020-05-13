@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Select from "react-select";
-import AsyncSelect from "react-select/async";
-import axios from "axios";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import TextField from "@material-ui/core/TextField";
-import ListItem from "@material-ui/core/ListItem";
-import Player from "./Player";
+import AsyncSelect from 'react-select/async';
+import axios from 'axios'
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+import ListItem from '@material-ui/core/ListItem';
+import Player from './Player';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
+import Button from '@material-ui/core/Button';
 
 const SearchBar = (props) => {
   const token = props.token;
@@ -14,6 +16,7 @@ const SearchBar = (props) => {
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
   let [chosenEpisode, setEpisode] = useState();
+  let [uri, setUri] = useState();
   let [results, setResults] = useState([
     { value: "chocolate", label: "Chocolate" },
   ]);
@@ -65,7 +68,7 @@ const SearchBar = (props) => {
       }
     );
     const searchJSON = await response.json();
-    console.log(searchJSON);
+    // console.log(searchJSON)
     if (searchJSON.shows) {
       result = searchJSON.shows.items.map((item) => {
         return item.id;
@@ -84,6 +87,7 @@ const SearchBar = (props) => {
         }
       );
       const episodesJSON = await episodes.json();
+      console.log(episodesJSON)
       try {
         let episodesArr = episodesJSON.items.map((item) => {
           return {
@@ -97,9 +101,24 @@ const SearchBar = (props) => {
       } catch (err) {
         console.log(err);
       }
+
     }
-  };
-  // console.log('CHOSEN EPISODE URI ', chosenEpisode)
+  }
+  const getEpisode = async (id) => {
+       const episode = await fetch(
+        `https://api.spotify.com/v1/episodes/${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      const episodeJSON = await episode.json();
+      setEpisode(episodeJSON)
+
+  }
+// console.log('CHOSEN EPISODE URI ', chosenEpisode)
   return (
     <div>
       <Autocomplete
@@ -120,17 +139,14 @@ const SearchBar = (props) => {
           />
         )}
       />
-      <button onClick={getEpisodes}>Get Episodes</button>
-      {episodes.map((episode) => (
-        <ListItem
-          button
-          onClick={() => setEpisode(episode.uri)}
-          key={episode.id}
-        >
-          {episode.name}
-        </ListItem>
-      ))}
-      {token.length > 0 && <Player token={token} uri={chosenEpisode} />}
+      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={getEpisodes}>Get Episodes</Button>
+      {episodes.map(episode => <ListItem button onClick={() => {
+        getEpisode(episode.id);
+        setUri(episode.uri);
+        }} key={episode.id}>{episode.name}</ListItem>)}
+    
+      <Player token={token} uri={uri} />
+      
     </div>
   );
 };
