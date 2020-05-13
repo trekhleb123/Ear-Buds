@@ -9,19 +9,19 @@ const firebaseApp = firebase.initializeApp({
   projectId: "podcastparty-402e2",
   storageBucket: "gs://podcastparty-402e2.appspot.com",
   messagingSenderId: "311285409494",
-})
+});
 
-const db = firebaseApp.firestore()
+const db = firebaseApp.firestore();
 //const firestore = getFirestore()
-const firestore = firebase.firestore()
-export { db, firestore }
+const firestore = firebase.firestore();
+export { db, firestore };
 
 export async function createNewRoom(newRoom) {
   try {
     const room = await db.collection("Rooms").add(newRoom);
     console.log(room);
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 }
 
@@ -36,7 +36,7 @@ export async function getRoom(roomCode) {
     console.log(res);
     return res;
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 }
 
@@ -48,7 +48,7 @@ export async function getCurrentRoomData(docId) {
     // console.log(result.data());
     return result.data();
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 }
 
@@ -60,9 +60,9 @@ export async function getCurrentUserData(docId, callback) {
     result.forEach((user) => console.log(user.id, "=>", user.data()));
 
     // console.log(result.data());
-    return result
+    return result;
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 }
 // export async function getRooms() {
@@ -97,21 +97,21 @@ export async function createRoom(token, username, refreshToken) {
   return newRoom.id;
 }
 export async function joinRoom(token, username, roomCode, refreshToken) {
-  const rooms = db.collection("Rooms")
-  const currentRoom = await rooms.where("roomCode", "==", roomCode).get()
-  let res = {}
+  const rooms = db.collection("Rooms");
+  const currentRoom = await rooms.where("roomCode", "==", roomCode).get();
+  let res = {};
   currentRoom.forEach((el) => {
-    res = el.id
-  })
-  console.log("currentroom", res, currentRoom)
+    res = el.id;
+  });
+  console.log("currentroom", res, currentRoom);
   await db.collection("Rooms").doc(res).collection("Users").add({
     accessToken: token,
     name: username,
     roomCode: roomCode,
     deviceId: 2,
     refreshToken,
-  })
-  return res
+  });
+  return res;
 }
 
 export async function updateRoomData(roomData, docId) {
@@ -124,17 +124,17 @@ export async function updateRoomData(roomData, docId) {
   }
 }
 
-export async function playbackUpdate(token, docId, playingStatus) {
+export async function playbackUpdate(token, roomCode, playingStatus) {
   let roomId;
   let epInfo;
 
   getNowPlaying(token)
     .then((res) => {
       epInfo = res;
-      return getRoom(docId);
+      return getRoom(roomCode);
     })
     .then((res) => {
-      roomId = res;
+      docId = res;
       return getCurrentRoomData(res);
     })
     .then((roomData) => {
@@ -143,5 +143,5 @@ export async function playbackUpdate(token, docId, playingStatus) {
       roomData.playing = playingStatus;
       return roomData;
     })
-    .then((res) => updateRoomData(res, roomId));
+    .then((res) => updateRoomData(res, docId));
 }
