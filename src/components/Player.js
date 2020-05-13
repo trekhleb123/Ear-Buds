@@ -16,7 +16,7 @@ import { pausePlayback, startPodcast, resumePlayback } from "../api/spotifyApi";
 import Sdk from "./Sdk";
 
 const Player = (props) => {
-  const roomId = props.match.params.roomId;
+  const roomId = props.roomId;
   const docId = props.docId;
   const [value, loading, error] = useDocumentData(
     db.doc(`Rooms/${docId}`)

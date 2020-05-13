@@ -43,7 +43,7 @@ class SingleRoom extends React.Component {
         <button type="button" onClick={this.data}>
           yo
         </button>
-        <SearchBar docId={this.docId} />
+        <SearchBar docId={this.docId} roomId={this.props.match.params.roomId} />
       </div>
     );
   }
