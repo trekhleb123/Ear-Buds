@@ -1,5 +1,5 @@
 import React from "react"
-import { db, createRoom } from "../firebase/firebase"
+import { db, createRoom, joinRoom } from "../firebase/firebase"
 import { Route } from "react-router-dom"
 import { Link } from "react-router-dom"
 import { withRouter } from "react-router-dom"
@@ -20,7 +20,7 @@ class Rooms extends React.Component {
     this.joinSubmit = this.joinSubmit.bind(this)
   }
   componentDidMount() {
-    //getUserData(this.props.access_token)
+    //this.props.getUserData(this.props.access_token)
     this.getRooms()
     console.log("this.props in Rooms Component", this.props)
   }
@@ -37,34 +37,17 @@ class Rooms extends React.Component {
   }
 
   async handleSubmit() {
-    const id = await createRoom()
+    const id = await createRoom(this.props.access_token, this.props.userData.display_name, this.props.refresh_token)
     console.log("id in handleSubmit", id)
     this.props.history.push(`/room/${id}`)
-    this.props.getUserData(this.props.access_token)
+    //this.props.getUserData(this.props.access_token)
+    console.log('props in submit', this.props)
   }
 
   async joinSubmit(event) {
     event.preventDefault()
-    console.log("PROPS", this.props)
-    console.log("in submit")
-    const rooms = db.collection("Rooms")
-    const currentRoom = await rooms
-      .where("roomCode", "==", this.state.roomCode)
-      .get()
-    let res = {}
-    currentRoom.forEach((el) => {
-      res = el.id
-    })
-    console.log("currentroom", res, currentRoom)
-    await db.collection("Rooms").doc(res).collection("Users").add({
-      accessToken: this.props.access_token || 'heyyy',
-      name: this.props.userData.display_name || 'bob',
-      roomCode: this.state.roomCode,
-    })
-    // const room = await db.collection('Rooms').doc()
-    // room.where('roomCode', '==', this.state.roomCode)
-    console.log("room", res, currentRoom)
-    this.props.history.push(`/room/${res}`)
+    const room = await joinRoom(this.props.access_token,this.props.userData.display_name,this.state.roomCode, this.props.refresh_token)
+    this.props.history.push(`/room/${room}`)
     this.setState({
       joinForm: false,
       roomCode: "",
@@ -117,6 +100,7 @@ class Rooms extends React.Component {
 const stateToProps = (state) => ({
   access_token: state.access_token,
   userData: state.userData,
+  refresh_token: state.refresh_token
 })
 
 const dispatchToProps = (dispatch) => ({
