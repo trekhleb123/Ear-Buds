@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import Select from 'react-select'
 import AsyncSelect from 'react-select/async';
 import axios from 'axios'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import ListItem from '@material-ui/core/ListItem';
 import Player from './Player';
+import DropDownMenu from 'material-ui/DropDownMenu';
+import MenuItem from 'material-ui/MenuItem';
+import Select from '@material-ui/core/Select';
+import Button from '@material-ui/core/Button';
 
 const SearchBar = props => {
   const token = props.token;
@@ -15,6 +18,7 @@ const SearchBar = props => {
   let [episodes, setEpisodes] = useState([]);
   let [chosenEpisode, setEpisode] = useState()
   let [results, setResults] = useState([{ value: 'chocolate', label: 'Chocolate' }]);
+  let [anchorEl, setAnchorEl] = React.useState(null);
   const searchHandler = async () => {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
@@ -52,7 +56,7 @@ const SearchBar = props => {
     setSearch(text);
     await searchHandler();
   };
-  const getEpisodes = async () => {
+  const getEpisodes = async (event) => {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
       `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=1`,
@@ -92,6 +96,7 @@ const SearchBar = props => {
       } catch (err) {
         console.log(err)
       }
+      setAnchorEl(event.currentTarget);
     }
   }
 // console.log('CHOSEN EPISODE URI ', chosenEpisode)
@@ -113,9 +118,11 @@ const SearchBar = props => {
           />
         )}
       />
-      <button onClick={getEpisodes}>Get Episodes</button>
+      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={getEpisodes}>Get Episodes</Button>
       {episodes.map(episode => <ListItem button onClick={() => setEpisode(episode.uri)} key={episode.id}>{episode.name}</ListItem>)}
+    
       <Player token={token} uri={chosenEpisode}/>
+      
     </div>
   );
 };
