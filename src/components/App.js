@@ -33,7 +33,6 @@ function App(props) {
     <div className="App">
       <Routes />
       <Rooms />
-      <SearchBar token={props.access_token} />
       <header className="App-header">
         <button onClick={() => spotifyLogin(props.code)}>
           Login to Spotify
