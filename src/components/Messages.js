@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { firestore } from "../firebase/firebase"
 import Form from "./Form" // This one is new
+import _sortBy from "lodash/sortBy"
 
 const Messages = () => {
   // Set default as null so we
@@ -27,7 +28,7 @@ const Messages = () => {
         snapshot.forEach((doc) => allMessages.push(doc.data()))
 
         // Set the collected array as our state
-        setMessages(allMessages)
+        setMessages(_sortBy(allMessages, ["timestamp"]))
       },
       (error) => console.error(error)
     )
@@ -63,8 +64,8 @@ const Messages = () => {
   // and the form
   return (
     <>
-      <Form /> {/* This one is new */}
       {renderMessages()}
+      <Form /> {/* This one is new */}
     </>
   )
 }

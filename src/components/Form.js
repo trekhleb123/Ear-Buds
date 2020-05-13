@@ -1,12 +1,14 @@
 import React, { useState } from "react"
+import { connect } from "react-redux"
 import { firestore } from "../firebase/firebase" // This one is new
 
-const Form = () => {
+const Form = (props) => {
   // Initial item contains empty strings
   // with the name and message
   const initialItemValues = {
-    name: "",
+    name: props.userData.display_name,
     message: "",
+    timestamp: new Date(),
   }
   const [item, setItem] = useState(initialItemValues)
 
@@ -19,7 +21,7 @@ const Form = () => {
     event.preventDefault()
 
     // These lines are new
-    if (item.name.length && item.message.length) {
+    if (item.message.length) {
       firestore
         .collection("messages")
         .doc()
@@ -40,13 +42,13 @@ const Form = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <input
+      {/* <input
         type="text"
         name="name"
         placeholder="Name"
         value={item.name}
         onChange={onChange}
-      />
+      /> */}
       <textarea
         name="message"
         placeholder="Message"
@@ -58,4 +60,8 @@ const Form = () => {
   )
 }
 
-export default Form
+const stateToProps = (state) => ({
+  userData: state.userData,
+})
+
+export default connect(stateToProps, null)(Form)
