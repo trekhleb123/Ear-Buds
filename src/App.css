@@ -37,7 +37,6 @@
   }
 }
 
-div,
 button {
   margin: 15px;
 }
@@ -48,4 +47,15 @@ button {
   justify-content: center;
   background-color: cornflowerblue;
   padding: 10px;
+}
+
+#progress-bar {
+  width: 100%;
+  background-color: grey;
+}
+
+#progress {
+  width: 1%;
+  height: 30px;
+  background-color: green;
 }

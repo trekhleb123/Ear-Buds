@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { setDeviceId } from "../redux/store";
 import { connect } from "react-redux";
 
+import LinearProgress from "@material-ui/core/LinearProgress";
 import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
 import {
   createNewRoom,
@@ -19,6 +20,10 @@ import {
 import Sdk from "./Sdk";
 
 const Player = (props) => {
+  let playing = false;
+  let [currentPosition, setCurrentPosition] = useState(0);
+  let [progress, setProgress] = useState("");
+  let [nowPlaying, setNowPlaying] = useState({});
   let usersArr = [
     { name: "Michael", token: props.token },
     {
@@ -33,7 +38,6 @@ const Player = (props) => {
     },
   ];
   let deviceId = props.deviceId;
-  let playing = null;
 
   const play = () => {
     resumePlayback(props.token);
@@ -44,8 +48,7 @@ const Player = (props) => {
     console.log("foo", foo);
   };
 
-  const pause = () => {
-    getNowPlaying(props.token);
+  const pause = async () => {
     pausePlayback(props.token);
     playing = false;
   };
@@ -68,20 +71,88 @@ const Player = (props) => {
     startPodcast(props.token, deviceId, props.uri);
   };
 
+  const progressFunc = () => {
+    setCurrentPosition(progress++);
+  };
+
+  let i = 0;
+
   const click = () => {
+    let timer = null;
+    playing = !playing;
+    if (playing) {
+      timer = setInterval(setCurrentPosition(currentPosition++), 300);
+    } else {
+      clearInterval(timer);
+    }
+
     console.log("props!!!", props);
   };
+
+  useEffect(() => {
+    setProgress(0);
+  }, []);
+
+  // const tick = () => {
+  //   set
+  // };
+
+  // //Triggered by timer
+  // useEffect(() => {
+  //   setCurrentPosition(Date.now() - this.state.start + (this.props.position || 0))
+  //   setProgress(+(
+  //     (currentPosition * 100) /
+  //     props.track.duration_ms
+  //   ).toFixed(2) + "%")
+  // }, []);
+
+  //   //Triggered by playing status
+
+  // const progressTick = (status, width = 1) => {
+  //   if (status) {
+  //     var elem = document.getElementById("progress");
+  //     var id = setInterval(tick, 1000);
+  //     function tick() {
+  //       if (width >= 100) {
+  //         clearInterval(id);
+  //       } else {
+  //         width++;
+  //         elem.style.width = width + "%";
+  //       }
+  //     }
+  //   } else {
+  //     clearInterval(id);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   setProgress(0)
+  //   function progressFunc() {
+  //     setCurrentPosition(progress++)
+  //   }
+
+  //   const timer = setInterval(progressFunc, 1000);
+
+  //   while(currentPosition < 100) {
+
+  //   }
+  //   return () => {
+  //     clearInterval(timer);
+  //   };
+  // }, []);
 
   return (
     <div>
       <div className="player-container">
         <Sdk token={props.token} />
-        {/* {loadScript("https://sdk.scdn.co/spotify-player.js")}
-        {handleLogin()} */}
         <PauseCircleFilled onClick={pause} />
         <PlayCircleFilled onClick={play} />
         <Sync onClick={start} />
       </div>
+      <LinearProgress variant="determinate" value={currentPosition} />
+      {/* <div id="progress-bar">
+        <div id="progress" style={{ width: progress }}></div>
+      </div> */}
       <div className="player-container">
         <button onClick={pauseAll}>Pause All</button>
         <button onClick={startAll}>Start All</button>
