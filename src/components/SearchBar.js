@@ -18,7 +18,6 @@ const SearchBar = props => {
   let [episodes, setEpisodes] = useState([]);
   let [chosenEpisode, setEpisode] = useState()
   let [results, setResults] = useState([{ value: 'chocolate', label: 'Chocolate' }]);
-  let [anchorEl, setAnchorEl] = React.useState(null);
   const searchHandler = async () => {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
@@ -56,7 +55,7 @@ const SearchBar = props => {
     setSearch(text);
     await searchHandler();
   };
-  const getEpisodes = async (event) => {
+  const getEpisodes = async () => {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
       `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=1`,
@@ -69,7 +68,7 @@ const SearchBar = props => {
       
     );
     const searchJSON = await response.json();
-    console.log(searchJSON)
+    // console.log(searchJSON)
     if (searchJSON.shows) {
         result = searchJSON.shows.items.map(item => {
           return item.id 
@@ -88,6 +87,7 @@ const SearchBar = props => {
         }
       );
       const episodesJSON = await episodes.json();
+      console.log(episodesJSON)
       try {
         let episodesArr = episodesJSON.items.map(item => {
           return { uri: item.uri, name: item.name, date: item.release_date, id: item.id}
@@ -96,8 +96,22 @@ const SearchBar = props => {
       } catch (err) {
         console.log(err)
       }
-      setAnchorEl(event.currentTarget);
+
     }
+  }
+  const getEpisode = async (id) => {
+       const episode = await fetch(
+        `https://api.spotify.com/v1/episodes/${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      const episodeJSON = await episode.json();
+      setEpisode(episodeJSON)
+
   }
 // console.log('CHOSEN EPISODE URI ', chosenEpisode)
   return (
@@ -119,9 +133,9 @@ const SearchBar = props => {
         )}
       />
       <Button aria-controls="simple-menu" aria-haspopup="true" onClick={getEpisodes}>Get Episodes</Button>
-      {episodes.map(episode => <ListItem button onClick={() => setEpisode(episode.uri)} key={episode.id}>{episode.name}</ListItem>)}
+      {episodes.map(episode => <ListItem button onClick={getEpisode(episode.id)} key={episode.id}>{episode.name}</ListItem>)}
     
-      <Player token={token} uri={chosenEpisode}/>
+      <Player token={token}/>
       
     </div>
   );
