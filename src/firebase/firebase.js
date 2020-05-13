@@ -25,16 +25,6 @@ export async function createNewRoom(newRoom) {
   }
 }
 
-export async function updateRoomData(roomData, docId) {
-  try {
-    const roomRef = db.collection("Rooms").doc(docId);
-    roomRef.update(roomData);
-    // console.log("new room", roomRef);
-  } catch (err) {
-    console.error(err);
-  }
-}
-
 export async function getRoom(roomCode) {
   try {
     const rooms = db.collection("Rooms");
@@ -107,6 +97,16 @@ export async function createRoom(token) {
   return newRoom.id;
 
   //this.setState({roomCode: code})
+}
+
+export async function updateRoomData(roomData, docId) {
+  try {
+    const roomRef = db.collection("Rooms").doc(docId);
+    roomRef.update(roomData);
+    // console.log("new room", roomRef);
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export async function playbackUpdate(token, docId, playingStatus) {
