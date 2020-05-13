@@ -41,3 +41,11 @@ div,
 button {
   margin: 15px;
 }
+
+.player-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: cornflowerblue;
+  padding: 10px;
+}
