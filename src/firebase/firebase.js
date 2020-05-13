@@ -1,4 +1,5 @@
 import firebase from "firebase";
+import { getNowPlaying } from "../api/spotifyApi";
 
 const firebaseApp = firebase.initializeApp({
   // copy and paste your firebase credential here
@@ -106,4 +107,26 @@ export async function createRoom(token) {
   return newRoom.id;
 
   //this.setState({roomCode: code})
+}
+
+export async function playbackUpdate(token, docId, playingStatus) {
+  let roomId;
+  let epInfo;
+
+  getNowPlaying(token)
+    .then((res) => {
+      epInfo = res;
+      return getRoom(docId);
+    })
+    .then((res) => {
+      roomId = res;
+      return getCurrentRoomData(res);
+    })
+    .then((roomData) => {
+      roomData.nowPlayingProgress = epInfo.data.progress_ms;
+      roomData.timestamp = epInfo.data.timestamp;
+      roomData.playing = playingStatus;
+      return roomData;
+    })
+    .then((res) => updateRoomData(res, roomId));
 }

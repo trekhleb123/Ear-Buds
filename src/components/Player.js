@@ -12,6 +12,7 @@ import {
   getCurrentRoomData,
   updateRoomData,
   db,
+  playbackUpdate,
 } from "../firebase/firebase";
 import {
   getNowPlaying,
@@ -36,72 +37,15 @@ const Player = (props) => {
   let [currentPosition, setCurrentPosition] = useState(0);
   let [progress, setProgress] = useState("");
   let [nowPlaying, setNowPlaying] = useState({});
-  let usersArr = [
-    { name: "Michael", token: props.token },
-    {
-      name: "Shreya",
-      token:
-        "BQCL7a4_pdhumPfxBnrTp4VJiKlcs164P6fwTHE1IrFR6dRU5ULVOpk3RQ7PXh-BxZPQwQ8HePaPW-TAaI_2wCsC9ue4BRXeH12sBCES2xMNifDtbMZP2TUXG9fHSimM4XPTHY0Wavko7VnJfkRdLN7m0YNH06FXN4pXgM_jjg8",
-    },
-    {
-      name: "Priti",
-      token:
-        "BQCmvlu88MubPtURsdGkXCn219fQJTSG8vXvgQuIXH2kshgA2dMg8dz58SHc8fsTIkf8KqSTv-l8HzYFV8ezWYKTsDCgRWLj4iPreJh7FPG4F_ZyPmZfV5UliU4rCcGJWvcdqDlKmXTnSgEwQhUZLPa3a6kgPm-03kAhA0US",
-    },
-  ];
 
   let deviceId = props.deviceId;
 
   const play = () => {
-    // resumePlayback(props.token);
-    // playing = true;
-    // const foo = getRoom("room1", "6qtt6iq8wm").then((res) =>
-    //   getCurrentUserData(res)
-    // );
-    // console.log("foo", foo);
-
-    let roomId;
-    let epInfo;
-
-    getNowPlaying(props.token)
-      .then((res) => {
-        epInfo = res;
-        return getRoom(docId);
-      })
-      .then((res) => {
-        roomId = res;
-        return getCurrentRoomData(res);
-      })
-      .then((roomData) => {
-        roomData.nowPlayingProgress = epInfo.data.progress_ms;
-        roomData.timestamp = epInfo.data.timestamp;
-        roomData.playing = true;
-        return roomData;
-      })
-      .then((res) => updateRoomData(res, roomId));
+    playbackUpdate(props.token, docId, true);
   };
 
-  const pause = async () => {
-    let roomId;
-    let epInfo;
-
-    getNowPlaying(props.token)
-      .then((res) => {
-        console.log("NOW PLAYING!!", res);
-        epInfo = res;
-        return getRoom(docId);
-      })
-      .then((res) => {
-        roomId = res;
-        return getCurrentRoomData(res);
-      })
-      .then((roomData) => {
-        roomData.nowPlayingProgress = epInfo.data.progress_ms;
-        roomData.timestamp = epInfo.data.timestamp || Date.now();
-        roomData.playing = false;
-        return roomData;
-      })
-      .then((res) => updateRoomData(res, roomId));
+  const pause = () => {
+    playbackUpdate(props.token, docId, false);
   };
 
   const start = () => {
@@ -122,20 +66,6 @@ const Player = (props) => {
       })
       .then((res) => updateRoomData(res, roomId));
   };
-
-  // const pauseAll = async () => {
-  //   let [firstUser, secondUser] = await Promise.all(
-  //     usersArr.map((user) => pausePlayback(user.token))
-  //   );
-  //   console.log("firstPa", firstUser);
-  //   console.log("secondPa", secondUser);
-  // };
-
-  // const startAll = async () => {
-  //   await Promise.all(
-  //     usersArr.map((user) => startPodcastAnywhere(user.token, props.uri))
-  //   );
-  // };
 
   const progressFunc = () => {
     setCurrentPosition(progress++);
