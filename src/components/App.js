@@ -36,6 +36,7 @@ function App(props) {
         <button onClick={() => spotifyLogin(props.code)}>
           Login to Spotify
         </button>
+        {/* {props.access_token && <Player token={props.access_token} />} */}
       </header>
     </div>
   )
