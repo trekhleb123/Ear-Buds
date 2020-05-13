@@ -130,7 +130,7 @@ const SearchBar = (props) => {
           {episode.name}
         </ListItem>
       ))}
-      <Player token={token} uri={chosenEpisode} />
+      {token.length > 0 && <Player token={token} uri={chosenEpisode} />}
     </div>
   );
 };

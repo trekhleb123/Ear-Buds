@@ -31,7 +31,7 @@ export const pausePlayback = async (token) => {
   }
 };
 
-export const startPodcast = async (token, devId, podcastUri) => {
+export const startPodcast = async (token, devId, podcastUri, startTime) => {
   try {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${devId}`, {
       method: "PUT",
@@ -40,7 +40,7 @@ export const startPodcast = async (token, devId, podcastUri) => {
       },
       body: JSON.stringify({
         uris: [podcastUri],
-        position_ms: 0,
+        position_ms: startTime,
       }),
     });
   } catch (err) {

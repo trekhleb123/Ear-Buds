@@ -24,13 +24,20 @@ export async function createNewRoom(newRoom) {
   }
 }
 
-export async function getRoom(roomName, roomPassword) {
+export async function updateRoomData(roomData, docId) {
+  try {
+    const roomRef = db.collection("Rooms").doc(docId);
+    roomRef.update(roomData);
+    // console.log("new room", roomRef);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getRoom(roomCode) {
   try {
     const rooms = db.collection("Rooms");
-    const currentRoom = await rooms
-      .where("name", "==", roomName)
-      .where("password", "==", roomPassword)
-      .get();
+    const currentRoom = await rooms.where("roomCode", "==", roomCode).get();
     let res = {};
     currentRoom.forEach((el) => {
       res = el.id;
@@ -47,7 +54,7 @@ export async function getCurrentRoomData(docId) {
     const doc = db.collection("Rooms").doc(docId);
     const result = await doc.get();
 
-    console.log(result.data());
+    // console.log(result.data());
     return result.data();
   } catch (err) {
     console.error(err);
