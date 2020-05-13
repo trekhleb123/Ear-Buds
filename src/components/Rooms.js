@@ -20,6 +20,7 @@ class Rooms extends React.Component {
     this.joinSubmit = this.joinSubmit.bind(this)
   }
   componentDidMount() {
+    //getUserData(this.props.access_token)
     this.getRooms()
     console.log("this.props in Rooms Component", this.props)
   }
@@ -56,8 +57,8 @@ class Rooms extends React.Component {
     })
     console.log("currentroom", res, currentRoom)
     await db.collection("Rooms").doc(res).collection("Users").add({
-      accessToken: this.props.access_token,
-      name: this.props.userData.display_name,
+      accessToken: this.props.access_token || 'heyyy',
+      name: this.props.userData.display_name || 'bob',
       roomCode: this.state.roomCode,
     })
     // const room = await db.collection('Rooms').doc()
