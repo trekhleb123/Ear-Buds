@@ -1,7 +1,7 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 
-const Navbar = (props) => {
+const Navbar = props => {
   return (
     <nav className="nav-wrapper black">
       <div className="container">
