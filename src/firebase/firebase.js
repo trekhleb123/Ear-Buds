@@ -78,7 +78,7 @@ export async function getCurrentUserData(docId, callback) {
 //   return res
 // }
 
-export async function createRoom(token) {
+export async function createRoom(token, username, refreshToken) {
   //event.preventDefault()
   const code =
     Math.random().toString(36).substring(2, 7) +
@@ -89,14 +89,30 @@ export async function createRoom(token) {
     .add({ name: "room1", roomCode: code })
   console.log("newRoom", newRoom)
   await db.collection("Rooms").doc(newRoom.id).collection("Users").add({
-    accessToken: "hey",
-    email: "you@email.com",
-    name: "Bob",
+    accessToken: token,
+    name: username,
     roomCode: code,
+    deviceId: 2,
+    refreshToken,
   })
-  // console.log('this.props in submit', newRoom.id);
-  // this.props.history.push(`/room/${newRoom.id}`);
-  return newRoom.id
 
-  //this.setState({roomCode: code})
+  return newRoom.id
+}
+
+export async function joinRoom(token, username, roomCode, refreshToken) {
+  const rooms = db.collection("Rooms")
+  const currentRoom = await rooms.where("roomCode", "==", roomCode).get()
+  let res = {}
+  currentRoom.forEach((el) => {
+    res = el.id
+  })
+  console.log("currentroom", res, currentRoom)
+  await db.collection("Rooms").doc(res).collection("Users").add({
+    accessToken: token,
+    name: username,
+    roomCode: roomCode,
+    deviceId: 2,
+    refreshToken,
+  })
+  return res
 }
