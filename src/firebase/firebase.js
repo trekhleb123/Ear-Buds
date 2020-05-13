@@ -29,7 +29,7 @@ export async function getRoom(roomName, roomPassword) {
     const rooms = db.collection("Rooms");
     const currentRoom = await rooms
       .where("name", "==", roomName)
-      .where("roomCode", "==", roomPassword)
+      .where("password", "==", roomPassword)
       .get();
     let res = {};
     currentRoom.forEach((el) => {
@@ -66,4 +66,37 @@ export async function getCurrentUserData(docId, callback) {
   } catch (err) {
     console.error(err);
   }
+}
+// export async function getRooms() {
+//   const doc = db.collection('Rooms')
+//  const docs = await doc.get()
+//      let res = {}
+//   docs.forEach((el) => {
+//     res = el
+//   })
+//   console.log(res)
+//   return res
+// }
+
+export async function createRoom(token) {
+  //event.preventDefault()
+  const code =
+    Math.random().toString(36).substring(2, 7) +
+    Math.random().toString(36).substring(2, 7);
+  console.log("in handle submit", code);
+  const newRoom = await db
+    .collection("Rooms")
+    .add({ name: "room1", roomCode: code });
+  console.log("newRoom", newRoom);
+  await db.collection("Rooms").doc(newRoom.id).collection("Users").add({
+    accessToken: "hey",
+    email: "you@email.com",
+    name: "Bob",
+    roomCode: code,
+  });
+  // console.log('this.props in submit', newRoom.id);
+  // this.props.history.push(`/room/${newRoom.id}`);
+  return newRoom.id;
+
+  //this.setState({roomCode: code})
 }

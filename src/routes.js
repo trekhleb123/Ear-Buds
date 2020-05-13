@@ -1,7 +1,10 @@
-import React, { Component } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import React, { Component } from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import { Navbar } from "./components";
+import { Navbar } from './components';
+import Rooms from './components/Rooms';
+import App from './components/App';
+import SingleRoom from './components/SingleRoom';
 
 /**
  * COMPONENT
@@ -9,10 +12,14 @@ import { Navbar } from "./components";
 class Routes extends Component {
   render() {
     return (
-      <BrowserRouter>
+      <>
         <Navbar />
-        <Switch>{/* <Route path="/signin" component={SignIn} /> */}</Switch>
-      </BrowserRouter>
+        <Switch>
+          <Route exact path="/room/:roomId" component={SingleRoom} />
+          {/* <Route exact path='/home' component={App} /> */}
+          {/* <Route exact path="/signin" component={SignIn} /> */}
+        </Switch>
+      </>
     );
   }
 }

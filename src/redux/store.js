@@ -82,8 +82,15 @@ export const getNewAccessToken = (refreshToken) => {
 export const getUserData = (token) => {
   return async (dispatch) => {
     try {
-      const { data } = await getMyData(token);
-      dispatch(setUserData(data));
+      fetch("https://api.spotify.com/v1/me", {
+        headers: { Authorization: "Bearer " + token },
+      })
+        .then((res) => res.json())
+        .catch((err) => console.log(err))
+        .then((data) => {
+          console.log("data", data);
+          dispatch(setUserData(data));
+        });
     } catch (err) {
       console.error(err);
     }
