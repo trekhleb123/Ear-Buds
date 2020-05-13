@@ -1,4 +1,5 @@
-import firebase from "firebase"
+import firebase from "firebase";
+import { getNowPlaying } from "../api/spotifyApi";
 
 const firebaseApp = firebase.initializeApp({
   // copy and paste your firebase credential here
@@ -17,26 +18,33 @@ export { db, firestore }
 
 export async function createNewRoom(newRoom) {
   try {
-    const room = await db.collection("Rooms").add(newRoom)
-    console.log(room)
+    const room = await db.collection("Rooms").add(newRoom);
+    console.log(room);
   } catch (err) {
     console.error(err)
   }
 }
 
-export async function getRoom(roomName, roomPassword) {
+export async function updateRoomData(roomData, docId) {
   try {
-    const rooms = db.collection("Rooms")
-    const currentRoom = await rooms
-      .where("name", "==", roomName)
-      .where("password", "==", roomPassword)
-      .get()
-    let res = {}
+    const roomRef = db.collection("Rooms").doc(docId);
+    roomRef.update(roomData);
+    // console.log("new room", roomRef);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getRoom(roomCode) {
+  try {
+    const rooms = db.collection("Rooms");
+    const currentRoom = await rooms.where("roomCode", "==", roomCode).get();
+    let res = {};
     currentRoom.forEach((el) => {
-      res = el.id
-    })
-    console.log(res)
-    return res
+      res = el.id;
+    });
+    console.log(res);
+    return res;
   } catch (err) {
     console.error(err)
   }
@@ -44,11 +52,11 @@ export async function getRoom(roomName, roomPassword) {
 
 export async function getCurrentRoomData(docId) {
   try {
-    const doc = db.collection("Rooms").doc(docId)
-    const result = await doc.get()
+    const doc = db.collection("Rooms").doc(docId);
+    const result = await doc.get();
 
-    console.log(result.data())
-    return result.data()
+    // console.log(result.data());
+    return result.data();
   } catch (err) {
     console.error(err)
   }
@@ -56,10 +64,10 @@ export async function getCurrentRoomData(docId) {
 
 export async function getCurrentUserData(docId, callback) {
   try {
-    const users = db.collection("Rooms").doc(docId).collection("Users")
-    const result = await users.get()
+    const users = db.collection("Rooms").doc(docId).collection("Users");
+    const result = await users.get();
 
-    result.forEach((user) => console.log(user.id, "=>", user.data()))
+    result.forEach((user) => console.log(user.id, "=>", user.data()));
 
     // console.log(result.data());
     return result
@@ -82,23 +90,22 @@ export async function createRoom(token, username, refreshToken) {
   //event.preventDefault()
   const code =
     Math.random().toString(36).substring(2, 7) +
-    Math.random().toString(36).substring(2, 7)
-  console.log("in handle submit", code)
+    Math.random().toString(36).substring(2, 7);
+  console.log("in handle submit", code);
   const newRoom = await db
     .collection("Rooms")
-    .add({ name: "room1", roomCode: code })
-  console.log("newRoom", newRoom)
+    .add({ name: "room1", roomCode: code });
+  console.log("newRoom", newRoom);
   await db.collection("Rooms").doc(newRoom.id).collection("Users").add({
-    accessToken: token,
-    name: username,
+    accessToken: "hey",
+    email: "you@email.com",
+    name: "Bob",
     roomCode: code,
-    deviceId: 2,
-    refreshToken,
-  })
-
-  return newRoom.id
+  });
+  // console.log('this.props in submit', newRoom.id);
+  // this.props.history.push(`/room/${newRoom.id}`);
+  return newRoom.id;
 }
-
 export async function joinRoom(token, username, roomCode, refreshToken) {
   const rooms = db.collection("Rooms")
   const currentRoom = await rooms.where("roomCode", "==", roomCode).get()
@@ -115,4 +122,26 @@ export async function joinRoom(token, username, roomCode, refreshToken) {
     refreshToken,
   })
   return res
+}
+
+export async function playbackUpdate(token, docId, playingStatus) {
+  let roomId;
+  let epInfo;
+
+  getNowPlaying(token)
+    .then((res) => {
+      epInfo = res;
+      return getRoom(docId);
+    })
+    .then((res) => {
+      roomId = res;
+      return getCurrentRoomData(res);
+    })
+    .then((roomData) => {
+      roomData.nowPlayingProgress = epInfo.data.progress_ms;
+      roomData.timestamp = epInfo.data.timestamp;
+      roomData.playing = playingStatus;
+      return roomData;
+    })
+    .then((res) => updateRoomData(res, roomId));
 }

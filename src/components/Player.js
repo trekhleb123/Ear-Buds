@@ -1,219 +1,224 @@
-import React from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { setDeviceId } from "../redux/store";
+import { connect } from "react-redux";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+
+import LinearProgress from "@material-ui/core/LinearProgress";
 import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
 import {
   createNewRoom,
   getRoom,
-  getCurrentRoomData,
   getCurrentUserData,
+  getCurrentRoomData,
+  updateRoomData,
+  db,
+  playbackUpdate,
 } from "../firebase/firebase";
+import {
+  getNowPlaying,
+  pausePlayback,
+  startPodcast,
+  startPodcastAnywhere,
+  resumePlayback,
+} from "../api/spotifyApi";
+import Sdk from "./Sdk";
 
 const Player = (props) => {
-  let usersArr = [
-    { name: "Michael", token: props.token },
-    {
-      name: "Sam",
-      token: "INSERT",
-    },
-  ];
-  let player = "";
-  let deviceId = null;
-  let checkInterval = null;
-  let playing = null;
-  const getNowPlaying = async (token) => {
-    try {
-      const episode = await axios.get(
-        `https://api.spotify.com/v1/me/player/currently-playing`,
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
-      console.log("Now Playing", episode);
-      return episode;
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const [value, loading, error] = useDocumentData(
+    db.doc("Rooms/0Wi4FBK0StEXKc0zQwS9")
+    // {
+    //   snapshotListenOptions: { includeMetadataChanges: true },
+    // }
+  );
+  const docId = "sdg8vb82ch";
+  let deviceIdFlag = false;
+  let playing = false;
+  let uri = props.uri;
+  let [currentPosition, setCurrentPosition] = useState(0);
+  let [progress, setProgress] = useState("");
+  let [nowPlaying, setNowPlaying] = useState({});
 
-  const pausePlayback = async (token) => {
-    try {
-      fetch(`https://api.spotify.com/v1/me/player/pause`, {
-        method: "PUT",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      });
-      console.log("timeStamp", Date.now());
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const startPodcast = async (token, devId, podcastUri) => {
-    try {
-      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${devId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({
-          uris: [podcastUri],
-          position_ms: 0,
-        }),
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const startPodcastAnywhere = async (token, podcastUri) => {
-    try {
-      fetch(`https://api.spotify.com/v1/me/player/play`, {
-        method: "PUT",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({
-          uris: [podcastUri],
-          position_ms: 0,
-        }),
-      });
-      console.log("timeStamp", Date.now());
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const resumePlayback = async (token) => {
-    try {
-      fetch(`https://api.spotify.com/v1/me/player/play`, {
-        method: "PUT",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-        // body: JSON.stringify({
-        //   uris: [`spotify:track:${action.track.id}`],
-        // }),
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  let deviceId = props.deviceId;
 
   const play = () => {
-    resumePlayback(props.token);
-    playing = true;
-    getRoom("room1", "420").then((res) => getCurrentUserData(res));
+    playbackUpdate(props.token, docId, true);
   };
 
   const pause = () => {
-    getNowPlaying(props.token);
-    pausePlayback(props.token);
-    playing = false;
-  };
-
-  const pauseAll = async () => {
-    let [firstUser, secondUser] = await Promise.all(
-      usersArr.map((user) => pausePlayback(user.token))
-    );
-    console.log("firstPa", firstUser);
-    console.log("secondPa", secondUser);
-  };
-
-  const startAll = async () => {
-    let [firstUser, secondUser] = await Promise.all(
-      usersArr.map((user) =>
-        startPodcastAnywhere(
-          user.token,
-          props.uri
-        )
-      )
-    );
-    console.log("firstPl", firstUser);
-    console.log("secondPl", secondUser);
+    playbackUpdate(props.token, docId, false);
   };
 
   const start = () => {
-    startPodcast(
-      props.token,
-      deviceId,
-      props.uri
-    );
+    let roomId;
+
+    getRoom(docId)
+      .then((res) => {
+        roomId = res;
+        return getCurrentRoomData(res);
+      })
+      .then((roomData) => {
+        roomData.nowPlayingProgress = 0;
+        roomData.timestamp = Date.now();
+        roomData.nowPlayingUri = uri;
+        roomData.playing = true;
+        uri = null;
+        return roomData;
+      })
+      .then((res) => updateRoomData(res, roomId));
   };
 
-  const loadScript = function (src) {
-    var tag = document.createElement("script");
-    tag.async = false;
-    tag.src = src;
-    document.querySelector("body").appendChild(tag);
+  const progressFunc = () => {
+    setCurrentPosition(progress++);
   };
 
-  const checkForPlayer = () => {
-    if (window.Spotify !== null) {
-      clearInterval(checkInterval);
-      player = new window.Spotify.Player({
-        name: "earBudz",
-        getOAuthToken: (cb) => {
-          cb(props.token);
-        },
-      });
-      createEventHandlers();
+  let i = 0;
 
-      // finally, connect!
-      player.connect();
+  const click = () => {
+    // let timer = null;
+    // playing = !playing;
+    // if (playing) {
+    //   timer = setInterval(setCurrentPosition(currentPosition++), 300);
+    // } else {
+    //   clearInterval(timer);
+    // }
+    let roomId;
+    let epInfo;
+
+    // updateRoomData(roomData, roomId);
+    // // const roomRef = db.collection("Rooms").doc(docId);
+    // // roomRef.update(roomData);
+
+    console.log("epInfo", epInfo);
+  };
+
+  // useEffect(() => {
+  //   let roomId;
+  //   getRoom(docId)
+  //     .then((res) => {
+  //       roomId = res;
+  //       return getCurrentRoomData(res);
+  //     })
+  //     .then((roomData) => {
+  //       if (roomData.playing === true) {
+  //         const startTime =
+  //           Date.now() - roomData.timestamp + roomData.nowPlayingProgress;
+  //         console.log("Time Elapsed", startTime);
+  //         console.log(roomData.timestamp);
+  //         console.log(roomData.timeElapsed);
+  //         console.log("time", Date.now());
+  //         startPodcast(
+  //           props.token,
+  //           deviceId,
+  //           roomData.nowPlayingUri,
+  //           startTime
+  //         );
+  //       }
+  //     });
+  // }, [props.deviceId]);
+
+  useEffect(() => {
+    if (value) {
+      const timeElapsed = Date.now() - value.timestamp;
+
+      if (
+        value.playing === true &&
+        value.nowPlayingProgress === 0 &&
+        timeElapsed < 5000
+      ) {
+        startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
+      } else if (value.playing === true && value.nowPlayingProgress !== 0) {
+        console.log("IT SHOULD PLAY");
+        resumePlayback(props.token);
+        // setCurrentPosition(value.nowPlayingProgress)
+      } else if (value.playing === false) {
+        console.log("IT SHOULD PAUSE");
+        pausePlayback(props.token);
+      }
+
+      console.log("value", value);
     }
-  };
+  }, [value]);
 
-  const handleLogin = () => {
-    if (props.token) {
-      // check every second for the player.
-      checkInterval = setInterval(() => checkForPlayer(), 1000);
-    }
-  };
+  useEffect(() => {
+    if (deviceId) deviceIdFlag = true;
+    console.log("FLAGGED");
+  }, []);
 
-  const createEventHandlers = () => {
-    player.on("initialization_error", (e) => {
-      console.error(e);
-    });
-    player.on("authentication_error", (e) => {
-      console.error(e);
-      // this.setState({ loggedIn: false });
-    });
-    player.on("account_error", (e) => {
-      console.error(e);
-    });
-    player.on("playback_error", (e) => {
-      console.error(e);
-    });
+  // const tick = () => {
+  //   set
+  // };
 
-    // Playback status updates
-    player.on("player_state_changed", (state) => {
-      console.log(state);
-    });
+  // //Triggered by timer
+  // useEffect(() => {
+  //   setCurrentPosition(Date.now() - this.state.start + (this.props.position || 0))
+  //   setProgress(+(
+  //     (currentPosition * 100) /
+  //     props.track.duration_ms
+  //   ).toFixed(2) + "%")
+  // }, []);
 
-    // Ready
-    player.on("ready", (data) => {
-      let { device_id } = data;
-      console.log("Ready with Device ID", device_id);
-      deviceId = device_id;
-    });
-  };
+  //   //Triggered by playing status
+
+  // const progressTick = (status, width = 1) => {
+  //   if (status) {
+  //     var elem = document.getElementById("progress");
+  //     var id = setInterval(tick, 1000);
+  //     function tick() {
+  //       if (width >= 100) {
+  //         clearInterval(id);
+  //       } else {
+  //         width++;
+  //         elem.style.width = width + "%";
+  //       }
+  //     }
+  //   } else {
+  //     clearInterval(id);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   setProgress(0)
+  //   function progressFunc() {
+  //     setCurrentPosition(progress++)
+  //   }
+
+  //   const timer = setInterval(progressFunc, 1000);
+
+  //   while(currentPosition < 100) {
+
+  //   }
+  //   return () => {
+  //     clearInterval(timer);
+  //   };
+  // }, []);
 
   return (
     <div>
-      {loadScript("https://sdk.scdn.co/spotify-player.js")}
-      {handleLogin()}
-      <div>
+      <div className="player-container">
+        <Sdk token={props.token} />
         <PauseCircleFilled onClick={pause} />
         <PlayCircleFilled onClick={play} />
-        <Sync onClick={start} />
-        <button onClick={pauseAll}>Pause All</button>
-        <button onClick={startAll}>Start All</button>
+        {uri && <Sync onClick={start} />}
+      </div>
+      <LinearProgress variant="determinate" value={currentPosition} />
+      {/* <div id="progress-bar">
+        <div id="progress" style={{ width: progress }}></div>
+      </div> */}
+      <div className="player-container">
+        {/* <button onClick={pauseAll}>Pause All</button>
+        <button onClick={startAll}>Start All</button> */}
+        <button onClick={click}>test</button>
       </div>
     </div>
   );
 };
 
-export default Player;
+const stateToProps = (state) => ({
+  deviceId: state.deviceId,
+});
+
+const dispatchToProps = (dispatch) => ({
+  setDeviceId: (code) => dispatch(setDeviceId(code)),
+});
+
+export default connect(stateToProps, dispatchToProps)(Player);
