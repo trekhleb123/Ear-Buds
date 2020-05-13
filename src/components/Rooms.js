@@ -23,6 +23,7 @@ class Rooms extends React.Component {
     //this.props.getUserData(this.props.access_token)
     this.getRooms()
     console.log("this.props in Rooms Component", this.props)
+    //this.props.getUserData(this.props.access_token)
   }
   async getRooms() {
     const doc = db.collection("Rooms")
@@ -37,16 +38,26 @@ class Rooms extends React.Component {
   }
 
   async handleSubmit() {
-    const id = await createRoom(this.props.access_token, this.props.userData.display_name, this.props.refresh_token)
+    const id = await createRoom(
+      this.props.access_token,
+      this.props.userData.display_name,
+      this.props.refresh_token
+    )
     console.log("id in handleSubmit", id)
+    console.log("PROPS in handle submit", this.props)
     this.props.history.push(`/room/${id}`)
     //this.props.getUserData(this.props.access_token)
-    console.log('props in submit', this.props)
+    console.log("props in submit", this.props)
   }
 
   async joinSubmit(event) {
     event.preventDefault()
-    const room = await joinRoom(this.props.access_token,this.props.userData.display_name,this.state.roomCode, this.props.refresh_token)
+    const room = await joinRoom(
+      this.props.access_token,
+      this.props.userData.display_name,
+      this.state.roomCode,
+      this.props.refresh_token
+    )
     this.props.history.push(`/room/${room}`)
     this.setState({
       joinForm: false,
@@ -100,7 +111,7 @@ class Rooms extends React.Component {
 const stateToProps = (state) => ({
   access_token: state.access_token,
   userData: state.userData,
-  refresh_token: state.refresh_token
+  refresh_token: state.refresh_token,
 })
 
 const dispatchToProps = (dispatch) => ({

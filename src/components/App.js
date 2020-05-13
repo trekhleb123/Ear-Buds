@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react"
-import Routes from '../routes'
-import SearchBar from './SearchBar'
+import Routes from "../routes"
+import SearchBar from "./SearchBar"
 import "./App.css"
 import { spotifyLogin } from "../spotifyLogin"
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
-import Rooms from './Rooms'
+import Rooms from "./Rooms"
+import Messages from "./Messages"
+
 function App(props) {
   //console.log(props)
   useEffect(() => {
@@ -37,6 +39,7 @@ function App(props) {
           Login to Spotify
         </button>
         {/* {props.access_token && <Player token={props.access_token} />} */}
+        <Messages />
       </header>
     </div>
   )
