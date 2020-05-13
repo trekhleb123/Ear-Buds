@@ -125,7 +125,7 @@ export async function updateRoomData(roomData, docId) {
 }
 
 export async function playbackUpdate(token, roomCode, playingStatus) {
-  let roomId;
+  let docId;
   let epInfo;
 
   getNowPlaying(token)

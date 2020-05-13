@@ -1,13 +1,15 @@
 import React from "react";
-import { db } from "../firebase/firebase";
+import { db, getRoom } from "../firebase/firebase";
 import { Route } from "react-router-dom";
 import { Link } from "react-router-dom";
 //import { getMyData } from "../spotifyLogin"
 import { getAccessToken } from "../redux/store";
+import SearchBar from "./SearchBar";
 
 class SingleRoom extends React.Component {
   constructor() {
     super();
+    this.docId = null;
     this.data = this.data.bind(this);
   }
   componentDidMount() {
@@ -31,6 +33,7 @@ class SingleRoom extends React.Component {
       .catch(function (error) {
         console.log("Error getting document:", error);
       });
+    this.docId = await getRoom(this.props.match.params.roomId);
     //console.log("stuff", stuff, getMyData()) //need access token
   }
 
@@ -40,6 +43,7 @@ class SingleRoom extends React.Component {
         <button type="button" onClick={this.data}>
           yo
         </button>
+        <SearchBar docId={this.docId} />
       </div>
     );
   }

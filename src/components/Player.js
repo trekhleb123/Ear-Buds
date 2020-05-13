@@ -17,7 +17,7 @@ import Sdk from "./Sdk";
 
 const Player = (props) => {
   const roomId = props.match.params.roomId;
-  const docId = await getRoom(roomId)
+  const docId = props.docId;
   const [value, loading, error] = useDocumentData(
     db.doc(`Rooms/${docId}`)
     // {
@@ -112,7 +112,6 @@ const Player = (props) => {
     console.log("FLAGGED");
   }, []);
 
-
   return (
     <div>
       <div className="player-container">
@@ -139,59 +138,58 @@ const dispatchToProps = (dispatch) => ({
 
 export default connect(stateToProps, dispatchToProps)(Player);
 
+// const tick = () => {
+//   set
+// };
 
-  // const tick = () => {
-  //   set
-  // };
+// //Triggered by timer
+// useEffect(() => {
+//   setCurrentPosition(Date.now() - this.state.start + (this.props.position || 0))
+//   setProgress(+(
+//     (currentPosition * 100) /
+//     props.track.duration_ms
+//   ).toFixed(2) + "%")
+// }, []);
 
-  // //Triggered by timer
-  // useEffect(() => {
-  //   setCurrentPosition(Date.now() - this.state.start + (this.props.position || 0))
-  //   setProgress(+(
-  //     (currentPosition * 100) /
-  //     props.track.duration_ms
-  //   ).toFixed(2) + "%")
-  // }, []);
+//   //Triggered by playing status
 
-  //   //Triggered by playing status
+// const progressTick = (status, width = 1) => {
+//   if (status) {
+//     var elem = document.getElementById("progress");
+//     var id = setInterval(tick, 1000);
+//     function tick() {
+//       if (width >= 100) {
+//         clearInterval(id);
+//       } else {
+//         width++;
+//         elem.style.width = width + "%";
+//       }
+//     }
+//   } else {
+//     clearInterval(id);
+//   }
+// };
 
-  // const progressTick = (status, width = 1) => {
-  //   if (status) {
-  //     var elem = document.getElementById("progress");
-  //     var id = setInterval(tick, 1000);
-  //     function tick() {
-  //       if (width >= 100) {
-  //         clearInterval(id);
-  //       } else {
-  //         width++;
-  //         elem.style.width = width + "%";
-  //       }
-  //     }
-  //   } else {
-  //     clearInterval(id);
-  //   }
-  // };
+// useEffect(() => {
+//   setProgress(0)
+//   function progressFunc() {
+//     setCurrentPosition(progress++)
+//   }
 
-  // useEffect(() => {
-  //   setProgress(0)
-  //   function progressFunc() {
-  //     setCurrentPosition(progress++)
-  //   }
+//   const timer = setInterval(progressFunc, 1000);
 
-  //   const timer = setInterval(progressFunc, 1000);
+//   while(currentPosition < 100) {
 
-  //   while(currentPosition < 100) {
+//   }
+//   return () => {
+//     clearInterval(timer);
+//   };
+// }, []);
 
-  //   }
-  //   return () => {
-  //     clearInterval(timer);
-  //   };
-  // }, []);
-
-      // let timer = null;
-    // playing = !playing;
-    // if (playing) {
-    //   timer = setInterval(setCurrentPosition(currentPosition++), 300);
-    // } else {
-    //   clearInterval(timer);
-    // }
+// let timer = null;
+// playing = !playing;
+// if (playing) {
+//   timer = setInterval(setCurrentPosition(currentPosition++), 300);
+// } else {
+//   clearInterval(timer);
+// }
