@@ -6,52 +6,43 @@ import { useDocumentData } from "react-firebase-hooks/firestore";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
 import {
-  createNewRoom,
   getRoom,
-  getCurrentUserData,
   getCurrentRoomData,
   updateRoomData,
   db,
   playbackUpdate,
 } from "../firebase/firebase";
-import {
-  getNowPlaying,
-  pausePlayback,
-  startPodcast,
-  startPodcastAnywhere,
-  resumePlayback,
-} from "../api/spotifyApi";
+import { pausePlayback, startPodcast, resumePlayback } from "../api/spotifyApi";
 import Sdk from "./Sdk";
 
 const Player = (props) => {
+  const roomId = props.match.params.roomId;
+  const docId = props.docId;
   const [value, loading, error] = useDocumentData(
-    db.doc("Rooms/0Wi4FBK0StEXKc0zQwS9")
+    db.doc(`Rooms/${docId}`)
     // {
     //   snapshotListenOptions: { includeMetadataChanges: true },
     // }
   );
-  const docId = "sdg8vb82ch";
   let deviceIdFlag = false;
-  let playing = false;
+  let deviceId = props.deviceId;
   let uri = props.uri;
   let [currentPosition, setCurrentPosition] = useState(0);
-  let [progress, setProgress] = useState("");
-  let [nowPlaying, setNowPlaying] = useState({});
-
-  let deviceId = props.deviceId;
+  // let [progress, setProgress] = useState("");
+  // let [nowPlaying, setNowPlaying] = useState({});
 
   const play = () => {
-    playbackUpdate(props.token, docId, true);
+    playbackUpdate(props.token, roomId, true);
   };
 
   const pause = () => {
-    playbackUpdate(props.token, docId, false);
+    playbackUpdate(props.token, roomId, false);
   };
 
   const start = () => {
     let roomId;
 
-    getRoom(docId)
+    getRoom(roomId)
       .then((res) => {
         roomId = res;
         return getCurrentRoomData(res);
@@ -67,33 +58,13 @@ const Player = (props) => {
       .then((res) => updateRoomData(res, roomId));
   };
 
-  const progressFunc = () => {
-    setCurrentPosition(progress++);
-  };
+  // const click = () => {
 
-  let i = 0;
-
-  const click = () => {
-    // let timer = null;
-    // playing = !playing;
-    // if (playing) {
-    //   timer = setInterval(setCurrentPosition(currentPosition++), 300);
-    // } else {
-    //   clearInterval(timer);
-    // }
-    let roomId;
-    let epInfo;
-
-    // updateRoomData(roomData, roomId);
-    // // const roomRef = db.collection("Rooms").doc(docId);
-    // // roomRef.update(roomData);
-
-    console.log("epInfo", epInfo);
-  };
+  // };
 
   // useEffect(() => {
   //   let roomId;
-  //   getRoom(docId)
+  //   getRoom(roomId)
   //     .then((res) => {
   //       roomId = res;
   //       return getCurrentRoomData(res);
@@ -127,11 +98,8 @@ const Player = (props) => {
       ) {
         startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
       } else if (value.playing === true && value.nowPlayingProgress !== 0) {
-        console.log("IT SHOULD PLAY");
         resumePlayback(props.token);
-        // setCurrentPosition(value.nowPlayingProgress)
       } else if (value.playing === false) {
-        console.log("IT SHOULD PAUSE");
         pausePlayback(props.token);
       }
 
@@ -144,54 +112,6 @@ const Player = (props) => {
     console.log("FLAGGED");
   }, []);
 
-  // const tick = () => {
-  //   set
-  // };
-
-  // //Triggered by timer
-  // useEffect(() => {
-  //   setCurrentPosition(Date.now() - this.state.start + (this.props.position || 0))
-  //   setProgress(+(
-  //     (currentPosition * 100) /
-  //     props.track.duration_ms
-  //   ).toFixed(2) + "%")
-  // }, []);
-
-  //   //Triggered by playing status
-
-  // const progressTick = (status, width = 1) => {
-  //   if (status) {
-  //     var elem = document.getElementById("progress");
-  //     var id = setInterval(tick, 1000);
-  //     function tick() {
-  //       if (width >= 100) {
-  //         clearInterval(id);
-  //       } else {
-  //         width++;
-  //         elem.style.width = width + "%";
-  //       }
-  //     }
-  //   } else {
-  //     clearInterval(id);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   setProgress(0)
-  //   function progressFunc() {
-  //     setCurrentPosition(progress++)
-  //   }
-
-  //   const timer = setInterval(progressFunc, 1000);
-
-  //   while(currentPosition < 100) {
-
-  //   }
-  //   return () => {
-  //     clearInterval(timer);
-  //   };
-  // }, []);
-
   return (
     <div>
       <div className="player-container">
@@ -201,13 +121,8 @@ const Player = (props) => {
         {uri && <Sync onClick={start} />}
       </div>
       <LinearProgress variant="determinate" value={currentPosition} />
-      {/* <div id="progress-bar">
-        <div id="progress" style={{ width: progress }}></div>
-      </div> */}
       <div className="player-container">
-        {/* <button onClick={pauseAll}>Pause All</button>
-        <button onClick={startAll}>Start All</button> */}
-        <button onClick={click}>test</button>
+        {/* <button onClick={click}>test</button> */}
       </div>
     </div>
   );
@@ -222,3 +137,59 @@ const dispatchToProps = (dispatch) => ({
 });
 
 export default connect(stateToProps, dispatchToProps)(Player);
+
+// const tick = () => {
+//   set
+// };
+
+// //Triggered by timer
+// useEffect(() => {
+//   setCurrentPosition(Date.now() - this.state.start + (this.props.position || 0))
+//   setProgress(+(
+//     (currentPosition * 100) /
+//     props.track.duration_ms
+//   ).toFixed(2) + "%")
+// }, []);
+
+//   //Triggered by playing status
+
+// const progressTick = (status, width = 1) => {
+//   if (status) {
+//     var elem = document.getElementById("progress");
+//     var id = setInterval(tick, 1000);
+//     function tick() {
+//       if (width >= 100) {
+//         clearInterval(id);
+//       } else {
+//         width++;
+//         elem.style.width = width + "%";
+//       }
+//     }
+//   } else {
+//     clearInterval(id);
+//   }
+// };
+
+// useEffect(() => {
+//   setProgress(0)
+//   function progressFunc() {
+//     setCurrentPosition(progress++)
+//   }
+
+//   const timer = setInterval(progressFunc, 1000);
+
+//   while(currentPosition < 100) {
+
+//   }
+//   return () => {
+//     clearInterval(timer);
+//   };
+// }, []);
+
+// let timer = null;
+// playing = !playing;
+// if (playing) {
+//   timer = setInterval(setCurrentPosition(currentPosition++), 300);
+// } else {
+//   clearInterval(timer);
+// }

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import AsyncSelect from 'react-select/async';
-import axios from 'axios'
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import ListItem from '@material-ui/core/ListItem';
-import Player from './Player';
-import DropDownMenu from 'material-ui/DropDownMenu';
-import MenuItem from 'material-ui/MenuItem';
-import Button from '@material-ui/core/Button';
+import AsyncSelect from "react-select/async";
+import axios from "axios";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+import ListItem from "@material-ui/core/ListItem";
+import Player from "./Player";
+import DropDownMenu from "material-ui/DropDownMenu";
+import MenuItem from "material-ui/MenuItem";
+import Button from "@material-ui/core/Button";
 
 const SearchBar = (props) => {
   const token = props.token;
@@ -87,7 +87,7 @@ const SearchBar = (props) => {
         }
       );
       const episodesJSON = await episodes.json();
-      console.log(episodesJSON)
+      console.log(episodesJSON);
       try {
         let episodesArr = episodesJSON.items.map((item) => {
           return {
@@ -101,24 +101,19 @@ const SearchBar = (props) => {
       } catch (err) {
         console.log(err);
       }
-
     }
-  }
+  };
   const getEpisode = async (id) => {
-       const episode = await fetch(
-        `https://api.spotify.com/v1/episodes/${id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      const episodeJSON = await episode.json();
-      setEpisode(episodeJSON)
-
-  }
-// console.log('CHOSEN EPISODE URI ', chosenEpisode)
+    const episode = await fetch(`https://api.spotify.com/v1/episodes/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const episodeJSON = await episode.json();
+    setEpisode(episodeJSON);
+  };
+  // console.log('CHOSEN EPISODE URI ', chosenEpisode)
   return (
     <div>
       <Autocomplete
@@ -139,14 +134,27 @@ const SearchBar = (props) => {
           />
         )}
       />
-      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={getEpisodes}>Get Episodes</Button>
-      {episodes.map(episode => <ListItem button onClick={() => {
-        getEpisode(episode.id);
-        setUri(episode.uri);
-        }} key={episode.id}>{episode.name}</ListItem>)}
-    
-      <Player token={token} uri={uri} />
-      
+      <Button
+        aria-controls="simple-menu"
+        aria-haspopup="true"
+        onClick={getEpisodes}
+      >
+        Get Episodes
+      </Button>
+      {episodes.map((episode) => (
+        <ListItem
+          button
+          onClick={() => {
+            getEpisode(episode.id);
+            setUri(episode.uri);
+          }}
+          key={episode.id}
+        >
+          {episode.name}
+        </ListItem>
+      ))}
+
+      <Player docId={props.docId} token={token} uri={uri} />
     </div>
   );
 };
