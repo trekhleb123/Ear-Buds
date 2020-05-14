@@ -26,16 +26,15 @@ class Rooms extends React.Component {
     //this.props.getUserData(this.props.access_token)
   }
   async getRooms() {
-    const doc = db.collection("Rooms")
+    const doc = db.collection('Rooms')
     const docs = await doc.get()
-    let res = {}
-    docs.forEach((el) => {
-      res = el
-      // console.log(el.data());
-    })
-    console.log("res", res)
-    return res
-  }
+    .then(function(room) {
+      room.forEach(function(doc) {
+        //console.log(doc.id, " => ", doc.data());
+    });
+  })
+}
+
 
   async handleSubmit() {
     const id = await createRoom(

@@ -1,5 +1,5 @@
 import React from 'react';
-import { db, userLeft, renderUsers } from '../firebase/firebase';
+import { db, userLeft, renderUsers, vacantRoom } from '../firebase/firebase';
 import { Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 //import { getMyData } from "../spotifyLogin"
@@ -22,10 +22,10 @@ class SingleRoom extends React.Component {
     })
   }
   async leaveRoom(roomId, displayName) {
-    userLeft(this.props.match.params.roomId, this.props.userData.display_name)
+    await userLeft(this.props.match.params.roomId, this.props.userData.display_name)
+    await vacantRoom(this.props.match.params.roomId)
       this.props.history.push('/')
   }
-
   render() {
     return (
       <div>
@@ -37,6 +37,9 @@ class SingleRoom extends React.Component {
       </div>
         <button type="button" onClick={this.leaveRoom}>
           Leave Room
+        </button>
+        <button type="button">
+          Invite Friend
         </button>
       </div>
     );
