@@ -3,6 +3,7 @@ import Messages from "./Messages"
 import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
+import SearchBar from "./SearchBar"
 
 class SingleRoom extends React.Component {
   constructor() {
@@ -40,6 +41,7 @@ class SingleRoom extends React.Component {
           Leave Room
         </button>
         <Messages />
+        <SearchBar roomId={this.props.match.params.roomId} />
         <button type="button">Invite Friend</button>
       </div>
     )
