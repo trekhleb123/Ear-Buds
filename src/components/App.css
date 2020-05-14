@@ -45,8 +45,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: cornflowerblue;
-  padding: 10px;
+  padding: 16px;
 }
 
 .podcast-info-container {
@@ -57,13 +56,28 @@ button {
   padding: 10px;
 }
 
-#progress-bar {
-  width: 100%;
-  background-color: grey;
+.on-deck-card-details {
+  display: flex;
+  flex-direction: column;
 }
 
-#progress {
-  width: 1%;
-  height: 30px;
-  background-color: green;
+.on-deck-card-description {
+  padding: 16px;
+  overflow: scroll;
+  height: 80px;
+}
+
+.on-deck-card {
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+  width: 100%;
+}
+
+.on-deck-card-content {
+  min-width: 60%;
+}
+
+#on-deck-card-image {
+  max-width: 25%;
 }

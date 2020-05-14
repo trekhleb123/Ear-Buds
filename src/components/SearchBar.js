@@ -158,7 +158,6 @@ const SearchBar = (props) => {
       <Player
         token={token}
         uri={uri}
-        docId={props.docId}
         roomId={props.roomId}
         episode={chosenEpisode}
       />
