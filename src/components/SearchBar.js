@@ -4,15 +4,22 @@ import axios from "axios";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import ListItem from "@material-ui/core/ListItem";
+import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
 import Player from "./Player";
 import DropDownMenu from "material-ui/DropDownMenu";
 import MenuItem from "material-ui/MenuItem";
 import Button from "@material-ui/core/Button";
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store";
 import { connect } from "react-redux";
+import { getEpisode, fetchEpisodes, fetchShows } from "../api/spotifyApi";
 
 const SearchBar = (props) => {
   const token = props.token;
+  const [state, setState] = useState({
+    epId: "",
+  });
   let [search, setSearch] = useState("");
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
@@ -53,44 +60,31 @@ const SearchBar = (props) => {
     foo();
   }, [props.search]);
 
+  const handleChange = (event) => {
+    const name = event.target.name;
+    setState({
+      ...state,
+      [name]: event.target.value,
+    });
+    getEpisode(event.target.value, token).then((res) => setEpisode(res));
+  };
+
   const activeSearch = async (text) => {
     setSearch(text);
     await searchHandler();
   };
+
   const getEpisodes = async () => {
-    const q = encodeURIComponent(`${search}`);
-    const response = await fetch(
-      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=1`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    const searchJSON = await response.json();
-    // console.log(searchJSON)
-    if (searchJSON.shows) {
-      result = searchJSON.shows.items.map((item) => {
-        return item.id;
-      });
-    }
-    setResult(result);
-    if (result) {
-      console.log("getting episodes");
-      const episodes = await fetch(
-        `https://api.spotify.com/v1/shows/${result}/episodes`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const episodesJSON = await episodes.json();
-      console.log(episodesJSON);
-      try {
-        let episodesArr = episodesJSON.items.map((item) => {
+    fetchShows(search, token)
+      .then((res) => {
+        result = res.shows.items.map((item) => {
+          return item.id;
+        });
+      })
+      .then(() => setResult(result))
+      .then(() => fetchEpisodes(result, token))
+      .then((res) => {
+        return res.items.map((item) => {
           return {
             uri: item.uri,
             name: item.name,
@@ -98,22 +92,44 @@ const SearchBar = (props) => {
             id: item.id,
           };
         });
-        setEpisodes(episodesArr);
-      } catch (err) {
-        console.log(err);
-      }
-    }
+      })
+      .then((res) => setEpisodes(res));
   };
-  const getEpisode = async (id) => {
-    const episode = await fetch(`https://api.spotify.com/v1/episodes/${id}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const episodeJSON = await episode.json();
-    setEpisode(episodeJSON);
-  };
+  // .then((res) => setEpisodes(res))
+
+  // const q = encodeURIComponent(`${search}`);
+  // const response = await fetch(
+  //   `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=1`,
+  //   {
+  //     method: "GET",
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   }
+  // );
+  // const searchJSON = await response.json();
+  // console.log(searchJSON)
+
+  //   if (result) {
+  //     console.log("getting episodes");
+
+  //     console.log(episodesJSON);
+  //     try {
+  //       let episodesArr = episodesJSON.items.map((item) => {
+  //         return {
+  //           uri: item.uri,
+  //           name: item.name,
+  //           date: item.release_date,
+  //           id: item.id,
+  //         };
+  //       });
+  //       setEpisodes(episodesArr);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   }
+  // };
+
   // console.log('CHOSEN EPISODE URI ', chosenEpisode)
   return (
     <div>
@@ -142,7 +158,30 @@ const SearchBar = (props) => {
       >
         Get Episodes
       </Button>
-      {episodes.map((episode) => (
+
+      <div>
+        <FormControl>
+          <InputLabel htmlFor="age-native-simple">Episodes</InputLabel>
+          <Select native value={state.epId} onChange={handleChange}>
+            <option aria-label="None" value="" />
+            {episodes &&
+              episodes.map((episode) => (
+                <option
+                  key={episode.id}
+                  value={episode.id}
+                  onClick={() => {
+                    getEpisode(episode.id);
+                    setUri(episode.uri);
+                  }}
+                >
+                  {episode.name}
+                </option>
+              ))}
+          </Select>
+        </FormControl>
+      </div>
+
+      {/* {episodes.map((episode) => (
         <ListItem
           button
           onClick={() => {
@@ -153,7 +192,7 @@ const SearchBar = (props) => {
         >
           {episode.name}
         </ListItem>
-      ))}
+      ))} */}
 
       <Player
         token={token}

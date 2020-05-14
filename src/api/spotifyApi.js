@@ -82,6 +82,59 @@ export const resumePlayback = async (token) => {
   }
 };
 
+export const getEpisode = async (id, token) => {
+  try {
+    const episode = await fetch(`https://api.spotify.com/v1/episodes/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const epJson = await episode.json();
+
+    return epJson;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const fetchShows = async (search, token) => {
+  try {
+    const q = encodeURIComponent(`${search}`);
+    const response = await fetch(
+      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=1`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const searchJSON = await response.json();
+    return searchJSON;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const fetchEpisodes = async (result, token) => {
+  try {
+    const episodes = await fetch(
+      `https://api.spotify.com/v1/shows/${result}/episodes`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const episodesJSON = await episodes.json();
+    return episodesJSON;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const sampleEp = {
   audio_preview_url:
     "https://p.scdn.co/mp3-preview/ae962b343e142fa4cb7a03a28d8fc5bb69e11c4c",
