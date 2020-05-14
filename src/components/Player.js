@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { setDeviceId } from "../redux/store";
 import { connect } from "react-redux";
 import { useDocumentData } from "react-firebase-hooks/firestore";
+import { isEqual } from "lodash";
 
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
@@ -11,7 +12,6 @@ import {
   updateRoomData,
   db,
   playbackUpdate,
-  changeQueue,
   clearQueue,
 } from "../firebase/firebase";
 import {
@@ -106,37 +106,123 @@ const Player = (props) => {
   //     });
   // }, [props.deviceId]);
 
+  // function useDeepCompareMemoize(value) {
+  //   const ref = useRef();
+  //   // it can be done by using useMemo as well
+  //   // but useRef is rather cleaner and easier
+
+  //   if (!deepCompareEquals(value, ref.current)) {
+  //     ref.current = value;
+  //   }
+
+  //   return ref.current;
+  // }
+
+  // function useDeepCompareEffect(callback, dependencies) {
+  //   useEffect(function checkVal() {
+  //     if (value) {
+  //       const timeElapsed = Date.now() - value.timestamp;
+  //       const queueTimeElapsed = Date.now() - value.queued.timestamp;
+  //       const queue = value.queued;
+
+  //       if (
+  //         value.playing === true &&
+  //         value.nowPlayingProgress === 0 &&
+  //         timeElapsed < 5000
+  //       ) {
+  //         startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
+  //       } else if (value.playing === true && value.nowPlayingProgress !== 0) {
+  //         resumePlayback(props.token);
+  //       } else if (
+  //         value.playing === false &&
+  //         timeElapsed > 500 &&
+  //         queueTimeElapsed > 500
+  //       ) {
+  //         pausePlayback(props.token);
+  //       }
+
+  //       if (value.queued.status === true) {
+  //         setSelectedEp(queue);
+  //       }
+
+  //       console.log("value", value);
+  //     }
+  //   }, useDeepCompareMemoize(value))
+  // }
+
+  const usePrevious = (val) => {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = val;
+    });
+    return ref.current;
+  };
+
+  const previousValue = usePrevious(value);
+
   useEffect(() => {
-    if (value) {
-      const timeElapsed = Date.now() - value.timestamp;
-      const queueTimeElapsed = Date.now() - value.queued.timestamp;
+    if (!isEqual(value, previousValue)) {
+      if (value) {
+        const timeElapsed = Date.now() - value.timestamp;
+        const queueTimeElapsed = Date.now() - value.queued.timestamp;
+        const queue = value.queued;
 
-      if (
-        value.playing === true &&
-        value.nowPlayingProgress === 0 &&
-        timeElapsed < 5000
-      ) {
-        startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
-      } else if (value.playing === true && value.nowPlayingProgress !== 0) {
-        resumePlayback(props.token);
-      } else if (value.playing === false) {
-        pausePlayback(props.token);
+        if (
+          value.playing === true &&
+          value.nowPlayingProgress === 0 &&
+          timeElapsed < 5000
+        ) {
+          startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
+        } else if (value.playing === true && value.nowPlayingProgress !== 0) {
+          resumePlayback(props.token);
+        } else if (value.playing === false) {
+          pausePlayback(props.token);
+        }
+
+        if (value.queued.status === true) {
+          setSelectedEp(queue);
+        }
+
+        console.log("value", value);
       }
-
-      if (value.queued.status === true && queueTimeElapsed < 500) {
-        setSelectedEp(value.queued);
-      }
-
-      console.log("value", value);
     }
-  }, [value]);
+  });
 
-  useEffect(() => {
-    if (props.episode) {
-      changeQueue(roomId, props.episode);
-      console.log("CHANGED QUEUE");
-    }
-  }, [props.episode]);
+  // useEffect(
+  //   function checkVal() {
+  //     if (value) {
+  //       const timeElapsed = Date.now() - value.timestamp;
+  //       const queueTimeElapsed = Date.now() - value.queued.timestamp;
+  //       const queue = value.queued;
+
+  //       if (
+  //         value.playing === true &&
+  //         value.nowPlayingProgress === 0 &&
+  //         timeElapsed < 5000
+  //       ) {
+  //         startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
+  //       } else if (value.playing === true && value.nowPlayingProgress !== 0) {
+  //         resumePlayback(props.token);
+  //       } else if (
+  //         value.playing === false
+  //       ) {
+  //         pausePlayback(props.token);
+  //       }
+
+  //       if (value.queued.status === true) {
+  //         setSelectedEp(queue);
+  //       }
+
+  //       console.log("value", value);
+  //     }
+  //   },
+  //   [value]
+  // );
+
+  // useEffect(() => {
+  //   changeQueue(roomId, props.episode);
+  //   console.log("CHANGED QUEUE");
+  // }, [props.episode]);
 
   return (
     <div>
@@ -167,7 +253,6 @@ const Player = (props) => {
           </div>
 
           <CardMedia
-            square
             component="img"
             src={selectedEp.imageUrl}
             id="on-deck-card-image"
@@ -202,7 +287,6 @@ const Player = (props) => {
           </div>
 
           <CardMedia
-            square
             component="img"
             src={playingEp.imageUrl}
             id="on-deck-card-image"

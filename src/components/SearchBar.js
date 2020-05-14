@@ -14,6 +14,7 @@ import Button from "@material-ui/core/Button";
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store";
 import { connect } from "react-redux";
 import { getEpisode, fetchEpisodes, fetchShows } from "../api/spotifyApi";
+import { changeQueue } from "../firebase/firebase";
 
 const SearchBar = (props) => {
   const token = props.token;
@@ -40,7 +41,7 @@ const SearchBar = (props) => {
       }
     );
     const searchJSON = await response.json();
-    console.log(searchJSON);
+
     let searchArr = [{ value: "chocolate", label: "Chocolate" }];
 
     if (searchJSON.shows) {
@@ -49,8 +50,6 @@ const SearchBar = (props) => {
       });
     }
     setResults(searchArr);
-    // var result = results.filter(item => item.label === search)
-    // setResult(result)
   };
 
   useEffect(() => {
@@ -66,7 +65,9 @@ const SearchBar = (props) => {
       ...state,
       [name]: event.target.value,
     });
-    getEpisode(event.target.value, token).then((res) => setEpisode(res));
+    getEpisode(event.target.value, token).then((res) =>
+      changeQueue(props.roomId, res)
+    );
   };
 
   const activeSearch = async (text) => {
@@ -95,42 +96,7 @@ const SearchBar = (props) => {
       })
       .then((res) => setEpisodes(res));
   };
-  // .then((res) => setEpisodes(res))
 
-  // const q = encodeURIComponent(`${search}`);
-  // const response = await fetch(
-  //   `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=1`,
-  //   {
-  //     method: "GET",
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   }
-  // );
-  // const searchJSON = await response.json();
-  // console.log(searchJSON)
-
-  //   if (result) {
-  //     console.log("getting episodes");
-
-  //     console.log(episodesJSON);
-  //     try {
-  //       let episodesArr = episodesJSON.items.map((item) => {
-  //         return {
-  //           uri: item.uri,
-  //           name: item.name,
-  //           date: item.release_date,
-  //           id: item.id,
-  //         };
-  //       });
-  //       setEpisodes(episodesArr);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   }
-  // };
-
-  // console.log('CHOSEN EPISODE URI ', chosenEpisode)
   return (
     <div>
       <Autocomplete
@@ -180,19 +146,6 @@ const SearchBar = (props) => {
           </Select>
         </FormControl>
       </div>
-
-      {/* {episodes.map((episode) => (
-        <ListItem
-          button
-          onClick={() => {
-            getEpisode(episode.id);
-            setUri(episode.uri);
-          }}
-          key={episode.id}
-        >
-          {episode.name}
-        </ListItem>
-      ))} */}
 
       <Player
         token={token}
