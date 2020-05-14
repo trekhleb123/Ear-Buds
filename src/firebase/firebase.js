@@ -121,3 +121,40 @@ export async function findRoom(roomCode) {
   console.log("currentroom", res, currentRoom)
   return res
 }
+export async function userLeft(roomId, displayName) {
+  const users = await db
+    .collection('Rooms')
+    .doc(roomId)
+    .collection('Users');
+  const currentUser = await users
+    .where('name', '==', displayName)
+    .get();
+  let res = {};
+  currentUser.forEach(el => {
+    res = el.id;
+  });
+  console.log(res);
+  await db
+    .collection('Rooms')
+    .doc(roomId)
+    .collection('Users')
+    .doc(res)
+    .delete();
+}
+export async function renderUsers(roomId) {
+  const obj = {}
+    await db.collection("Rooms").doc(roomId).collection('Users').get()
+    .then(function(room) {
+      room.forEach(function(doc) {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+        obj[doc.id] = doc.data().name
+    });
+    console.log(obj)
+  });
+    // let res = []
+    // rooms.forEach((el) => {
+    //   res.push(el.id)
+    // })
+    return obj
+}

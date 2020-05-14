@@ -1,49 +1,58 @@
 import React from "react"
-import { db } from "../firebase/firebase"
+import Messages from "./Messages"
+import { db, userLeft, renderUsers } from "../firebase/firebase"
 import { Route } from "react-router-dom"
 import { Link } from "react-router-dom"
-import Messages from "./Messages"
-//import { getMyData } from "../spotifyLogin"
-import { getAccessToken } from "../redux/store"
+import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
+import { connect } from "react-redux"
 
 class SingleRoom extends React.Component {
   constructor() {
     super()
-    this.data = this.data.bind(this)
+    this.state = {
+      users: {},
+    }
+    this.leaveRoom = this.leaveRoom.bind(this)
   }
-  componentDidMount() {
-    //getAccessToken()
+  async componentDidMount() {
+    this.props.getUserData(this.props.access_token)
+    await renderUsers(this.props.match.params.roomId)
+    this.setState({
+      users: await renderUsers(this.props.match.params.roomId),
+    })
   }
-  async data() {
-    const stuff = await db
-      .collection("Rooms")
-      .doc(this.props.match.params.roomId)
-      .get()
-      .then(function (doc) {
-        if (doc.exists) {
-          console.log("Document data:", doc.data())
-          return doc.data()
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!")
-        }
-      })
-      .catch(function (error) {
-        console.log("Error getting document:", error)
-      })
-    //console.log("stuff", stuff, getMyData()) //need access token
+  async leaveRoom(roomId, displayName) {
+    userLeft(this.props.match.params.roomId, this.props.userData.display_name)
+    this.props.history.push("/")
   }
+
   render() {
     return (
       <div>
-        <button type="button" onClick={this.data}>
-          yo
+        <h2>Users</h2>
+        <div>
+          {Object.values(this.state.users).map((user) => {
+            return <li key={user}>{user}</li>
+          })}
+        </div>
+        <button type="button" onClick={this.leaveRoom}>
+          Leave Room
         </button>
         <Messages />
       </div>
     )
   }
 }
+const stateToProps = (state) => ({
+  access_token: state.access_token,
+  userData: state.userData,
+  refresh_token: state.refresh_token,
+})
 
-export default SingleRoom
-//  <Link to={`/room/${this.state.roomCode}`}></Link>
+const dispatchToProps = (dispatch) => ({
+  getAccessToken: (code) => dispatch(getAccessToken(code)),
+  setSpotifyCode: (code) => dispatch(setSpotifyCode(code)),
+  getUserData: (token) => dispatch(getUserData(token)),
+})
+
+export default connect(stateToProps, dispatchToProps)(SingleRoom)
