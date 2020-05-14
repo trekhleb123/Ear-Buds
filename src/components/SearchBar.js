@@ -13,7 +13,6 @@ import { connect } from "react-redux";
 
 const SearchBar = (props) => {
   const token = props.token;
-  //   console.log("token", token)
   let [search, setSearch] = useState("");
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
@@ -161,9 +160,13 @@ const SearchBar = (props) => {
         uri={uri}
         docId={props.docId}
         roomId={props.roomId}
+        episode={chosenEpisode}
       />
     </div>
   );
 };
+const stateToProps = (state) => ({
+  token: state.access_token,
+});
 
-export default SearchBar;
+export default connect(stateToProps)(SearchBar);
