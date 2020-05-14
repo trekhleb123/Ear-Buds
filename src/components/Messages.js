@@ -1,43 +1,50 @@
 import React, { useState, useEffect } from "react"
-import { firestore } from "../firebase/firebase"
+import { firestore, findRoom, db } from "../firebase/firebase"
 import Form from "./Form" // This one is new
 import _sortBy from "lodash/sortBy"
+import { connect } from "react-redux"
 
-const Messages = () => {
+const Messages = (props) => {
   // Set default as null so we
   // know if it's still loading
-  const [messages, setMessages] = useState(null)
+  const [messages, setMessages] = useState([])
 
   // Initialize with listening to our
   // messages collection. The second argument
   // with the empty array makes sure the
-  // function only executes once
+  // function only executes onc
   useEffect(() => {
     listenForMessages()
   }, [])
 
   // Use firestore to listen for changes within
   // our newly created collection
-  const listenForMessages = () => {
-    firestore.collection("messages").onSnapshot(
-      (snapshot) => {
-        // Loop through the snapshot and collect
-        // the necessary info we need. Then push
-        // it into our array
-        const allMessages = []
-        snapshot.forEach((doc) => allMessages.push(doc.data()))
+  const listenForMessages = async () => {
+    console.log("room code", props)
+    let roomId
+    if (props.roomCode) {
+      roomId = await findRoom(props.roomCode)
+    }
 
-        // Set the collected array as our state
-        setMessages(_sortBy(allMessages, ["timestamp"]))
-      },
-      (error) => console.error(error)
-    )
-  }
+    if (roomId) {
+      firestore
+        .collection("Rooms")
+        .doc(roomId)
+        .collection("messages")
+        .onSnapshot(
+          (snapshot) => {
+            // Loop through the snapshot and collect
+            // the necessary info we need. Then push
+            // it into our array
+            const allMessages = []
+            snapshot.forEach((doc) => allMessages.push(doc.data()))
 
-  // If the state is null we
-  // know that it's still loading
-  if (!messages) {
-    return <div>Loading...</div>
+            // Set the collected array as our state
+            setMessages(_sortBy(allMessages, ["timestamp"]))
+          },
+          (error) => console.error(error)
+        )
+    }
   }
 
   // Render all the messages with no
@@ -70,4 +77,8 @@ const Messages = () => {
   )
 }
 
-export default Messages
+const stateToProps = (state) => ({
+  roomCode: state.roomCode,
+})
+
+export default connect(stateToProps, null)(Messages)

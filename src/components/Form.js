@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { connect } from "react-redux"
-import { firestore } from "../firebase/firebase" // This one is new
+import { firestore, findRoom } from "../firebase/firebase" // This one is new
 
 const Form = (props) => {
   // Initial item contains empty strings
@@ -17,17 +17,25 @@ const Form = (props) => {
   // we'll send the object to our firestore
   // collection as a document. Then we clear the
   // item state when it has succeeded
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault()
 
+    let roomId
+    if (props.roomCode) {
+      roomId = await findRoom(props.roomCode)
+    }
     // These lines are new
-    if (item.message.length) {
-      firestore
-        .collection("messages")
-        .doc()
-        .set(item)
-        .then(() => setItem(initialItemValues))
-        .catch((error) => console.error(error))
+    if (roomId) {
+      if (item.message.length) {
+        firestore
+          .collection("Rooms")
+          .doc(roomId)
+          .collection("messages")
+          .doc()
+          .set(item)
+          .then(() => setItem(initialItemValues))
+          .catch((error) => console.error(error))
+      }
     }
   }
 
@@ -62,6 +70,7 @@ const Form = (props) => {
 
 const stateToProps = (state) => ({
   userData: state.userData,
+  roomCode: state.roomCode,
 })
 
 export default connect(stateToProps, null)(Form)

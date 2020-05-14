@@ -39,7 +39,6 @@ function App(props) {
           Login to Spotify
         </button>
         {/* {props.access_token && <Player token={props.access_token} />} */}
-        <Messages />
       </header>
     </div>
   )

@@ -2,6 +2,7 @@ import React from "react"
 import { db } from "../firebase/firebase"
 import { Route } from "react-router-dom"
 import { Link } from "react-router-dom"
+import Messages from "./Messages"
 //import { getMyData } from "../spotifyLogin"
 import { getAccessToken } from "../redux/store"
 
@@ -38,6 +39,7 @@ class SingleRoom extends React.Component {
         <button type="button" onClick={this.data}>
           yo
         </button>
+        <Messages />
       </div>
     )
   }
