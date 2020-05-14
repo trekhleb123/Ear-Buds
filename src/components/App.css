@@ -49,6 +49,14 @@ button {
   padding: 10px;
 }
 
+.podcast-info-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: crimson;
+  padding: 10px;
+}
+
 #progress-bar {
   width: 100%;
   background-color: grey;
