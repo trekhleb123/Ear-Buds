@@ -5,14 +5,17 @@ import { Link } from 'react-router-dom';
 //import { getMyData } from "../spotifyLogin"
 import { getAccessToken, setSpotifyCode, getUserData } from '../redux/store';
 import { connect } from 'react-redux';
-
+import { Modal } from '@material-ui/core';
 class SingleRoom extends React.Component {
   constructor() {
     super();
     this.state = {
-      users: {}
+      users: {},
+      // open: false
     }
     this.leaveRoom = this.leaveRoom.bind(this);
+    this.open = this.open.bind(this);
+
   }
   async componentDidMount() {
     this.props.getUserData(this.props.access_token);
@@ -26,6 +29,11 @@ class SingleRoom extends React.Component {
     await vacantRoom(this.props.match.params.roomId)
       this.props.history.push('/')
   }
+  // open() {
+  //   this.setState({
+  //     open: true
+  //   })
+  // }
   render() {
     return (
       <div>
@@ -41,6 +49,10 @@ class SingleRoom extends React.Component {
         <button type="button">
           Invite Friend
         </button>
+        {/* {this.state.open ?
+        <Modal open={this.state.open}>
+          hello
+        </Modal> : null} */}
       </div>
     );
   }
