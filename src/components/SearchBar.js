@@ -8,10 +8,11 @@ import Player from "./Player";
 import DropDownMenu from "material-ui/DropDownMenu";
 import MenuItem from "material-ui/MenuItem";
 import Button from "@material-ui/core/Button";
+import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store";
+import { connect } from "react-redux";
 
 const SearchBar = (props) => {
   const token = props.token;
-  //   console.log("token", token)
   let [search, setSearch] = useState("");
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
@@ -154,9 +155,17 @@ const SearchBar = (props) => {
         </ListItem>
       ))}
 
-      <Player docId={props.docId} token={token} uri={uri} />
+      <Player
+        token={token}
+        uri={uri}
+        roomId={props.roomId}
+        episode={chosenEpisode}
+      />
     </div>
   );
 };
+const stateToProps = (state) => ({
+  token: state.access_token,
+});
 
-export default SearchBar;
+export default connect(stateToProps)(SearchBar);

@@ -11,15 +11,37 @@ import {
   updateRoomData,
   db,
   playbackUpdate,
+  changeQueue,
+  clearQueue,
 } from "../firebase/firebase";
-import { pausePlayback, startPodcast, resumePlayback } from "../api/spotifyApi";
+import {
+  pausePlayback,
+  startPodcast,
+  resumePlayback,
+  sampleEp,
+} from "../api/spotifyApi";
 import Sdk from "./Sdk";
+import Card from "@material-ui/core/Card";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import CardMedia from "@material-ui/core/CardMedia";
+import Button from "@material-ui/core/Button";
 
 const Player = (props) => {
-  const roomId = props.match.params.roomId;
-  const docId = props.docId;
+  const blank = {
+    name: "",
+    show: { publisher: "" },
+    duration_ms: 1000,
+    description: "",
+    imageUrl:
+      "https://i.scdn.co/image/a7de7e0497e4b718a08d99e98241533f5113a3e1",
+  };
+  let [selectedEp, setSelectedEp] = useState(blank);
+  let [playingEp, setPlayingEp] = useState(blank);
+  const roomId = props.roomId;
   const [value, loading, error] = useDocumentData(
-    db.doc(`Rooms/${docId}`)
+    db.doc(`Rooms/${roomId}`)
     // {
     //   snapshotListenOptions: { includeMetadataChanges: true },
     // }
@@ -40,22 +62,19 @@ const Player = (props) => {
   };
 
   const start = () => {
-    let roomId;
+    setPlayingEp(selectedEp);
+    setSelectedEp(blank);
 
-    getRoom(roomId)
-      .then((res) => {
-        roomId = res;
-        return getCurrentRoomData(res);
-      })
+    getCurrentRoomData(roomId)
       .then((roomData) => {
         roomData.nowPlayingProgress = 0;
         roomData.timestamp = Date.now();
-        roomData.nowPlayingUri = uri;
+        roomData.nowPlayingUri = roomData.queued.uri;
         roomData.playing = true;
-        uri = null;
         return roomData;
       })
-      .then((res) => updateRoomData(res, roomId));
+      .then((res) => updateRoomData(res, roomId))
+      .then(() => clearQueue(roomId));
   };
 
   // const click = () => {
@@ -90,6 +109,7 @@ const Player = (props) => {
   useEffect(() => {
     if (value) {
       const timeElapsed = Date.now() - value.timestamp;
+      const queueTimeElapsed = Date.now() - value.queued.timestamp;
 
       if (
         value.playing === true &&
@@ -103,26 +123,92 @@ const Player = (props) => {
         pausePlayback(props.token);
       }
 
+      if (value.queued.status === true && queueTimeElapsed < 500) {
+        setSelectedEp(value.queued);
+      }
+
       console.log("value", value);
     }
   }, [value]);
 
   useEffect(() => {
-    if (deviceId) deviceIdFlag = true;
-    console.log("FLAGGED");
-  }, []);
+    if (props.episode) {
+      changeQueue(roomId, props.episode);
+      console.log("CHANGED QUEUE");
+    }
+  }, [props.episode]);
 
   return (
     <div>
-      <div className="player-container">
-        <Sdk token={props.token} />
-        <PauseCircleFilled onClick={pause} />
-        <PlayCircleFilled onClick={play} />
-        {uri && <Sync onClick={start} />}
+      <div className="podcast-info-container">
+        <Card className="on-deck-card">
+          <div className="on-deck-card-content">
+            <div className="on-deck-card-details">
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  On Deck
+                </Typography>
+                <Typography variant="h5" component="h2">
+                  {selectedEp.name}
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
+                  {selectedEp.show.publisher}
+                </Typography>
+              </CardContent>
+            </div>
+            <div className="on-deck-card-description">
+              <Typography variant="body2" component="p">
+                {selectedEp.description}
+              </Typography>
+            </div>
+            <div className="player-container">
+              {selectedEp.uri && <Sync onClick={start} />}
+            </div>
+          </div>
+
+          <CardMedia
+            square
+            component="img"
+            src={selectedEp.imageUrl}
+            id="on-deck-card-image"
+            title="Show Artwork"
+          />
+        </Card>
       </div>
-      <LinearProgress variant="determinate" value={currentPosition} />
-      <div className="player-container">
-        {/* <button onClick={click}>test</button> */}
+      <div className="podcast-info-container">
+        <Card className="on-deck-card">
+          <div className="on-deck-card-content">
+            <div className="on-deck-card-details">
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Now Playing
+                </Typography>
+                <Typography variant="h5" component="h2">
+                  {playingEp.name}
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
+                  {playingEp.show.publisher}
+                </Typography>
+              </CardContent>
+            </div>
+            <div className="on-deck-card-description">
+              <div className="player-container">
+                <Sdk token={props.token} />
+                <PauseCircleFilled onClick={pause} />
+                <PlayCircleFilled onClick={play} />
+              </div>
+              <LinearProgress variant="determinate" value={currentPosition} />
+            </div>
+          </div>
+
+          <CardMedia
+            square
+            component="img"
+            src={playingEp.imageUrl}
+            id="on-deck-card-image"
+            title="Show Artwork"
+          />
+        </Card>
       </div>
     </div>
   );

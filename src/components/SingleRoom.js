@@ -9,10 +9,10 @@ import SearchBar from "./SearchBar";
 class SingleRoom extends React.Component {
   constructor() {
     super();
-    this.docId = null;
     this.data = this.data.bind(this);
   }
-  componentDidMount() {
+  async componentDidMount() {
+    this.docId = await getRoom(this.props.match.params.roomId);
     //getAccessToken()
   }
 
@@ -33,7 +33,7 @@ class SingleRoom extends React.Component {
       .catch(function (error) {
         console.log("Error getting document:", error);
       });
-    this.docId = await getRoom(this.props.match.params.roomId);
+
     //console.log("stuff", stuff, getMyData()) //need access token
   }
 
@@ -43,7 +43,7 @@ class SingleRoom extends React.Component {
         <button type="button" onClick={this.data}>
           yo
         </button>
-        <SearchBar docId={this.docId} />
+        <SearchBar roomId={this.props.match.params.roomId} />
       </div>
     );
   }

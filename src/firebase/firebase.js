@@ -40,9 +40,9 @@ export async function getRoom(roomCode) {
   }
 }
 
-export async function getCurrentRoomData(docId) {
+export async function getCurrentRoomData(roomId) {
   try {
-    const doc = db.collection("Rooms").doc(docId);
+    const doc = db.collection("Rooms").doc(roomId);
     const result = await doc.get();
 
     // console.log(result.data());
@@ -52,9 +52,9 @@ export async function getCurrentRoomData(docId) {
   }
 }
 
-export async function getCurrentUserData(docId, callback) {
+export async function getCurrentUserData(roomId, callback) {
   try {
-    const users = db.collection("Rooms").doc(docId).collection("Users");
+    const users = db.collection("Rooms").doc(roomId).collection("Users");
     const result = await users.get();
 
     result.forEach((user) => console.log(user.id, "=>", user.data()));
@@ -114,9 +114,9 @@ export async function joinRoom(token, username, roomCode, refreshToken) {
   return res;
 }
 
-export async function updateRoomData(roomData, docId) {
+export async function updateRoomData(roomData, roomId) {
   try {
-    const roomRef = db.collection("Rooms").doc(docId);
+    const roomRef = db.collection("Rooms").doc(roomId);
     roomRef.update(roomData);
     // console.log("new room", roomRef);
   } catch (err) {
@@ -124,18 +124,13 @@ export async function updateRoomData(roomData, docId) {
   }
 }
 
-export async function playbackUpdate(token, roomCode, playingStatus) {
-  let docId;
+export async function playbackUpdate(token, roomId, playingStatus) {
   let epInfo;
 
   getNowPlaying(token)
     .then((res) => {
       epInfo = res;
-      return getRoom(roomCode);
-    })
-    .then((res) => {
-      docId = res;
-      return getCurrentRoomData(res);
+      return getCurrentRoomData(roomId);
     })
     .then((roomData) => {
       roomData.nowPlayingProgress = epInfo.data.progress_ms;
@@ -143,5 +138,36 @@ export async function playbackUpdate(token, roomCode, playingStatus) {
       roomData.playing = playingStatus;
       return roomData;
     })
-    .then((res) => updateRoomData(res, docId));
+    .then((res) => updateRoomData(res, roomId));
+}
+
+export async function changeQueue(roomId, epInfo) {
+  getCurrentRoomData(roomId)
+    .then((roomData) => {
+      roomData.queued.name = epInfo.name;
+      roomData.queued.show = epInfo.show.publisher;
+      roomData.queued.duration = epInfo.duration_ms;
+      roomData.queued.imageUrl = epInfo.images[1].url;
+      roomData.queued.description = epInfo.description;
+      roomData.queued.uri = epInfo.uri;
+      roomData.queued.timestamp = Date.now();
+      roomData.queued.status = true;
+      return roomData;
+    })
+    .then((res) => updateRoomData(res, roomId));
+}
+
+export async function clearQueue(roomId) {
+  getCurrentRoomData(roomId)
+    .then((roomData) => {
+      roomData.queued.name = "";
+      roomData.queued.show = "";
+      roomData.queued.duration = 0;
+      roomData.queued.imageUrl = "";
+      roomData.queued.description = "";
+      roomData.queued.uri = "";
+      roomData.queued.status = false;
+      return roomData;
+    })
+    .then((res) => updateRoomData(res, roomId));
 }
