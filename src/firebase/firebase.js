@@ -67,16 +67,16 @@ export async function getCurrentUserData(docId, callback) {
     console.error(err)
   }
 }
-// export async function getRooms() {
-//   const doc = db.collection('Rooms')
-//  const docs = await doc.get()
-//      let res = {}
-//   docs.forEach((el) => {
-//     res = el
-//   })
-//   console.log(res)
-//   return res
-// }
+export async function getRooms() {
+  const doc = db.collection('Rooms')
+ const docs = await doc.get()
+     let res = []
+  docs.forEach((el) => {
+    res.push(el)
+  })
+  console.log('res', res)
+  return res
+}
 
 export async function createRoom(token, username, refreshToken) {
   //event.preventDefault()
@@ -146,15 +146,25 @@ export async function renderUsers(roomId) {
     await db.collection("Rooms").doc(roomId).collection('Users').get()
     .then(function(room) {
       room.forEach(function(doc) {
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
+        //console.log(doc.id, " => ", doc.data());
         obj[doc.id] = doc.data().name
     });
-    console.log(obj)
+    //console.log(obj)
   });
-    // let res = []
-    // rooms.forEach((el) => {
-    //   res.push(el.id)
-    // })
     return obj
+}
+
+export async function vacantRoom(roomId) {
+  let userLength;
+    const users = await db
+    .collection('Rooms')
+    .doc(roomId)
+    .collection('Users')
+    .get()
+    .then(function(user) {
+    userLength = user.size
+   })
+   if(userLength === 0) {
+    await db.collection("Rooms").doc(roomId).delete()
+   }
 }
