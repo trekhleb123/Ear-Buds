@@ -1,40 +1,44 @@
-import React from "react";
+import React from "react"
 import {
   db,
   createRoom,
   joinRoom,
   findRoom,
   getRoom,
-} from "../firebase/firebase";
-import { Route } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { getUserData, setRoomCode } from "../redux/store";
+} from "../firebase/firebase"
+import { Route } from "react-router-dom"
+import { Link } from "react-router-dom"
+import { withRouter } from "react-router-dom"
+import { connect } from "react-redux"
+import { getUserData, setRoomCode } from "../redux/store"
 
 class Rooms extends React.Component {
   constructor() {
-    super();
+    super()
     this.state = {
       joinForm: false,
-    };
-    this.getRooms = this.getRooms.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.showForm = this.showForm.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.joinSubmit = this.joinSubmit.bind(this);
+      wrongRoomCode: false,
+    }
+    this.getRooms = this.getRooms.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.showForm = this.showForm.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+    this.joinSubmit = this.joinSubmit.bind(this)
   }
   componentDidMount() {
-    this.getRooms();
+    this.getRooms()
+    if (!Object.keys(this.props.userData).length) {
+      this.props.history.push("/")
+    }
   }
 
   async getRooms() {
-    const doc = db.collection("Rooms");
+    const doc = db.collection("Rooms")
     const docs = await doc.get().then(function (room) {
       room.forEach(function (doc) {
         //console.log(doc.id, " => ", doc.data());
-      });
-    });
+      })
+    })
   }
 
   async handleSubmit() {
@@ -42,36 +46,43 @@ class Rooms extends React.Component {
       this.props.access_token,
       this.props.userData.display_name,
       this.props.refresh_token
-    );
-    const id = await getRoom(roomCode);
-    this.props.setRoomCode(roomCode);
-    this.props.history.push(`/room/${id}`);
+    )
+    const id = await getRoom(roomCode)
+    this.props.setRoomCode(roomCode)
+    this.props.history.push(`/room/${id}`)
   }
 
   async joinSubmit(event) {
-    event.preventDefault();
-    const room = await findRoom(this.props.roomCode);
-    await joinRoom(
-      this.props.access_token,
-      this.props.userData.display_name,
-      this.props.refresh_token,
-      room,
-      this.props.roomCode
-    );
-    this.props.history.push(`/room/${room}`);
-    console.log("PROPS", this.props);
-    this.setState({
-      joinForm: false,
-    });
+    event.preventDefault()
+    const room = await findRoom(this.props.roomCode)
+    if (typeof room === "string") {
+      await joinRoom(
+        this.props.access_token,
+        this.props.userData.display_name,
+        this.props.refresh_token,
+        room,
+        this.props.roomCode
+      )
+      this.props.history.push(`/room/${room}`)
+      console.log("PROPS", this.props)
+      this.setState({
+        joinForm: false,
+      })
+    } else {
+      this.setState({
+        wrongRoomCode: true,
+      })
+      console.log("wrong room code")
+    }
   }
   showForm() {
     this.setState({
       joinForm: !this.state.joinForm,
-    });
+    })
   }
   handleChange(event) {
-    console.log([event.target.name], event.target.value);
-    this.props.setRoomCode(event.target.value);
+    console.log([event.target.name], event.target.value)
+    this.props.setRoomCode(event.target.value)
   }
   render() {
     return (
@@ -97,13 +108,14 @@ class Rooms extends React.Component {
             </button>
           </form>
         ) : null}
+        {this.state.wrongRoomCode && <p>Opps, wrong code. Please try again</p>}
         {/* <div>
           <h2>All Rooms</h2>
           <div>
           </div>
         </div> */}
       </div>
-    );
+    )
   }
 }
 const stateToProps = (state) => ({
@@ -111,11 +123,11 @@ const stateToProps = (state) => ({
   userData: state.userData,
   refresh_token: state.refresh_token,
   roomCode: state.roomCode,
-});
+})
 
 const dispatchToProps = (dispatch) => ({
   getUserData: (token) => dispatch(getUserData(token)),
   setRoomCode: (roomCode) => dispatch(setRoomCode(roomCode)),
-});
+})
 
-export default withRouter(connect(stateToProps, dispatchToProps)(Rooms));
+export default withRouter(connect(stateToProps, dispatchToProps)(Rooms))
