@@ -96,9 +96,25 @@ export async function createRoom(token, username, refreshToken) {
     Math.random().toString(36).substring(2, 7) +
     Math.random().toString(36).substring(2, 7);
   console.log("in handle submit", code);
-  const newRoom = await db
-    .collection("Rooms")
-    .add({ name: "room1", roomCode: code });
+  const newRoom = await db.collection("Rooms").add({
+    name: "room1",
+    roomCode: code,
+    queued: {
+      timestamp: 0,
+      uri: "",
+      status: false,
+      duration_ms: 1000,
+      username: "",
+    },
+    playing: {
+      progress: "",
+      timestamp: 0,
+      uri: "",
+      status: false,
+      duration_ms: 1000,
+      username: "",
+    },
+  });
   console.log("newRoom", newRoom);
   await db.collection("Rooms").doc(newRoom.id).collection("Users").add({
     accessToken: "hey",
@@ -192,7 +208,7 @@ export async function updateRoomData(roomData, roomId) {
   }
 }
 
-export async function playbackUpdate(token, roomId, playingStatus) {
+export async function playbackUpdate(token, roomId, playingStatus, username) {
   let epInfo;
 
   getNowPlaying(token)
@@ -201,25 +217,28 @@ export async function playbackUpdate(token, roomId, playingStatus) {
       return getCurrentRoomData(roomId);
     })
     .then((roomData) => {
-      roomData.nowPlayingProgress = epInfo.data.progress_ms;
-      roomData.timestamp = epInfo.data.timestamp;
-      roomData.playing = playingStatus;
+      roomData.playing.progress = epInfo.data.progress_ms;
+      roomData.playing.timestamp = epInfo.data.timestamp;
+      roomData.playing.status = playingStatus;
+      roomData.playing.username = username;
       return roomData;
     })
     .then((res) => updateRoomData(res, roomId));
 }
 
-export async function changeQueue(roomId, epInfo) {
+export async function changeQueue(roomId, epInfo, epId, username) {
   getCurrentRoomData(roomId)
     .then((roomData) => {
-      roomData.queued.name = epInfo.name;
-      roomData.queued.show = epInfo.show.publisher;
+      roomData.queued.epId = epId;
+      // roomData.queued.name = epInfo.name;
+      // roomData.queued.show = epInfo.show.publisher;
       roomData.queued.duration = epInfo.duration_ms;
-      roomData.queued.imageUrl = epInfo.images[1].url;
-      roomData.queued.description = epInfo.description;
+      // roomData.queued.imageUrl = epInfo.images[1].url;
+      // roomData.queued.description = epInfo.description;
       roomData.queued.uri = epInfo.uri;
       roomData.queued.timestamp = Date.now();
       roomData.queued.status = true;
+      roomData.queued.username = username;
       return roomData;
     })
     .then((res) => updateRoomData(res, roomId));
@@ -228,13 +247,16 @@ export async function changeQueue(roomId, epInfo) {
 export async function clearQueue(roomId) {
   getCurrentRoomData(roomId)
     .then((roomData) => {
-      roomData.queued.name = "";
-      roomData.queued.show = "";
+      roomData.queued.epId = "";
+      // roomData.queued.name = "";
+      // roomData.queued.show = "";
+      roomData.queued.timestamp = Date.now();
       roomData.queued.duration = 0;
-      roomData.queued.imageUrl = "";
-      roomData.queued.description = "";
+      // roomData.queued.imageUrl = "";
+      // roomData.queued.description = "";
       roomData.queued.uri = "";
       roomData.queued.status = false;
+      roomData.queued.username = "";
       return roomData;
     })
     .then((res) => updateRoomData(res, roomId));
