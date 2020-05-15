@@ -98,11 +98,11 @@ export const getEpisode = async (id, token) => {
   }
 };
 
-export const fetchShows = async (search, token) => {
+export const fetchShows = async (search, token, num) => {
   try {
     const q = encodeURIComponent(`${search}`);
     const response = await fetch(
-      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=1`,
+      `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=${num}`,
       {
         method: "GET",
         headers: {

@@ -19,6 +19,7 @@ import {
   startPodcast,
   resumePlayback,
   sampleEp,
+  getEpisode,
 } from "../api/spotifyApi";
 import Sdk from "./Sdk";
 import Card from "@material-ui/core/Card";
@@ -34,8 +35,12 @@ const Player = (props) => {
     show: { publisher: "" },
     duration_ms: 1000,
     description: "",
-    imageUrl:
-      "https://i.scdn.co/image/a7de7e0497e4b718a08d99e98241533f5113a3e1",
+    images: [
+      { url: "" },
+      {
+        url: "https://i.scdn.co/image/a7de7e0497e4b718a08d99e98241533f5113a3e1",
+      },
+    ],
   };
   let [selectedEp, setSelectedEp] = useState(blank);
   let [playingEp, setPlayingEp] = useState(blank);
@@ -62,9 +67,6 @@ const Player = (props) => {
   };
 
   const start = () => {
-    setPlayingEp(selectedEp);
-    setSelectedEp(blank);
-
     getCurrentRoomData(roomId)
       .then((roomData) => {
         roomData.nowPlayingProgress = 0;
@@ -76,79 +78,6 @@ const Player = (props) => {
       .then((res) => updateRoomData(res, roomId))
       .then(() => clearQueue(roomId));
   };
-
-  // const click = () => {
-
-  // };
-
-  // useEffect(() => {
-  //   let roomId;
-  //   getRoom(roomId)
-  //     .then((res) => {
-  //       roomId = res;
-  //       return getCurrentRoomData(res);
-  //     })
-  //     .then((roomData) => {
-  //       if (roomData.playing === true) {
-  //         const startTime =
-  //           Date.now() - roomData.timestamp + roomData.nowPlayingProgress;
-  //         console.log("Time Elapsed", startTime);
-  //         console.log(roomData.timestamp);
-  //         console.log(roomData.timeElapsed);
-  //         console.log("time", Date.now());
-  //         startPodcast(
-  //           props.token,
-  //           deviceId,
-  //           roomData.nowPlayingUri,
-  //           startTime
-  //         );
-  //       }
-  //     });
-  // }, [props.deviceId]);
-
-  // function useDeepCompareMemoize(value) {
-  //   const ref = useRef();
-  //   // it can be done by using useMemo as well
-  //   // but useRef is rather cleaner and easier
-
-  //   if (!deepCompareEquals(value, ref.current)) {
-  //     ref.current = value;
-  //   }
-
-  //   return ref.current;
-  // }
-
-  // function useDeepCompareEffect(callback, dependencies) {
-  //   useEffect(function checkVal() {
-  //     if (value) {
-  //       const timeElapsed = Date.now() - value.timestamp;
-  //       const queueTimeElapsed = Date.now() - value.queued.timestamp;
-  //       const queue = value.queued;
-
-  //       if (
-  //         value.playing === true &&
-  //         value.nowPlayingProgress === 0 &&
-  //         timeElapsed < 5000
-  //       ) {
-  //         startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
-  //       } else if (value.playing === true && value.nowPlayingProgress !== 0) {
-  //         resumePlayback(props.token);
-  //       } else if (
-  //         value.playing === false &&
-  //         timeElapsed > 500 &&
-  //         queueTimeElapsed > 500
-  //       ) {
-  //         pausePlayback(props.token);
-  //       }
-
-  //       if (value.queued.status === true) {
-  //         setSelectedEp(queue);
-  //       }
-
-  //       console.log("value", value);
-  //     }
-  //   }, useDeepCompareMemoize(value))
-  // }
 
   const usePrevious = (val) => {
     const ref = useRef();
@@ -164,7 +93,6 @@ const Player = (props) => {
     if (!isEqual(value, previousValue)) {
       if (value) {
         const timeElapsed = Date.now() - value.timestamp;
-        const queueTimeElapsed = Date.now() - value.queued.timestamp;
         const queue = value.queued;
 
         if (
@@ -172,6 +100,8 @@ const Player = (props) => {
           value.nowPlayingProgress === 0 &&
           timeElapsed < 5000
         ) {
+          setPlayingEp(selectedEp);
+          setSelectedEp(blank);
           startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
         } else if (value.playing === true && value.nowPlayingProgress !== 0) {
           resumePlayback(props.token);
@@ -180,49 +110,15 @@ const Player = (props) => {
         }
 
         if (value.queued.status === true) {
-          setSelectedEp(queue);
+          getEpisode(value.queued.epId, props.token).then((res) =>
+            setSelectedEp(res)
+          );
         }
 
         console.log("value", value);
       }
     }
   });
-
-  // useEffect(
-  //   function checkVal() {
-  //     if (value) {
-  //       const timeElapsed = Date.now() - value.timestamp;
-  //       const queueTimeElapsed = Date.now() - value.queued.timestamp;
-  //       const queue = value.queued;
-
-  //       if (
-  //         value.playing === true &&
-  //         value.nowPlayingProgress === 0 &&
-  //         timeElapsed < 5000
-  //       ) {
-  //         startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
-  //       } else if (value.playing === true && value.nowPlayingProgress !== 0) {
-  //         resumePlayback(props.token);
-  //       } else if (
-  //         value.playing === false
-  //       ) {
-  //         pausePlayback(props.token);
-  //       }
-
-  //       if (value.queued.status === true) {
-  //         setSelectedEp(queue);
-  //       }
-
-  //       console.log("value", value);
-  //     }
-  //   },
-  //   [value]
-  // );
-
-  // useEffect(() => {
-  //   changeQueue(roomId, props.episode);
-  //   console.log("CHANGED QUEUE");
-  // }, [props.episode]);
 
   return (
     <div>
@@ -254,7 +150,7 @@ const Player = (props) => {
 
           <CardMedia
             component="img"
-            src={selectedEp.imageUrl}
+            src={selectedEp.images[1].url}
             id="on-deck-card-image"
             title="Show Artwork"
           />
@@ -288,7 +184,7 @@ const Player = (props) => {
 
           <CardMedia
             component="img"
-            src={playingEp.imageUrl}
+            src={playingEp.images[1].url}
             id="on-deck-card-image"
             title="Show Artwork"
           />
