@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from "react"
-import Select from "react-select"
 import AsyncSelect from "react-select/async"
 import axios from "axios"
 import Autocomplete from "@material-ui/lab/Autocomplete"
 import TextField from "@material-ui/core/TextField"
 import ListItem from "@material-ui/core/ListItem"
 import Player from "./Player"
+import DropDownMenu from "material-ui/DropDownMenu"
+import MenuItem from "material-ui/MenuItem"
+import Button from "@material-ui/core/Button"
+import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
 
 const SearchBar = (props) => {
   const token = props.token
-  //   console.log("token", token)
   let [search, setSearch] = useState("")
   let [result, setResult] = useState([])
   let [episodes, setEpisodes] = useState([])
   let [chosenEpisode, setEpisode] = useState()
+  let [uri, setUri] = useState()
   let [results, setResults] = useState([
     { value: "chocolate", label: "Chocolate" },
   ])
@@ -66,7 +69,7 @@ const SearchBar = (props) => {
       }
     )
     const searchJSON = await response.json()
-    console.log(searchJSON)
+    // console.log(searchJSON)
     if (searchJSON.shows) {
       result = searchJSON.shows.items.map((item) => {
         return item.id
@@ -85,6 +88,7 @@ const SearchBar = (props) => {
         }
       )
       const episodesJSON = await episodes.json()
+      console.log(episodesJSON)
       try {
         let episodesArr = episodesJSON.items.map((item) => {
           return {
@@ -99,6 +103,16 @@ const SearchBar = (props) => {
         console.log(err)
       }
     }
+  }
+  const getEpisode = async (id) => {
+    const episode = await fetch(`https://api.spotify.com/v1/episodes/${id}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    const episodeJSON = await episode.json()
+    setEpisode(episodeJSON)
   }
   // console.log('CHOSEN EPISODE URI ', chosenEpisode)
   return (
@@ -121,23 +135,37 @@ const SearchBar = (props) => {
           />
         )}
       />
-      <button onClick={getEpisodes}>Get Episodes</button>
+      <Button
+        aria-controls="simple-menu"
+        aria-haspopup="true"
+        onClick={getEpisodes}
+      >
+        Get Episodes
+      </Button>
       {episodes.map((episode) => (
         <ListItem
           button
-          onClick={() => setEpisode(episode.uri)}
+          onClick={() => {
+            getEpisode(episode.id)
+            setUri(episode.uri)
+          }}
           key={episode.id}
         >
           {episode.name}
         </ListItem>
       ))}
-      <Player token={token} uri={chosenEpisode} />
+
+      <Player
+        token={token}
+        uri={uri}
+        roomId={props.roomId}
+        episode={chosenEpisode}
+      />
     </div>
   )
 }
-
 const stateToProps = (state) => ({
   token: state.access_token,
 })
 
-export default connect(stateToProps, null)(SearchBar)
+export default connect(stateToProps)(SearchBar)

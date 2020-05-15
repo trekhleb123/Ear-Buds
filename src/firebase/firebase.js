@@ -1,4 +1,8 @@
 import firebase from "firebase";
+<<<<<<< HEAD
+=======
+import { getNowPlaying } from "../api/spotifyApi";
+>>>>>>> 61c73a1b48d430c406ccfac8a385646c00df1a88
 
 const firebaseApp = firebase.initializeApp({
   // copy and paste your firebase credential here
@@ -39,21 +43,32 @@ export async function getRoom(roomCode) {
   }
 }
 
-export async function getCurrentRoomData(docId) {
+export async function getCurrentRoomData(roomId) {
   try {
+<<<<<<< HEAD
     const doc = db.collection("Rooms").doc(docId);
     const result = await doc.get();
 
     console.log(result.data());
+=======
+    const doc = db.collection("Rooms").doc(roomId);
+    const result = await doc.get();
+
+    // console.log(result.data());
+>>>>>>> 61c73a1b48d430c406ccfac8a385646c00df1a88
     return result.data();
   } catch (err) {
     console.error(err);
   }
 }
 
-export async function getCurrentUserData(docId, callback) {
+export async function getCurrentUserData(roomId, callback) {
   try {
+<<<<<<< HEAD
     const users = db.collection("Rooms").doc(docId).collection("Users");
+=======
+    const users = db.collection("Rooms").doc(roomId).collection("Users");
+>>>>>>> 61c73a1b48d430c406ccfac8a385646c00df1a88
     const result = await users.get();
 
     result.forEach((user) => console.log(user.id, "=>", user.data()));
@@ -86,8 +101,9 @@ export async function createRoom(token, username, refreshToken) {
     .add({ name: "room1", roomCode: code });
   console.log("newRoom", newRoom);
   await db.collection("Rooms").doc(newRoom.id).collection("Users").add({
-    accessToken: token,
-    name: username,
+    accessToken: "hey",
+    email: "you@email.com",
+    name: "Bob",
     roomCode: code,
     deviceId: 2,
     refreshToken,
@@ -163,4 +179,63 @@ export async function vacantRoom(roomId) {
   if (userLength === 0) {
     await db.collection("Rooms").doc(roomId).delete();
   }
+  return res;
+}
+
+export async function updateRoomData(roomData, roomId) {
+  try {
+    const roomRef = db.collection("Rooms").doc(roomId);
+    roomRef.update(roomData);
+    // console.log("new room", roomRef);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function playbackUpdate(token, roomId, playingStatus) {
+  let epInfo;
+
+  getNowPlaying(token)
+    .then((res) => {
+      epInfo = res;
+      return getCurrentRoomData(roomId);
+    })
+    .then((roomData) => {
+      roomData.nowPlayingProgress = epInfo.data.progress_ms;
+      roomData.timestamp = epInfo.data.timestamp;
+      roomData.playing = playingStatus;
+      return roomData;
+    })
+    .then((res) => updateRoomData(res, roomId));
+}
+
+export async function changeQueue(roomId, epInfo) {
+  getCurrentRoomData(roomId)
+    .then((roomData) => {
+      roomData.queued.name = epInfo.name;
+      roomData.queued.show = epInfo.show.publisher;
+      roomData.queued.duration = epInfo.duration_ms;
+      roomData.queued.imageUrl = epInfo.images[1].url;
+      roomData.queued.description = epInfo.description;
+      roomData.queued.uri = epInfo.uri;
+      roomData.queued.timestamp = Date.now();
+      roomData.queued.status = true;
+      return roomData;
+    })
+    .then((res) => updateRoomData(res, roomId));
+}
+
+export async function clearQueue(roomId) {
+  getCurrentRoomData(roomId)
+    .then((roomData) => {
+      roomData.queued.name = "";
+      roomData.queued.show = "";
+      roomData.queued.duration = 0;
+      roomData.queued.imageUrl = "";
+      roomData.queued.description = "";
+      roomData.queued.uri = "";
+      roomData.queued.status = false;
+      return roomData;
+    })
+    .then((res) => updateRoomData(res, roomId));
 }

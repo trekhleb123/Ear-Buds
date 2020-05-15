@@ -1,13 +1,14 @@
 import { createStore, applyMiddleware } from "redux"
 import { createLogger } from "redux-logger"
 import thunkMiddleware from "redux-thunk"
-import { getNewToken, loginHelper } from "../spotifyLogin"
+import { getNewToken, getMyData, loginHelper } from "../spotifyLogin"
 
 const SET_ACCESS_TOKEN = "SET_ACCESS_TOKEN"
 const SET_REFRESH_TOKEN = "SET_REFRESH_TOKEN"
 const SET_SPOTIFY_CODE = "SET_SPOTIFY_CODE"
 const SET_USER_DATA = "SET_USER_DATA"
 const SET_ROOM_CODE = "SET_ROOM_CODE"
+const SET_DEVICE_ID = "SET_DEVICE_ID"
 
 export const setAccessToken = (access_token) => {
   return {
@@ -36,6 +37,24 @@ export const setSpotifyCode = (code) => {
     code,
   }
 }
+
+export const setDeviceId = (code) => {
+  return {
+    type: SET_DEVICE_ID,
+    code,
+  }
+}
+
+// export const getDeviceId = (refreshToken) => {
+//   return async (dispatch) => {
+//     try {
+//       const newToken = await getNewToken(refreshToken)
+//       dispatch(setAccessToken(newToken))
+//     } catch (err) {
+//       console.error(err)
+//     }
+//   }
+// }
 
 export const setRoomCode = (roomCode) => {
   return {
@@ -92,6 +111,7 @@ const initialState = {
   code: "",
   userData: {},
   roomCode: "",
+  deviceId: "",
 }
 
 const reducer = (state = initialState, action) => {
@@ -102,6 +122,8 @@ const reducer = (state = initialState, action) => {
       return { ...state, refresh_token: action.refresh_token }
     case SET_SPOTIFY_CODE:
       return { ...state, code: action.code }
+    case SET_DEVICE_ID:
+      return { ...state, deviceId: action.code }
     case SET_USER_DATA:
       return { ...state, userData: action.userData }
     case SET_ROOM_CODE:

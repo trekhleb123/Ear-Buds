@@ -37,7 +37,47 @@
   }
 }
 
-div,
 button {
   margin: 15px;
+}
+
+.player-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.podcast-info-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background-color: crimson;
+  padding: 10px;
+}
+
+.on-deck-card-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.on-deck-card-description {
+  padding: 16px;
+  overflow: scroll;
+  height: 80px;
+}
+
+.on-deck-card {
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+  width: 100%;
+}
+
+.on-deck-card-content {
+  min-width: 60%;
+}
+
+#on-deck-card-image {
+  max-width: 25%;
 }

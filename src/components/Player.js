@@ -1,219 +1,281 @@
-import React from "react";
-import axios from "axios";
-import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
+import React, { useState, useEffect } from "react"
+import { setDeviceId } from "../redux/store"
+import { connect } from "react-redux"
+import { useDocumentData } from "react-firebase-hooks/firestore"
+
+import LinearProgress from "@material-ui/core/LinearProgress"
+import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons"
 import {
-  createNewRoom,
   getRoom,
   getCurrentRoomData,
-  getCurrentUserData,
-} from "../firebase/firebase";
+  updateRoomData,
+  db,
+  playbackUpdate,
+  changeQueue,
+  clearQueue,
+} from "../firebase/firebase"
+import {
+  pausePlayback,
+  startPodcast,
+  resumePlayback,
+  sampleEp,
+} from "../api/spotifyApi"
+import Sdk from "./Sdk"
+import Card from "@material-ui/core/Card"
+import CardActions from "@material-ui/core/CardActions"
+import CardContent from "@material-ui/core/CardContent"
+import Typography from "@material-ui/core/Typography"
+import CardMedia from "@material-ui/core/CardMedia"
+import Button from "@material-ui/core/Button"
 
 const Player = (props) => {
-  let usersArr = [
-    { name: "Michael", token: props.token },
-    {
-      name: "Sam",
-      token: "INSERT",
-    },
-  ];
-  let player = "";
-  let deviceId = null;
-  let checkInterval = null;
-  let playing = null;
-  const getNowPlaying = async (token) => {
-    try {
-      const episode = await axios.get(
-        `https://api.spotify.com/v1/me/player/currently-playing`,
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
-      console.log("Now Playing", episode);
-      return episode;
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const pausePlayback = async (token) => {
-    try {
-      fetch(`https://api.spotify.com/v1/me/player/pause`, {
-        method: "PUT",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      });
-      console.log("timeStamp", Date.now());
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const startPodcast = async (token, devId, podcastUri) => {
-    try {
-      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${devId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({
-          uris: [podcastUri],
-          position_ms: 0,
-        }),
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const startPodcastAnywhere = async (token, podcastUri) => {
-    try {
-      fetch(`https://api.spotify.com/v1/me/player/play`, {
-        method: "PUT",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({
-          uris: [podcastUri],
-          position_ms: 0,
-        }),
-      });
-      console.log("timeStamp", Date.now());
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const resumePlayback = async (token) => {
-    try {
-      fetch(`https://api.spotify.com/v1/me/player/play`, {
-        method: "PUT",
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-        // body: JSON.stringify({
-        //   uris: [`spotify:track:${action.track.id}`],
-        // }),
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const blank = {
+    name: "",
+    show: { publisher: "" },
+    duration_ms: 1000,
+    description: "",
+    imageUrl:
+      "https://i.scdn.co/image/a7de7e0497e4b718a08d99e98241533f5113a3e1",
+  }
+  let [selectedEp, setSelectedEp] = useState(blank)
+  let [playingEp, setPlayingEp] = useState(blank)
+  const roomId = props.roomId
+  const [value, loading, error] = useDocumentData(
+    db.doc(`Rooms/${roomId}`)
+    // {
+    //   snapshotListenOptions: { includeMetadataChanges: true },
+    // }
+  )
+  let deviceIdFlag = false
+  let deviceId = props.deviceId
+  let uri = props.uri
+  let [currentPosition, setCurrentPosition] = useState(0)
+  // let [progress, setProgress] = useState("");
+  // let [nowPlaying, setNowPlaying] = useState({});
 
   const play = () => {
-    resumePlayback(props.token);
-    playing = true;
-    getRoom("room1", "420").then((res) => getCurrentUserData(res));
-  };
+    playbackUpdate(props.token, roomId, true)
+  }
 
   const pause = () => {
-    getNowPlaying(props.token);
-    pausePlayback(props.token);
-    playing = false;
-  };
-
-  const pauseAll = async () => {
-    let [firstUser, secondUser] = await Promise.all(
-      usersArr.map((user) => pausePlayback(user.token))
-    );
-    console.log("firstPa", firstUser);
-    console.log("secondPa", secondUser);
-  };
-
-  const startAll = async () => {
-    let [firstUser, secondUser] = await Promise.all(
-      usersArr.map((user) =>
-        startPodcastAnywhere(
-          user.token,
-          props.uri
-        )
-      )
-    );
-    console.log("firstPl", firstUser);
-    console.log("secondPl", secondUser);
-  };
+    playbackUpdate(props.token, roomId, false)
+  }
 
   const start = () => {
-    startPodcast(
-      props.token,
-      deviceId,
-      props.uri
-    );
-  };
+    setPlayingEp(selectedEp)
+    setSelectedEp(blank)
 
-  const loadScript = function (src) {
-    var tag = document.createElement("script");
-    tag.async = false;
-    tag.src = src;
-    document.querySelector("body").appendChild(tag);
-  };
+    getCurrentRoomData(roomId)
+      .then((roomData) => {
+        roomData.nowPlayingProgress = 0
+        roomData.timestamp = Date.now()
+        roomData.nowPlayingUri = roomData.queued.uri
+        roomData.playing = true
+        return roomData
+      })
+      .then((res) => updateRoomData(res, roomId))
+      .then(() => clearQueue(roomId))
+  }
 
-  const checkForPlayer = () => {
-    if (window.Spotify !== null) {
-      clearInterval(checkInterval);
-      player = new window.Spotify.Player({
-        name: "earBudz",
-        getOAuthToken: (cb) => {
-          cb(props.token);
-        },
-      });
-      createEventHandlers();
+  // const click = () => {
 
-      // finally, connect!
-      player.connect();
+  // };
+
+  // useEffect(() => {
+  //   let roomId;
+  //   getRoom(roomId)
+  //     .then((res) => {
+  //       roomId = res;
+  //       return getCurrentRoomData(res);
+  //     })
+  //     .then((roomData) => {
+  //       if (roomData.playing === true) {
+  //         const startTime =
+  //           Date.now() - roomData.timestamp + roomData.nowPlayingProgress;
+  //         console.log("Time Elapsed", startTime);
+  //         console.log(roomData.timestamp);
+  //         console.log(roomData.timeElapsed);
+  //         console.log("time", Date.now());
+  //         startPodcast(
+  //           props.token,
+  //           deviceId,
+  //           roomData.nowPlayingUri,
+  //           startTime
+  //         );
+  //       }
+  //     });
+  // }, [props.deviceId]);
+
+  useEffect(() => {
+    if (value) {
+      const timeElapsed = Date.now() - value.timestamp
+      const queueTimeElapsed = Date.now() - value.queued.timestamp
+
+      if (
+        value.playing === true &&
+        value.nowPlayingProgress === 0 &&
+        timeElapsed < 5000
+      ) {
+        startPodcast(props.token, deviceId, value.nowPlayingUri, 0)
+      } else if (value.playing === true && value.nowPlayingProgress !== 0) {
+        resumePlayback(props.token)
+      } else if (value.playing === false) {
+        pausePlayback(props.token)
+      }
+
+      if (value.queued.status === true && queueTimeElapsed < 500) {
+        setSelectedEp(value.queued)
+      }
+
+      console.log("value", value)
     }
-  };
+  }, [value])
 
-  const handleLogin = () => {
-    if (props.token) {
-      // check every second for the player.
-      checkInterval = setInterval(() => checkForPlayer(), 1000);
+  useEffect(() => {
+    if (props.episode) {
+      changeQueue(roomId, props.episode)
+      console.log("CHANGED QUEUE")
     }
-  };
-
-  const createEventHandlers = () => {
-    player.on("initialization_error", (e) => {
-      console.error(e);
-    });
-    player.on("authentication_error", (e) => {
-      console.error(e);
-      // this.setState({ loggedIn: false });
-    });
-    player.on("account_error", (e) => {
-      console.error(e);
-    });
-    player.on("playback_error", (e) => {
-      console.error(e);
-    });
-
-    // Playback status updates
-    player.on("player_state_changed", (state) => {
-      console.log(state);
-    });
-
-    // Ready
-    player.on("ready", (data) => {
-      let { device_id } = data;
-      console.log("Ready with Device ID", device_id);
-      deviceId = device_id;
-    });
-  };
+  }, [props.episode])
 
   return (
     <div>
-      {loadScript("https://sdk.scdn.co/spotify-player.js")}
-      {handleLogin()}
-      <div>
-        <PauseCircleFilled onClick={pause} />
-        <PlayCircleFilled onClick={play} />
-        <Sync onClick={start} />
-        <button onClick={pauseAll}>Pause All</button>
-        <button onClick={startAll}>Start All</button>
+      <div className="podcast-info-container">
+        <Card className="on-deck-card">
+          <div className="on-deck-card-content">
+            <div className="on-deck-card-details">
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  On Deck
+                </Typography>
+                <Typography variant="h5" component="h2">
+                  {selectedEp.name}
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
+                  {selectedEp.show.publisher}
+                </Typography>
+              </CardContent>
+            </div>
+            <div className="on-deck-card-description">
+              <Typography variant="body2" component="p">
+                {selectedEp.description}
+              </Typography>
+            </div>
+            <div className="player-container">
+              {selectedEp.uri && <Sync onClick={start} />}
+            </div>
+          </div>
+
+          <CardMedia
+            square
+            component="img"
+            src={selectedEp.imageUrl}
+            id="on-deck-card-image"
+            title="Show Artwork"
+          />
+        </Card>
+      </div>
+      <div className="podcast-info-container">
+        <Card className="on-deck-card">
+          <div className="on-deck-card-content">
+            <div className="on-deck-card-details">
+              <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                  Now Playing
+                </Typography>
+                <Typography variant="h5" component="h2">
+                  {playingEp.name}
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
+                  {playingEp.show.publisher}
+                </Typography>
+              </CardContent>
+            </div>
+            <div className="on-deck-card-description">
+              <div className="player-container">
+                <Sdk token={props.token} />
+                <PauseCircleFilled onClick={pause} />
+                <PlayCircleFilled onClick={play} />
+              </div>
+              <LinearProgress variant="determinate" value={currentPosition} />
+            </div>
+          </div>
+
+          <CardMedia
+            square
+            component="img"
+            src={playingEp.imageUrl}
+            id="on-deck-card-image"
+            title="Show Artwork"
+          />
+        </Card>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Player;
+const stateToProps = (state) => ({
+  deviceId: state.deviceId,
+})
+
+const dispatchToProps = (dispatch) => ({
+  setDeviceId: (code) => dispatch(setDeviceId(code)),
+})
+
+export default connect(stateToProps, dispatchToProps)(Player)
+
+// const tick = () => {
+//   set
+// };
+
+// //Triggered by timer
+// useEffect(() => {
+//   setCurrentPosition(Date.now() - this.state.start + (this.props.position || 0))
+//   setProgress(+(
+//     (currentPosition * 100) /
+//     props.track.duration_ms
+//   ).toFixed(2) + "%")
+// }, []);
+
+//   //Triggered by playing status
+
+// const progressTick = (status, width = 1) => {
+//   if (status) {
+//     var elem = document.getElementById("progress");
+//     var id = setInterval(tick, 1000);
+//     function tick() {
+//       if (width >= 100) {
+//         clearInterval(id);
+//       } else {
+//         width++;
+//         elem.style.width = width + "%";
+//       }
+//     }
+//   } else {
+//     clearInterval(id);
+//   }
+// };
+
+// useEffect(() => {
+//   setProgress(0)
+//   function progressFunc() {
+//     setCurrentPosition(progress++)
+//   }
+
+//   const timer = setInterval(progressFunc, 1000);
+
+//   while(currentPosition < 100) {
+
+//   }
+//   return () => {
+//     clearInterval(timer);
+//   };
+// }, []);
+
+// let timer = null;
+// playing = !playing;
+// if (playing) {
+//   timer = setInterval(setCurrentPosition(currentPosition++), 300);
+// } else {
+//   clearInterval(timer);
+// }
