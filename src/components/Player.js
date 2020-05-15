@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { setDeviceId } from "../redux/store";
 import { connect } from "react-redux";
 import { useDocumentData } from "react-firebase-hooks/firestore";
+import { isEqual } from "lodash";
 
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
@@ -11,7 +12,6 @@ import {
   updateRoomData,
   db,
   playbackUpdate,
-  changeQueue,
   clearQueue,
 } from "../firebase/firebase";
 import {
@@ -19,6 +19,7 @@ import {
   startPodcast,
   resumePlayback,
   sampleEp,
+  getEpisode,
 } from "../api/spotifyApi";
 import Sdk from "./Sdk";
 import Card from "@material-ui/core/Card";
@@ -34,8 +35,12 @@ const Player = (props) => {
     show: { publisher: "" },
     duration_ms: 1000,
     description: "",
-    imageUrl:
-      "https://i.scdn.co/image/a7de7e0497e4b718a08d99e98241533f5113a3e1",
+    images: [
+      { url: "" },
+      {
+        url: "https://i.scdn.co/image/a7de7e0497e4b718a08d99e98241533f5113a3e1",
+      },
+    ],
   };
   let [selectedEp, setSelectedEp] = useState(blank);
   let [playingEp, setPlayingEp] = useState(blank);
@@ -46,97 +51,82 @@ const Player = (props) => {
     //   snapshotListenOptions: { includeMetadataChanges: true },
     // }
   );
-  let deviceIdFlag = false;
+
   let deviceId = props.deviceId;
-  let uri = props.uri;
+
   let [currentPosition, setCurrentPosition] = useState(0);
   // let [progress, setProgress] = useState("");
   // let [nowPlaying, setNowPlaying] = useState({});
 
   const play = () => {
-    playbackUpdate(props.token, roomId, true);
+    playbackUpdate(props.token, roomId, true, props.userData.display_name);
   };
 
   const pause = () => {
-    playbackUpdate(props.token, roomId, false);
+    playbackUpdate(props.token, roomId, false, props.userData.display_name);
   };
 
   const start = () => {
-    setPlayingEp(selectedEp);
-    setSelectedEp(blank);
-
     getCurrentRoomData(roomId)
       .then((roomData) => {
-        roomData.nowPlayingProgress = 0;
-        roomData.timestamp = Date.now();
-        roomData.nowPlayingUri = roomData.queued.uri;
-        roomData.playing = true;
+        roomData.playing.progress = 0;
+        roomData.playing.timestamp = Date.now();
+        roomData.playing.uri = roomData.queued.uri;
+        roomData.playing.duration_ms = roomData.queued.duration_ms;
+        roomData.playing.status = true;
+        roomData.playing.username = props.userData.display_name;
         return roomData;
       })
       .then((res) => updateRoomData(res, roomId))
-      .then(() => clearQueue(roomId));
+      .then(() => clearQueue(roomId))
+      .then((res) => {
+        setPlayingEp(selectedEp);
+        setSelectedEp(blank);
+        console.log("BLANK", blank);
+        console.log("SELECT", selectedEp);
+      });
   };
 
-  // const click = () => {
+  const usePrevious = (val) => {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = val;
+    });
+    return ref.current;
+  };
 
-  // };
-
-  // useEffect(() => {
-  //   let roomId;
-  //   getRoom(roomId)
-  //     .then((res) => {
-  //       roomId = res;
-  //       return getCurrentRoomData(res);
-  //     })
-  //     .then((roomData) => {
-  //       if (roomData.playing === true) {
-  //         const startTime =
-  //           Date.now() - roomData.timestamp + roomData.nowPlayingProgress;
-  //         console.log("Time Elapsed", startTime);
-  //         console.log(roomData.timestamp);
-  //         console.log(roomData.timeElapsed);
-  //         console.log("time", Date.now());
-  //         startPodcast(
-  //           props.token,
-  //           deviceId,
-  //           roomData.nowPlayingUri,
-  //           startTime
-  //         );
-  //       }
-  //     });
-  // }, [props.deviceId]);
+  const previousValue = usePrevious(value);
 
   useEffect(() => {
-    if (value) {
-      const timeElapsed = Date.now() - value.timestamp;
-      const queueTimeElapsed = Date.now() - value.queued.timestamp;
+    if (!isEqual(value, previousValue)) {
+      if (value) {
+        const timeElapsed = Date.now() - value.playing.timestamp;
+        const queueTimeElapsed = Date.now() - value.queued.timestamp;
 
-      if (
-        value.playing === true &&
-        value.nowPlayingProgress === 0 &&
-        timeElapsed < 5000
-      ) {
-        startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
-      } else if (value.playing === true && value.nowPlayingProgress !== 0) {
-        resumePlayback(props.token);
-      } else if (value.playing === false) {
-        pausePlayback(props.token);
+        if (
+          value.playing.status === true &&
+          value.playing.progress === 0 &&
+          timeElapsed < 500
+        ) {
+          startPodcast(props.token, deviceId, value.playing.uri, 0);
+        } else if (
+          value.playing.status === true &&
+          value.playing.progress !== 0
+        ) {
+          resumePlayback(props.token);
+        } else if (value.playing.status === false) {
+          pausePlayback(props.token);
+        }
+
+        if (value.queued.status === true && queueTimeElapsed < 500) {
+          getEpisode(value.queued.epId, props.token).then((res) =>
+            setSelectedEp(res)
+          );
+        }
+        console.log("value", value);
       }
-
-      if (value.queued.status === true && queueTimeElapsed < 500) {
-        setSelectedEp(value.queued);
-      }
-
-      console.log("value", value);
     }
-  }, [value]);
-
-  useEffect(() => {
-    if (props.episode) {
-      changeQueue(roomId, props.episode);
-      console.log("CHANGED QUEUE");
-    }
-  }, [props.episode]);
+  });
 
   return (
     <div>
@@ -167,9 +157,8 @@ const Player = (props) => {
           </div>
 
           <CardMedia
-            square
             component="img"
-            src={selectedEp.imageUrl}
+            src={selectedEp.images[1].url}
             id="on-deck-card-image"
             title="Show Artwork"
           />
@@ -202,9 +191,8 @@ const Player = (props) => {
           </div>
 
           <CardMedia
-            square
             component="img"
-            src={playingEp.imageUrl}
+            src={playingEp.images[1].url}
             id="on-deck-card-image"
             title="Show Artwork"
           />
@@ -216,6 +204,7 @@ const Player = (props) => {
 
 const stateToProps = (state) => ({
   deviceId: state.deviceId,
+  userData: state.userData,
 });
 
 const dispatchToProps = (dispatch) => ({

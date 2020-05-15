@@ -44,7 +44,8 @@ const Sdk = (props) => {
   };
 
   const checkForPlayer = () => {
-    if (window.Spotify !== null) {
+    // if (window.Spotify !== null && window.Spotify) {
+    if (window.Spotify) {
       clearInterval(checkInterval);
       player = new window.Spotify.Player({
         name: "earBudz",
