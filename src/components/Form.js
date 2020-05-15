@@ -1,54 +1,60 @@
-import React, { useState } from "react"
-import { connect } from "react-redux"
-import { firestore } from "../firebase/firebase" // This one is new
+import React, { useState } from "react";
+import { connect } from "react-redux";
+import { firestore, findRoom } from "../firebase/firebase";
 
 const Form = (props) => {
-  // Initial item contains empty strings
-  // with the name and message
   const initialItemValues = {
     name: props.userData.display_name,
     message: "",
     timestamp: new Date(),
-  }
-  const [item, setItem] = useState(initialItemValues)
+  };
+  const [item, setItem] = useState(initialItemValues);
 
-  // Will be executed when the form is submitted.
-  // If the name and message has some length
-  // we'll send the object to our firestore
-  // collection as a document. Then we clear the
-  // item state when it has succeeded
-  const onSubmit = (event) => {
-    event.preventDefault()
+  const onSubmit = async (event) => {
+    event.preventDefault();
 
-    // These lines are new
-    if (item.message.length) {
-      firestore
-        .collection("messages")
-        .doc()
-        .set(item)
-        .then(() => setItem(initialItemValues))
-        .catch((error) => console.error(error))
+    let roomId;
+    if (props.roomCode) {
+      console.log("entered first If");
+      roomId = await findRoom(props.roomCode);
+      if (item.message.length) {
+        console.log("entered second If");
+        firestore
+          .collection("Rooms")
+          .doc(roomId)
+          .collection("messages")
+          .doc()
+          .set(item)
+          .then(() => setItem(initialItemValues))
+          .catch((error) => console.error(error));
+      }
     }
-  }
 
-  // Set the value for the current
-  // element within our state
+    console.log("BUTTON CLICKED", event);
+
+    // if (roomId) {
+    //   if (item.message.length) {
+    //     firestore
+    //       .collection("Rooms")
+    //       .doc(roomId)
+    //       .collection("messages")
+    //       .doc()
+    //       .set(item)
+    //       .then(() => setItem(initialItemValues))
+    //       .catch((error) => console.error(error));
+    //   }
+    // }
+  };
+
   const onChange = ({ target }) => {
     setItem({
       ...item,
       [target.name]: target.value,
-    })
-  }
+    });
+  };
 
   return (
     <form onSubmit={onSubmit}>
-      {/* <input
-        type="text"
-        name="name"
-        placeholder="Name"
-        value={item.name}
-        onChange={onChange}
-      /> */}
       <textarea
         name="message"
         placeholder="Message"
@@ -57,11 +63,12 @@ const Form = (props) => {
       />
       <button type="submit">Send</button>
     </form>
-  )
-}
+  );
+};
 
 const stateToProps = (state) => ({
   userData: state.userData,
-})
+  roomCode: state.roomCode,
+});
 
-export default connect(stateToProps, null)(Form)
+export default connect(stateToProps, null)(Form);

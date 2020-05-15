@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
-import { setDeviceId } from "../redux/store";
-import { connect } from "react-redux";
-import { useDocumentData } from "react-firebase-hooks/firestore";
-import { isEqual } from "lodash";
+import React, { useState, useEffect, useRef } from "react"
+import { setDeviceId } from "../redux/store"
+import { connect } from "react-redux"
+import { useDocumentData } from "react-firebase-hooks/firestore"
+import { isEqual } from "lodash"
 
-import LinearProgress from "@material-ui/core/LinearProgress";
-import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
+import LinearProgress from "@material-ui/core/LinearProgress"
+import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons"
 import {
   getRoom,
   getCurrentRoomData,
@@ -13,21 +13,21 @@ import {
   db,
   playbackUpdate,
   clearQueue,
-} from "../firebase/firebase";
+} from "../firebase/firebase"
 import {
   pausePlayback,
   startPodcast,
   resumePlayback,
   sampleEp,
   getEpisode,
-} from "../api/spotifyApi";
-import Sdk from "./Sdk";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
+} from "../api/spotifyApi"
+import Sdk from "./Sdk"
+import Card from "@material-ui/core/Card"
+import CardActions from "@material-ui/core/CardActions"
+import CardContent from "@material-ui/core/CardContent"
+import Typography from "@material-ui/core/Typography"
+import CardMedia from "@material-ui/core/CardMedia"
+import Button from "@material-ui/core/Button"
 
 const Player = (props) => {
   const blank = {
@@ -41,92 +41,92 @@ const Player = (props) => {
         url: "https://i.scdn.co/image/a7de7e0497e4b718a08d99e98241533f5113a3e1",
       },
     ],
-  };
-  let [selectedEp, setSelectedEp] = useState(blank);
-  let [playingEp, setPlayingEp] = useState(blank);
-  const roomId = props.roomId;
+  }
+  let [selectedEp, setSelectedEp] = useState(blank)
+  let [playingEp, setPlayingEp] = useState(blank)
+  const roomId = props.roomId
   const [value, loading, error] = useDocumentData(
     db.doc(`Rooms/${roomId}`)
     // {
     //   snapshotListenOptions: { includeMetadataChanges: true },
     // }
-  );
+  )
 
-  let deviceId = props.deviceId;
+  let deviceId = props.deviceId
 
-  let [currentPosition, setCurrentPosition] = useState(0);
+  let [currentPosition, setCurrentPosition] = useState(0)
   // let [progress, setProgress] = useState("");
   // let [nowPlaying, setNowPlaying] = useState({});
 
   const play = () => {
-    playbackUpdate(props.token, roomId, true, props.userData.display_name);
-  };
+    playbackUpdate(props.token, roomId, true, props.userData.display_name)
+  }
 
   const pause = () => {
-    playbackUpdate(props.token, roomId, false, props.userData.display_name);
-  };
+    playbackUpdate(props.token, roomId, false, props.userData.display_name)
+  }
 
   const start = () => {
     getCurrentRoomData(roomId)
       .then((roomData) => {
-        roomData.playing.progress = 0;
-        roomData.playing.timestamp = Date.now();
-        roomData.playing.uri = roomData.queued.uri;
-        roomData.playing.duration_ms = roomData.queued.duration_ms;
-        roomData.playing.status = true;
-        roomData.playing.username = props.userData.display_name;
-        return roomData;
+        roomData.playing.progress = 0
+        roomData.playing.timestamp = Date.now()
+        roomData.playing.uri = roomData.queued.uri
+        roomData.playing.duration_ms = roomData.queued.duration_ms
+        roomData.playing.status = true
+        roomData.playing.username = props.userData.display_name
+        return roomData
       })
       .then((res) => updateRoomData(res, roomId))
       .then(() => clearQueue(roomId))
       .then((res) => {
-        setPlayingEp(selectedEp);
-        setSelectedEp(blank);
-        console.log("BLANK", blank);
-        console.log("SELECT", selectedEp);
-      });
-  };
+        setPlayingEp(selectedEp)
+        setSelectedEp(blank)
+        console.log("BLANK", blank)
+        console.log("SELECT", selectedEp)
+      })
+  }
 
   const usePrevious = (val) => {
-    const ref = useRef();
+    const ref = useRef()
     useEffect(() => {
-      ref.current = val;
-    });
-    return ref.current;
-  };
+      ref.current = val
+    })
+    return ref.current
+  }
 
-  const previousValue = usePrevious(value);
+  const previousValue = usePrevious(value)
 
   useEffect(() => {
     if (!isEqual(value, previousValue)) {
       if (value) {
-        const timeElapsed = Date.now() - value.playing.timestamp;
-        const queueTimeElapsed = Date.now() - value.queued.timestamp;
+        const timeElapsed = Date.now() - value.playing.timestamp
+        const queueTimeElapsed = Date.now() - value.queued.timestamp
 
         if (
           value.playing.status === true &&
           value.playing.progress === 0 &&
           timeElapsed < 500
         ) {
-          startPodcast(props.token, deviceId, value.playing.uri, 0);
+          startPodcast(props.token, deviceId, value.playing.uri, 0)
         } else if (
           value.playing.status === true &&
           value.playing.progress !== 0
         ) {
-          resumePlayback(props.token);
+          resumePlayback(props.token)
         } else if (value.playing.status === false) {
-          pausePlayback(props.token);
+          pausePlayback(props.token)
         }
 
         if (value.queued.status === true && queueTimeElapsed < 500) {
           getEpisode(value.queued.epId, props.token).then((res) =>
             setSelectedEp(res)
-          );
+          )
         }
-        console.log("value", value);
+        console.log("value", value)
       }
     }
-  });
+  })
 
   return (
     <div>
@@ -199,19 +199,19 @@ const Player = (props) => {
         </Card>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const stateToProps = (state) => ({
   deviceId: state.deviceId,
   userData: state.userData,
-});
+})
 
 const dispatchToProps = (dispatch) => ({
   setDeviceId: (code) => dispatch(setDeviceId(code)),
-});
+})
 
-export default connect(stateToProps, dispatchToProps)(Player);
+export default connect(stateToProps, dispatchToProps)(Player)
 
 // const tick = () => {
 //   set
