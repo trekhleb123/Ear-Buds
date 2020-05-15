@@ -96,17 +96,12 @@ export async function createRoom(token, username, refreshToken) {
     refreshToken,
   })
 
+  await db.collection("Rooms").doc(newRoom.id).collection("messages").add({})
+
   return newRoom.id
 }
 
-export async function joinRoom(token, username, roomCode, refreshToken) {
-  const rooms = db.collection("Rooms")
-  const currentRoom = await rooms.where("roomCode", "==", roomCode).get()
-  let res = {}
-  currentRoom.forEach((el) => {
-    res = el.id
-  })
-  console.log("currentroom", res, currentRoom)
+export async function joinRoom(token, username, refreshToken, res, roomCode) {
   await db.collection("Rooms").doc(res).collection("Users").add({
     accessToken: token,
     name: username,
@@ -114,6 +109,16 @@ export async function joinRoom(token, username, roomCode, refreshToken) {
     deviceId: 2,
     refreshToken,
   })
+}
+
+export async function findRoom(roomCode) {
+  const rooms = db.collection("Rooms")
+  const currentRoom = await rooms.where("roomCode", "==", roomCode).get()
+  let res = {}
+  currentRoom.forEach((el) => {
+    res = el.id
+  })
+  console.log("currentroom", res, currentRoom)
   return res
 }
 export async function userLeft(roomId, displayName) {

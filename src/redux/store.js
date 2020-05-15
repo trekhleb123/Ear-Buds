@@ -7,6 +7,7 @@ const SET_ACCESS_TOKEN = "SET_ACCESS_TOKEN"
 const SET_REFRESH_TOKEN = "SET_REFRESH_TOKEN"
 const SET_SPOTIFY_CODE = "SET_SPOTIFY_CODE"
 const SET_USER_DATA = "SET_USER_DATA"
+const SET_ROOM_CODE = "SET_ROOM_CODE"
 
 export const setAccessToken = (access_token) => {
   return {
@@ -33,6 +34,13 @@ export const setSpotifyCode = (code) => {
   return {
     type: SET_SPOTIFY_CODE,
     code,
+  }
+}
+
+export const setRoomCode = (roomCode) => {
+  return {
+    type: SET_ROOM_CODE,
+    roomCode,
   }
 }
 
@@ -83,6 +91,7 @@ const initialState = {
   refresh_token: "",
   code: "",
   userData: {},
+  roomCode: "",
 }
 
 const reducer = (state = initialState, action) => {
@@ -95,6 +104,8 @@ const reducer = (state = initialState, action) => {
       return { ...state, code: action.code }
     case SET_USER_DATA:
       return { ...state, userData: action.userData }
+    case SET_ROOM_CODE:
+      return { ...state, roomCode: action.roomCode }
     default:
       return state
   }

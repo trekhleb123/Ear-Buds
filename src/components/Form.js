@@ -1,36 +1,37 @@
 import React, { useState } from "react"
-import { firestore } from "../firebase/firebase" // This one is new
+import { connect } from "react-redux"
+import { firestore, findRoom } from "../firebase/firebase"
 
-const Form = () => {
-  // Initial item contains empty strings
-  // with the name and message
+const Form = (props) => {
   const initialItemValues = {
-    name: "",
+    name: props.userData.display_name,
     message: "",
+    timestamp: new Date(),
   }
   const [item, setItem] = useState(initialItemValues)
 
-  // Will be executed when the form is submitted.
-  // If the name and message has some length
-  // we'll send the object to our firestore
-  // collection as a document. Then we clear the
-  // item state when it has succeeded
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault()
 
-    // These lines are new
-    if (item.name.length && item.message.length) {
-      firestore
-        .collection("messages")
-        .doc()
-        .set(item)
-        .then(() => setItem(initialItemValues))
-        .catch((error) => console.error(error))
+    let roomId
+    if (props.roomCode) {
+      roomId = await findRoom(props.roomCode)
+    }
+
+    if (roomId) {
+      if (item.message.length) {
+        firestore
+          .collection("Rooms")
+          .doc(roomId)
+          .collection("messages")
+          .doc()
+          .set(item)
+          .then(() => setItem(initialItemValues))
+          .catch((error) => console.error(error))
+      }
     }
   }
 
-  // Set the value for the current
-  // element within our state
   const onChange = ({ target }) => {
     setItem({
       ...item,
@@ -40,13 +41,6 @@ const Form = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <input
-        type="text"
-        name="name"
-        placeholder="Name"
-        value={item.name}
-        onChange={onChange}
-      />
       <textarea
         name="message"
         placeholder="Message"
@@ -58,4 +52,9 @@ const Form = () => {
   )
 }
 
-export default Form
+const stateToProps = (state) => ({
+  userData: state.userData,
+  roomCode: state.roomCode,
+})
+
+export default connect(stateToProps, null)(Form)

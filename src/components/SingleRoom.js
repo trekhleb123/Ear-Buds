@@ -6,28 +6,32 @@ import { Link } from 'react-router-dom';
 import { getAccessToken, setSpotifyCode, getUserData } from '../redux/store';
 import { connect } from 'react-redux';
 import { Modal } from '@material-ui/core';
+import Messages from './Messages'
 class SingleRoom extends React.Component {
   constructor() {
-    super();
+    super()
     this.state = {
       users: {},
       // open: false
     }
     this.leaveRoom = this.leaveRoom.bind(this);
-    this.open = this.open.bind(this);
+    //this.open = this.open.bind(this);
 
   }
   async componentDidMount() {
-    this.props.getUserData(this.props.access_token);
+    this.props.getUserData(this.props.access_token)
     await renderUsers(this.props.match.params.roomId)
     this.setState({
-      users: await renderUsers(this.props.match.params.roomId)
+      users: await renderUsers(this.props.match.params.roomId),
     })
   }
   async leaveRoom(roomId, displayName) {
-    await userLeft(this.props.match.params.roomId, this.props.userData.display_name)
-    await vacantRoom(this.props.match.params.roomId)
-      this.props.history.push('/')
+    await userLeft(
+      roomId,
+      displayName
+    )
+    await vacantRoom(roomId)
+    this.props.history.push("/")
   }
   // open() {
   //   this.setState({
@@ -38,12 +42,12 @@ class SingleRoom extends React.Component {
     return (
       <div>
         <h2>Users</h2>
-      <div>
-        {Object.values(this.state.users).map(user => {
-          return <li key={user}>{user}</li>
-        })}
-      </div>
-        <button type="button" onClick={this.leaveRoom}>
+        <div>
+          {Object.values(this.state.users).map((user, i) => {
+            return <li key={i}>{user}</li>
+          })}
+        </div>
+        <button type="button" onClick={() => this.leaveRoom(this.props.match.params.roomId, this.props.userData.display_name)}>
           Leave Room
         </button>
         <button type="button">
@@ -53,21 +57,22 @@ class SingleRoom extends React.Component {
         <Modal open={this.state.open}>
           hello
         </Modal> : null} */}
+        <Messages />
+        <button type="button">Invite Friend</button>
       </div>
-    );
+    )
   }
 }
-const stateToProps = state => ({
+const stateToProps = (state) => ({
   access_token: state.access_token,
   userData: state.userData,
   refresh_token: state.refresh_token,
-});
+})
 
-const dispatchToProps = dispatch => ({
-  getAccessToken: code => dispatch(getAccessToken(code)),
-  setSpotifyCode: code => dispatch(setSpotifyCode(code)),
-  getUserData: token => dispatch(getUserData(token)),
-});
+const dispatchToProps = (dispatch) => ({
+  getAccessToken: (code) => dispatch(getAccessToken(code)),
+  setSpotifyCode: (code) => dispatch(setSpotifyCode(code)),
+  getUserData: (token) => dispatch(getUserData(token)),
+})
 
-export default connect(stateToProps, dispatchToProps)(SingleRoom);
-
+export default connect(stateToProps, dispatchToProps)(SingleRoom)
