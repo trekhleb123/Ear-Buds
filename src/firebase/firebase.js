@@ -144,55 +144,10 @@ export async function userLeft(roomId, displayName) {
     .collection('Rooms')
     .doc(roomId)
     .collection('Users');
-  const currentUser = await users.where('name', '==', displayName).get();
-  let res = {};
-  currentUser.forEach(el => {
-    res = el.id;
-  });
-  console.log(res);
-  await db
-    .collection('Rooms')
-    .doc(roomId)
-    .collection('Users')
-    .doc(res)
-    .delete();
-}
-export async function renderUsers(roomId) {
-  const obj = {};
-  let arr = []
-  await db
-    .collection('Rooms')
-    .doc(roomId)
-    .collection('Users')
-    .onSnapshot(snapshot => {
-      const changes = snapshot.docChanges();
-      console.log('changes', changes);
-      changes.forEach(function(change) {
-        console.log(change.type, ' => ', change.doc.data());
-let data = change.doc.data()
-let type = change.type
-        if (change.type === 'added') {
-          //renderUsers(change.doc);
-          //obj[change.type] = change.doc.data()
-          arr.push({'added': data})
-        } else if(type === 'removed'){
-           //delete obj['removed']
-           arr.push({'removed': data})
-
-        }
-      });
-    });
-
-  //.get()
-  //   .then(function(room) {
-  //     room.forEach(function(doc) {
-  //       //console.log(doc.id, " => ", doc.data());
-  //       obj[doc.id] = doc.data().name
-  //   });
-  //   //console.log(obj)
-  // });
-  console.log('obj', arr)
-  return arr;
+  const currentUser = await users.where('name', '==', displayName).get()
+   currentUser.forEach(async el => {
+    await el.ref.delete()
+  })
 }
 
 export async function vacantRoom(roomId) {
