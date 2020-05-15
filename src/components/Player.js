@@ -51,32 +51,40 @@ const Player = (props) => {
     //   snapshotListenOptions: { includeMetadataChanges: true },
     // }
   );
-  let deviceIdFlag = false;
+
   let deviceId = props.deviceId;
-  let uri = props.uri;
+
   let [currentPosition, setCurrentPosition] = useState(0);
   // let [progress, setProgress] = useState("");
   // let [nowPlaying, setNowPlaying] = useState({});
 
   const play = () => {
-    playbackUpdate(props.token, roomId, true);
+    playbackUpdate(props.token, roomId, true, props.userData.display_name);
   };
 
   const pause = () => {
-    playbackUpdate(props.token, roomId, false);
+    playbackUpdate(props.token, roomId, false, props.userData.display_name);
   };
 
   const start = () => {
     getCurrentRoomData(roomId)
       .then((roomData) => {
-        roomData.nowPlayingProgress = 0;
-        roomData.timestamp = Date.now();
-        roomData.nowPlayingUri = roomData.queued.uri;
-        roomData.playing = true;
+        roomData.playing.progress = 0;
+        roomData.playing.timestamp = Date.now();
+        roomData.playing.uri = roomData.queued.uri;
+        roomData.playing.duration_ms = roomData.queued.duration_ms;
+        roomData.playing.status = true;
+        roomData.playing.username = props.userData.display_name;
         return roomData;
       })
       .then((res) => updateRoomData(res, roomId))
-      .then(() => clearQueue(roomId));
+      .then(() => clearQueue(roomId))
+      .then((res) => {
+        setPlayingEp(selectedEp);
+        setSelectedEp(blank);
+        console.log("BLANK", blank);
+        console.log("SELECT", selectedEp);
+      });
   };
 
   const usePrevious = (val) => {
@@ -92,29 +100,29 @@ const Player = (props) => {
   useEffect(() => {
     if (!isEqual(value, previousValue)) {
       if (value) {
-        const timeElapsed = Date.now() - value.timestamp;
-        const queue = value.queued;
+        const timeElapsed = Date.now() - value.playing.timestamp;
+        const queueTimeElapsed = Date.now() - value.queued.timestamp;
 
         if (
-          value.playing === true &&
-          value.nowPlayingProgress === 0 &&
-          timeElapsed < 5000
+          value.playing.status === true &&
+          value.playing.progress === 0 &&
+          timeElapsed < 500
         ) {
-          setPlayingEp(selectedEp);
-          setSelectedEp(blank);
-          startPodcast(props.token, deviceId, value.nowPlayingUri, 0);
-        } else if (value.playing === true && value.nowPlayingProgress !== 0) {
+          startPodcast(props.token, deviceId, value.playing.uri, 0);
+        } else if (
+          value.playing.status === true &&
+          value.playing.progress !== 0
+        ) {
           resumePlayback(props.token);
-        } else if (value.playing === false) {
+        } else if (value.playing.status === false) {
           pausePlayback(props.token);
         }
 
-        if (value.queued.status === true) {
+        if (value.queued.status === true && queueTimeElapsed < 500) {
           getEpisode(value.queued.epId, props.token).then((res) =>
             setSelectedEp(res)
           );
         }
-
         console.log("value", value);
       }
     }
@@ -196,6 +204,7 @@ const Player = (props) => {
 
 const stateToProps = (state) => ({
   deviceId: state.deviceId,
+  userData: state.userData,
 });
 
 const dispatchToProps = (dispatch) => ({

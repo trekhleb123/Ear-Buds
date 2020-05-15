@@ -70,7 +70,7 @@ const SearchBar = (props) => {
     //   [name]: value,
     // });
     getEpisode(value, token).then((res) =>
-      changeQueue(props.roomId, res, value)
+      changeQueue(props.roomId, res, value, props.userData.display_name)
     );
   };
 
@@ -179,6 +179,7 @@ const SearchBar = (props) => {
 };
 const stateToProps = (state) => ({
   token: state.access_token,
+  userData: state.userData,
 });
 
 export default connect(stateToProps)(SearchBar);

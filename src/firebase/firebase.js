@@ -90,6 +90,15 @@ export async function createRoom(token, username, refreshToken) {
       uri: "",
       status: false,
       duration_ms: 1000,
+      username: "",
+    },
+    playing: {
+      progress: "",
+      timestamp: 0,
+      uri: "",
+      status: false,
+      duration_ms: 1000,
+      username: "",
     },
   });
   console.log("newRoom", newRoom);
@@ -131,7 +140,7 @@ export async function updateRoomData(roomData, roomId) {
   }
 }
 
-export async function playbackUpdate(token, roomId, playingStatus) {
+export async function playbackUpdate(token, roomId, playingStatus, username) {
   let epInfo;
 
   getNowPlaying(token)
@@ -140,15 +149,16 @@ export async function playbackUpdate(token, roomId, playingStatus) {
       return getCurrentRoomData(roomId);
     })
     .then((roomData) => {
-      roomData.nowPlayingProgress = epInfo.data.progress_ms;
-      roomData.timestamp = epInfo.data.timestamp;
-      roomData.playing = playingStatus;
+      roomData.playing.progress = epInfo.data.progress_ms;
+      roomData.playing.timestamp = epInfo.data.timestamp;
+      roomData.playing.status = playingStatus;
+      roomData.playing.username = username;
       return roomData;
     })
     .then((res) => updateRoomData(res, roomId));
 }
 
-export async function changeQueue(roomId, epInfo, epId) {
+export async function changeQueue(roomId, epInfo, epId, username) {
   getCurrentRoomData(roomId)
     .then((roomData) => {
       roomData.queued.epId = epId;
@@ -160,6 +170,7 @@ export async function changeQueue(roomId, epInfo, epId) {
       roomData.queued.uri = epInfo.uri;
       roomData.queued.timestamp = Date.now();
       roomData.queued.status = true;
+      roomData.queued.username = username;
       return roomData;
     })
     .then((res) => updateRoomData(res, roomId));
@@ -177,6 +188,7 @@ export async function clearQueue(roomId) {
       // roomData.queued.description = "";
       roomData.queued.uri = "";
       roomData.queued.status = false;
+      roomData.queued.username = "";
       return roomData;
     })
     .then((res) => updateRoomData(res, roomId));
