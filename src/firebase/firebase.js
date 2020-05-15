@@ -103,9 +103,8 @@ export async function createRoom(token, username, refreshToken) {
   })
   console.log("newRoom", newRoom)
   await db.collection("Rooms").doc(newRoom.id).collection("Users").add({
-    accessToken: "hey",
-    email: "you@email.com",
-    name: "Bob",
+    accessToken: token,
+    name: username,
     roomCode: code,
     deviceId: 2,
     refreshToken,
