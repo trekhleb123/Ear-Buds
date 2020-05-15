@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react"
-import { firestore, findRoom } from "../firebase/firebase"
-import Form from "./Form"
-import _sortBy from "lodash/sortBy"
-import { connect } from "react-redux"
+import React, { useState, useEffect } from "react";
+import { firestore, findRoom } from "../firebase/firebase";
+import Form from "./Form";
+import _sortBy from "lodash/sortBy";
+import { connect } from "react-redux";
 
 const Messages = (props) => {
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    listenForMessages()
-  }, [])
+    listenForMessages();
+  }, []);
 
   const listenForMessages = async () => {
-    console.log("room code", props)
-    let roomId
+    console.log("room code", props);
+    let roomId;
     if (props.roomCode) {
-      roomId = await findRoom(props.roomCode)
+      roomId = await findRoom(props.roomCode);
     }
 
     if (roomId) {
@@ -25,20 +25,20 @@ const Messages = (props) => {
         .collection("messages")
         .onSnapshot(
           (snapshot) => {
-            const allMessages = []
-            snapshot.forEach((doc) => allMessages.push(doc.data()))
+            const allMessages = [];
+            snapshot.forEach((doc) => allMessages.push(doc.data()));
 
             // Set the collected array as our state
-            setMessages(_sortBy(allMessages, ["timestamp"]))
+            setMessages(_sortBy(allMessages, ["timestamp"]));
           },
           (error) => console.error(error)
-        )
+        );
     }
-  }
+  };
 
   const renderMessages = () => {
     if (!messages.length) {
-      return <div>There's no messages yet...</div>
+      return <div>There's no messages yet...</div>;
     }
 
     return messages.map(({ name, message }, index) => (
@@ -46,19 +46,19 @@ const Messages = (props) => {
         <b>{name}</b>
         <div>{message}</div>
       </div>
-    ))
-  }
+    ));
+  };
 
   return (
     <>
       {renderMessages()}
       <Form />
     </>
-  )
-}
+  );
+};
 
 const stateToProps = (state) => ({
   roomCode: state.roomCode,
-})
+});
 
-export default connect(stateToProps, null)(Messages)
+export default connect(stateToProps, null)(Messages);

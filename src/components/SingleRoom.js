@@ -9,7 +9,7 @@ import { Modal } from '@material-ui/core';
 import Messages from './Messages'
 class SingleRoom extends React.Component {
   constructor() {
-    super()
+    super();
     this.state = {
       users: [],
       // open: false
@@ -19,14 +19,18 @@ class SingleRoom extends React.Component {
 
   }
   async componentDidMount() {
-    this.props.getUserData(this.props.access_token)
-    await renderUsers(this.props.match.params.roomId)
+    if (!Object.keys(this.props.userData).length) {
+      this.props.history.push("/");
+    }
+    this.props.getUserData(this.props.access_token);
+    await renderUsers(this.props.match.params.roomId);
     this.setState({
       users: [...this.state.users, await renderUsers(this.props.match.params.roomId)],
     })
         console.log('in mount', this.state.users)
 
   }
+
   async leaveRoom(roomId, displayName) {
     await userLeft(
       roomId,
@@ -62,21 +66,22 @@ class SingleRoom extends React.Component {
           hello
         </Modal> : null} */}
         <Messages />
+        <SearchBar roomId={this.props.match.params.roomId} />
         <button type="button">Invite Friend</button>
       </div>
-    )
+    );
   }
 }
 const stateToProps = (state) => ({
   access_token: state.access_token,
   userData: state.userData,
   refresh_token: state.refresh_token,
-})
+});
 
 const dispatchToProps = (dispatch) => ({
   getAccessToken: (code) => dispatch(getAccessToken(code)),
   setSpotifyCode: (code) => dispatch(setSpotifyCode(code)),
   getUserData: (token) => dispatch(getUserData(token)),
-})
+});
 
-export default connect(stateToProps, dispatchToProps)(SingleRoom)
+export default connect(stateToProps, dispatchToProps)(SingleRoom);

@@ -1,4 +1,5 @@
-import firebase from 'firebase';
+import firebase from "firebase"
+import { getNowPlaying } from "../api/spotifyApi"
 
 const firebaseApp = firebase.initializeApp({
   // copy and paste your firebase credential here
@@ -24,43 +25,37 @@ export async function createNewRoom(newRoom) {
   }
 }
 
-export async function getRoom(roomName, roomPassword) {
+export async function getRoom(roomCode) {
   try {
-    const rooms = db.collection('Rooms');
-    const currentRoom = await rooms
-      .where('name', '==', roomName)
-      .where('password', '==', roomPassword)
-      .get();
-    let res = {};
-    currentRoom.forEach(el => {
-      res = el.id;
-    });
-    console.log(res);
-    return res;
+    const rooms = db.collection("Rooms")
+    const currentRoom = await rooms.where("roomCode", "==", roomCode).get()
+    let res = {}
+    currentRoom.forEach((el) => {
+      res = el.id
+    })
+    console.log(res)
+    return res
   } catch (err) {
     console.error(err);
   }
 }
 
-export async function getCurrentRoomData(docId) {
+export async function getCurrentRoomData(roomId) {
   try {
-    const doc = db.collection('Rooms').doc(docId);
-    const result = await doc.get();
+    const doc = db.collection("Rooms").doc(roomId)
+    const result = await doc.get()
 
-    console.log(result.data());
-    return result.data();
+    // console.log(result.data());
+    return result.data()
   } catch (err) {
     console.error(err);
   }
 }
 
-export async function getCurrentUserData(docId, callback) {
+export async function getCurrentUserData(roomId, callback) {
   try {
-    const users = db
-      .collection('Rooms')
-      .doc(docId)
-      .collection('Users');
-    const result = await users.get();
+    const users = db.collection("Rooms").doc(roomId).collection("Users")
+    const result = await users.get()
 
     result.forEach(user => console.log(user.id, '=>', user.data()));
 
@@ -71,51 +66,55 @@ export async function getCurrentUserData(docId, callback) {
   }
 }
 export async function getRooms() {
-  const doc = db.collection('Rooms');
-  const docs = await doc.get();
-  let res = [];
-  docs.forEach(el => {
-    res.push(el);
-  });
-  console.log('res', res);
-  return res;
+  const doc = db.collection("Rooms")
+  const docs = await doc.get()
+  let res = []
+  docs.forEach((el) => {
+    res.push(el)
+  })
+  console.log("res", res)
+  return res
 }
 
 export async function createRoom(token, username, refreshToken) {
   //event.preventDefault()
   const code =
-    Math.random()
-      .toString(36)
-      .substring(2, 7) +
-    Math.random()
-      .toString(36)
-      .substring(2, 7);
-  console.log('in handle submit', code);
-  const newRoom = await db
-    .collection('Rooms')
-    .add({ name: 'room1', roomCode: code });
-  console.log('newRoom', newRoom);
-  await db
-    .collection('Rooms')
-    .doc(newRoom.id)
-    .collection('Users')
-    .add({
-      accessToken: token,
-      name: username,
-      roomCode: code,
-      deviceId: 2,
-      refreshToken,
-    });
+    Math.random().toString(36).substring(2, 7) +
+    Math.random().toString(36).substring(2, 7)
+  console.log("in handle submit", code)
+  const newRoom = await db.collection("Rooms").add({
+    name: "room1",
+    roomCode: code,
+    queued: {
+      timestamp: 0,
+      uri: "",
+      status: false,
+      duration_ms: 1000,
+      username: "",
+    },
+    playing: {
+      progress: "",
+      timestamp: 0,
+      uri: "",
+      status: false,
+      duration_ms: 1000,
+      username: "",
+    },
+  })
+  console.log("newRoom", newRoom)
+  await db.collection("Rooms").doc(newRoom.id).collection("Users").add({
+    accessToken: "hey",
+    email: "you@email.com",
+    name: "Bob",
+    roomCode: code,
+    deviceId: 2,
+    refreshToken,
+  })
 
-  await db
-    .collection('Rooms')
-    .doc(newRoom.id)
-    .collection('messages')
-    .add({});
+  await db.collection("Rooms").doc(newRoom.id).collection("messages").add({})
 
-  return newRoom.id;
+  return code
 }
-
 export async function joinRoom(token, username, refreshToken, res, roomCode) {
   await db
     .collection('Rooms')
@@ -201,15 +200,76 @@ export async function vacantRoom(roomId) {
   await db
     .collection('Rooms')
     .doc(roomId)
-    .collection('Users')
+    .collection("Users")
     .get()
-    .then(function(user) {
-      userLength = user.size;
-    });
+    .then(function (user) {
+      userLength = user.size
+    })
   if (userLength === 0) {
-    await db
-      .collection('Rooms')
-      .doc(roomId)
-      .delete();
+    await db.collection("Rooms").doc(roomId).delete()
   }
+}
+
+export async function updateRoomData(roomData, roomId) {
+  try {
+    const roomRef = db.collection("Rooms").doc(roomId)
+    roomRef.update(roomData)
+    // console.log("new room", roomRef);
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+export async function playbackUpdate(token, roomId, playingStatus, username) {
+  let epInfo
+
+  getNowPlaying(token)
+    .then((res) => {
+      epInfo = res
+      return getCurrentRoomData(roomId)
+    })
+    .then((roomData) => {
+      roomData.playing.progress = epInfo.data.progress_ms
+      roomData.playing.timestamp = epInfo.data.timestamp
+      roomData.playing.status = playingStatus
+      roomData.playing.username = username
+      return roomData
+    })
+    .then((res) => updateRoomData(res, roomId))
+}
+
+export async function changeQueue(roomId, epInfo, epId, username) {
+  getCurrentRoomData(roomId)
+    .then((roomData) => {
+      roomData.queued.epId = epId
+      // roomData.queued.name = epInfo.name;
+      // roomData.queued.show = epInfo.show.publisher;
+      roomData.queued.duration = epInfo.duration_ms
+      // roomData.queued.imageUrl = epInfo.images[1].url;
+      // roomData.queued.description = epInfo.description;
+      roomData.queued.uri = epInfo.uri
+      roomData.queued.timestamp = Date.now()
+      roomData.queued.status = true
+      roomData.queued.username = username
+      return roomData
+    })
+    .then((res) => updateRoomData(res, roomId))
+}
+
+export async function clearQueue(roomId) {
+  getCurrentRoomData(roomId)
+    .then((roomData) => {
+      roomData.queued.epId = ""
+      // roomData.queued.name = "";
+      // roomData.queued.show = "";
+      roomData.queued.timestamp = Date.now()
+      roomData.queued.duration = 0
+      // roomData.queued.imageUrl = "";
+      // roomData.queued.description = "";
+      roomData.queued.uri = ""
+      roomData.queued.status = false
+      roomData.queued.username = ""
+      return roomData
+    })
+    .then((res) => updateRoomData(res, roomId))
 }

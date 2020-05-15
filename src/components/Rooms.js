@@ -1,5 +1,11 @@
 import React from "react"
-import { db, createRoom, joinRoom, findRoom } from "../firebase/firebase"
+import {
+  db,
+  createRoom,
+  joinRoom,
+  findRoom,
+  getRoom,
+} from "../firebase/firebase"
 import { Route } from "react-router-dom"
 import { Link } from "react-router-dom"
 import { withRouter } from "react-router-dom"
@@ -11,6 +17,7 @@ class Rooms extends React.Component {
     super()
     this.state = {
       joinForm: false,
+      wrongRoomCode: false,
     }
     this.getRooms = this.getRooms.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -20,44 +27,53 @@ class Rooms extends React.Component {
   }
   componentDidMount() {
     this.getRooms()
+    if (!Object.keys(this.props.userData).length) {
+      this.props.history.push("/")
+    }
   }
 
   async getRooms() {
-    const doc = db.collection('Rooms')
-    const docs = await doc.get()
-    .then(function(room) {
-      room.forEach(function(doc) {
+    const doc = db.collection("Rooms")
+    const docs = await doc.get().then(function (room) {
+      room.forEach(function (doc) {
         //console.log(doc.id, " => ", doc.data());
-    });
-  })
-}
-
+      })
+    })
+  }
 
   async handleSubmit() {
-    const id = await createRoom(
+    const roomCode = await createRoom(
       this.props.access_token,
       this.props.userData.display_name,
       this.props.refresh_token
     )
+    const id = await getRoom(roomCode)
+    this.props.setRoomCode(roomCode)
     this.props.history.push(`/room/${id}`)
   }
 
   async joinSubmit(event) {
     event.preventDefault()
     const room = await findRoom(this.props.roomCode)
-    await joinRoom(
-      this.props.access_token,
-      this.props.userData.display_name,
-      this.props.refresh_token,
-      room,
-      this.props.roomCode
-    )
-    this.props.history.push(`/room/${room}`)
-    console.log("PROPS", this.props)
-    this.setState({
-      joinForm: false,
-      roomCode: ''
-    })
+    if (typeof room === "string") {
+      await joinRoom(
+        this.props.access_token,
+        this.props.userData.display_name,
+        this.props.refresh_token,
+        room,
+        this.props.roomCode
+      )
+      this.props.history.push(`/room/${room}`)
+      console.log("PROPS", this.props)
+      this.setState({
+        joinForm: false,
+      })
+    } else {
+      this.setState({
+        wrongRoomCode: true,
+      })
+      console.log("wrong room code")
+    }
   }
   showForm() {
     this.setState({
@@ -92,6 +108,7 @@ class Rooms extends React.Component {
             </button>
           </form>
         ) : null}
+        {this.state.wrongRoomCode && <p>Opps, wrong code. Please try again</p>}
         {/* <div>
           <h2>All Rooms</h2>
           <div>
