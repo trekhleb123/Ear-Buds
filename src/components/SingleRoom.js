@@ -11,7 +11,7 @@ class SingleRoom extends React.Component {
   constructor() {
     super()
     this.state = {
-      users: {},
+      users: [],
       // open: false
     }
     this.leaveRoom = this.leaveRoom.bind(this);
@@ -22,8 +22,10 @@ class SingleRoom extends React.Component {
     this.props.getUserData(this.props.access_token)
     await renderUsers(this.props.match.params.roomId)
     this.setState({
-      users: await renderUsers(this.props.match.params.roomId),
+      users: [...this.state.users, await renderUsers(this.props.match.params.roomId)],
     })
+        console.log('in mount', this.state.users)
+
   }
   async leaveRoom(roomId, displayName) {
     await userLeft(
@@ -39,12 +41,14 @@ class SingleRoom extends React.Component {
   //   })
   // }
   render() {
+    console.log('users in render', this.state.users)
     return (
       <div>
         <h2>Users</h2>
         <div>
           {Object.values(this.state.users).map((user, i) => {
-            return <li key={i}>{user}</li>
+            console.log('user', user)
+            return <li key={i}>{user.name}</li>
           })}
         </div>
         <button type="button" onClick={() => this.leaveRoom(this.props.match.params.roomId, this.props.userData.display_name)}>
