@@ -25,7 +25,7 @@ function App(props) {
   }, [props.access_token])
 
   useEffect(() => {
-    if (Object.keys(props.userData).length) {
+    if (!!props.userData.display_name) {
       props.history.push(`/home`)
     }
   }, [props])
