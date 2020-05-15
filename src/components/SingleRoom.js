@@ -14,12 +14,16 @@ class SingleRoom extends React.Component {
     this.leaveRoom = this.leaveRoom.bind(this)
   }
   async componentDidMount() {
+    if (!Object.keys(this.props.userData).length) {
+      this.props.history.push("/")
+    }
     this.props.getUserData(this.props.access_token)
     await renderUsers(this.props.match.params.roomId)
     this.setState({
       users: await renderUsers(this.props.match.params.roomId),
     })
   }
+
   async leaveRoom(roomId, displayName) {
     await userLeft(
       this.props.match.params.roomId,
@@ -28,6 +32,7 @@ class SingleRoom extends React.Component {
     await vacantRoom(this.props.match.params.roomId)
     this.props.history.push("/")
   }
+
   render() {
     return (
       <div>
