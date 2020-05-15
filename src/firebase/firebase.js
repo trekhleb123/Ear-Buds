@@ -164,9 +164,9 @@ export async function renderUsers(roomId) {
 }
 
 export async function vacantRoom(roomId) {
-  let userLength
-  const users = await db
-    .collection("Rooms")
+  let userLength;
+    await db
+    .collection('Rooms')
     .doc(roomId)
     .collection("Users")
     .get()

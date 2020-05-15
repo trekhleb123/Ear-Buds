@@ -1,9 +1,11 @@
+
 import React from "react";
 import Messages from "./Messages";
 import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase";
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store";
 import { connect } from "react-redux";
 import SearchBar from "./SearchBar";
+import { Modal } from '@material-ui/core';
 
 class SingleRoom extends React.Component {
   constructor() {
@@ -12,6 +14,7 @@ class SingleRoom extends React.Component {
       users: {},
     };
     this.leaveRoom = this.leaveRoom.bind(this);
+
   }
   async componentDidMount() {
     if (!Object.keys(this.props.userData).length) {
@@ -48,8 +51,16 @@ class SingleRoom extends React.Component {
             )
           }
         >
+
           Leave Room
         </button>
+        <button type="button">
+          Invite Friend
+        </button>
+        {/* {this.state.open ?
+        <Modal open={this.state.open}>
+          hello
+        </Modal> : null} */}
         <Messages />
         <SearchBar roomId={this.props.match.params.roomId} />
         <button type="button">Invite Friend</button>
