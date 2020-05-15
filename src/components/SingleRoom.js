@@ -7,6 +7,7 @@ import { getAccessToken, setSpotifyCode, getUserData } from '../redux/store';
 import { connect } from 'react-redux';
 import { Modal } from '@material-ui/core';
 import Messages from './Messages'
+import { SearchBar } from '.';
 class SingleRoom extends React.Component {
   constructor() {
     super();
@@ -32,18 +33,11 @@ class SingleRoom extends React.Component {
   }
 
   async leaveRoom(roomId, displayName) {
-    await userLeft(
-      roomId,
-      displayName
-    )
-    await vacantRoom(roomId)
-    this.props.history.push("/")
+    await userLeft(roomId, displayName);
+    await vacantRoom(roomId);
+    this.props.history.push("/");
   }
-  // open() {
-  //   this.setState({
-  //     open: true
-  //   })
-  // }
+
   render() {
     console.log('users in render', this.state.users)
     return (
