@@ -24,6 +24,7 @@ import Button from "@material-ui/core/Button";
 
 const Player = (props) => {
   const blank = {
+    isBlank: true,
     name: "",
     show: { publisher: "" },
     duration_ms: 1000,
@@ -37,6 +38,12 @@ const Player = (props) => {
   };
   let [selectedEp, setSelectedEp] = useState(blank);
   let [playingEp, setPlayingEp] = useState(blank);
+  const [state, setState] = useState({
+    timeElapsed: "",
+    timeElapsedMs: 0,
+    timeRemaining: "",
+    timeRemainingMs: 0,
+  });
   const roomId = props.roomId;
   const [value, loading, error] = useDocumentData(db.doc(`Rooms/${roomId}`));
 
@@ -55,10 +62,19 @@ const Player = (props) => {
   };
 
   const start = () => {
-    playbackStart(roomId, props.userData.display_name).then(() => {
-      setPlayingEp(selectedEp);
-      setSelectedEp(blank);
-    });
+    playbackStart(roomId, props.userData.display_name);
+  };
+
+  const msConversion = (s) => {
+    // var ms = s % 1000;
+    // s = (s - ms) / 1000;
+    // var secs = s % 60;
+    // s = (s - secs) / 60;
+    // var mins = s % 60;
+    // var hrs = (s - mins) / 60;
+
+    // return hrs + ":" + mins + ":" + secs;
+    return s;
   };
 
   const usePrevious = (val) => {
@@ -74,24 +90,38 @@ const Player = (props) => {
   useEffect(() => {
     if (!isEqual(value, previousValue)) {
       if (value) {
-        const timeElapsed = Date.now() - value.playing.timestamp;
+        const playTimeElapsed = Date.now() - value.playing.timestamp;
         const queueTimeElapsed = Date.now() - value.queued.timestamp;
 
         if (
           value.playing.status === true &&
           value.playing.progress === 0 &&
-          timeElapsed < 500
+          playTimeElapsed < 300
         ) {
-          startPodcast(props.token, deviceId, value.playing.uri, 0);
+          startPodcast(props.token, deviceId, value.playing.uri, 0)
+            .then(() => {
+              if (value.playing.uri !== playingEp.uri) {
+                setPlayingEp(selectedEp);
+                setSelectedEp(blank);
+              }
+              setState({
+                ...state,
+                timeElapsed: msConversion(0),
+                timeElapsedMs: 0,
+                timeRemaining: msConversion(playingEp.duration_ms),
+                timeRemainingMs: playingEp.duration_ms,
+              });
+              console.log("Initial Time", state);
+            })
+            .then(() => tick(true));
         } else if (
           value.playing.status === true &&
           value.playing.progress !== 0
         ) {
-          resumePlayback(props.token);
+          resumePlayback(props.token).then(() => tick(true));
         } else if (value.playing.status === false) {
-          pausePlayback(props.token);
+          pausePlayback(props.token).then(() => tick(false));
         }
-
         if (value.queued.status === true && queueTimeElapsed < 500) {
           getEpisode(value.queued.epId, props.token).then((res) =>
             setSelectedEp(res)
@@ -101,6 +131,40 @@ const Player = (props) => {
       }
     }
   });
+
+  // useEffect(() => {
+  //   console.log("Setting Time From:", playingEp);
+  //   setState({
+  //     ...state,
+  //     timeElapsed: msConversion(0),
+  //     timeElapsedMs: 0,
+  //     timeRemaining: msConversion(playingEp.duration_ms),
+  //     timeRemainingMs: playingEp.duration_ms
+  //   });
+  // }, [playingEp]);
+
+  const increment = () => {
+    console.log("Incrementing", state);
+    setState({
+      ...state,
+      timeElapsedMs: state.timeElapsedMs + 1000,
+      timeRemainingMs: state.timeRemainingMs - 1000,
+    });
+    setState({
+      ...state,
+      timeElapsed: msConversion(state.timeElapsedMs),
+      timeRemaining: msConversion(state.timeRemainingMs),
+    });
+  };
+  let timer;
+
+  const tick = (status) => {
+    if (status) {
+      timer = setInterval(increment, 1000);
+    } else {
+      clearInterval(timer);
+    }
+  };
 
   return (
     <div>
@@ -156,9 +220,17 @@ const Player = (props) => {
             </div>
             <div className="on-deck-card-description">
               <div className="player-container">
+                <div>Vol</div>
                 <Sdk token={props.token} />
-                <PauseCircleFilled onClick={pause} />
-                <PlayCircleFilled onClick={play} />
+                <div>
+                  <PauseCircleFilled onClick={pause} />
+                  <PlayCircleFilled onClick={play} />
+                </div>
+                <div>Status</div>
+              </div>
+              <div className="progress-container">
+                <span>{state.timeElapsed}</span>
+                <span>{state.timeRemaining}</span>
               </div>
               <LinearProgress variant="determinate" value={currentPosition} />
             </div>
