@@ -1,132 +1,198 @@
-import React, { useState, useEffect, useRef } from "react"
-import { setDeviceId } from "../redux/store"
-import { connect } from "react-redux"
-import { useDocumentData } from "react-firebase-hooks/firestore"
-import { isEqual } from "lodash"
-
-import LinearProgress from "@material-ui/core/LinearProgress"
-import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons"
+import React, { useState, useEffect, useRef } from "react";
+import { setDeviceId } from "../redux/store";
+import { connect } from "react-redux";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import { isEqual } from "lodash";
+import Volume from "./Volume";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
 import {
   getRoom,
   getCurrentRoomData,
   updateRoomData,
   db,
   playbackUpdate,
+  playbackStart,
   clearQueue,
-} from "../firebase/firebase"
+} from "../firebase/firebase";
 import {
   pausePlayback,
   startPodcast,
   resumePlayback,
-  sampleEp,
   getEpisode,
-} from "../api/spotifyApi"
-import Sdk from "./Sdk"
-import Card from "@material-ui/core/Card"
-import CardActions from "@material-ui/core/CardActions"
-import CardContent from "@material-ui/core/CardContent"
-import Typography from "@material-ui/core/Typography"
-import CardMedia from "@material-ui/core/CardMedia"
-import Button from "@material-ui/core/Button"
+  getDevices,
+  transferDevice,
+} from "../api/spotifyApi";
+import Sdk from "./Sdk";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import CardMedia from "@material-ui/core/CardMedia";
+import DevicesIcon from "@material-ui/icons/Devices";
+import VolumeUpIcon from "@material-ui/icons/VolumeUp";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Popover from "@material-ui/core/Popover";
+import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
 
 const Player = (props) => {
   const blank = {
+    isBlank: true,
     name: "",
     show: { publisher: "" },
-    duration_ms: 1000,
+    duration_ms: 0,
     description: "",
     images: [
       { url: "" },
       {
-        url: "https://i.scdn.co/image/a7de7e0497e4b718a08d99e98241533f5113a3e1",
+        url:
+          "https://www.messy.fm/static/media/podcast_placeholder.b5c814ab.png",
       },
     ],
-  }
-  let [selectedEp, setSelectedEp] = useState(blank)
-  let [playingEp, setPlayingEp] = useState(blank)
-  const roomId = props.roomId
-  const [value, loading, error] = useDocumentData(
-    db.doc(`Rooms/${roomId}`)
-    // {
-    //   snapshotListenOptions: { includeMetadataChanges: true },
-    // }
-  )
+  };
+  let [selectedEp, setSelectedEp] = useState(blank);
+  let [timer, setTimer] = useState(null);
+  let [playingEp, setPlayingEp] = useState(blank);
 
-  let deviceId = props.deviceId
+  let [timeElapsed, setTimeElapsed] = useState(0);
+  let [devices, setDevices] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [activeDevId, setActiveDevId] = useState(props.deviceId);
 
-  let [currentPosition, setCurrentPosition] = useState(0)
+  // const [state, setState] = useState({
+  //   timeElapsed: "",
+  //   timeElapsedMs: 0,
+  //   timeRemaining: "",
+  //   timeRemainingMs: 0,
+  // });
+  const roomId = props.roomId;
+  const [value, loading, error] = useDocumentData(db.doc(`Rooms/${roomId}`));
+
+  let deviceId = props.deviceId;
+
+  let [currentPosition, setCurrentPosition] = useState(0);
   // let [progress, setProgress] = useState("");
   // let [nowPlaying, setNowPlaying] = useState({});
 
   const play = () => {
-    playbackUpdate(props.token, roomId, true, props.userData.display_name)
-  }
+    playbackUpdate(props.token, roomId, true, props.userData.display_name);
+  };
 
   const pause = () => {
-    playbackUpdate(props.token, roomId, false, props.userData.display_name)
-  }
+    playbackUpdate(props.token, roomId, false, props.userData.display_name);
+  };
 
   const start = () => {
-    getCurrentRoomData(roomId)
-      .then((roomData) => {
-        roomData.playing.progress = 0
-        roomData.playing.timestamp = Date.now()
-        roomData.playing.uri = roomData.queued.uri
-        roomData.playing.duration_ms = roomData.queued.duration_ms
-        roomData.playing.status = true
-        roomData.playing.username = props.userData.display_name
-        return roomData
-      })
-      .then((res) => updateRoomData(res, roomId))
-      .then(() => clearQueue(roomId))
-      .then((res) => {
-        setPlayingEp(selectedEp)
-        setSelectedEp(blank)
-        console.log("BLANK", blank)
-        console.log("SELECT", selectedEp)
-      })
-  }
+    playbackStart(roomId, props.userData.display_name);
+  };
+
+  const msConversion = (s) => {
+    var ms = s % 1000;
+    s = (s - ms) / 1000;
+    var secs = s % 60;
+    s = (s - secs) / 60;
+    var mins = s % 60;
+    var hrs = (s - mins) / 60;
+
+    return hrs + ":" + mins + ":" + secs;
+  };
 
   const usePrevious = (val) => {
-    const ref = useRef()
+    const ref = useRef();
     useEffect(() => {
-      ref.current = val
-    })
-    return ref.current
-  }
+      ref.current = val;
+    });
+    return ref.current;
+  };
 
-  const previousValue = usePrevious(value)
+  const previousValue = usePrevious(value);
 
   useEffect(() => {
     if (!isEqual(value, previousValue)) {
       if (value) {
-        const timeElapsed = Date.now() - value.playing.timestamp
-        const queueTimeElapsed = Date.now() - value.queued.timestamp
+        const playTimeElapsed = Date.now() - value.playing.timestamp;
+        const queueTimeElapsed = Date.now() - value.queued.timestamp;
 
         if (
           value.playing.status === true &&
           value.playing.progress === 0 &&
-          timeElapsed < 500
+          playTimeElapsed < 300
         ) {
-          startPodcast(props.token, deviceId, value.playing.uri, 0)
+          console.log("PLAYINGEP", playingEp);
+          console.log("selected", selectedEp);
+          startPodcast(props.token, activeDevId, value.playing.uri, 0)
+            .then(() => {
+              if (value.playing.uri !== playingEp.uri) {
+                setPlayingEp(selectedEp);
+                setSelectedEp(blank);
+              }
+            })
+            .then(() => {
+              setTimeElapsed(0);
+            })
+            .then(() => {
+              // if (!timer) setTimer(setInterval(increment, 1000));
+            });
         } else if (
           value.playing.status === true &&
           value.playing.progress !== 0
         ) {
-          resumePlayback(props.token)
+          resumePlayback(props.token, activeDevId);
         } else if (value.playing.status === false) {
-          pausePlayback(props.token)
+          pausePlayback(props.token, activeDevId);
         }
-
         if (value.queued.status === true && queueTimeElapsed < 500) {
           getEpisode(value.queued.epId, props.token).then((res) =>
             setSelectedEp(res)
-          )
+          );
         }
-        console.log("value", value)
+        console.log("value", value);
       }
     }
-  })
+  });
+
+  let counter = 0;
+
+  const increment = () => {
+    console.log("Incrementing", counter);
+    counter++;
+  };
+
+  useEffect(() => {
+    timeElapsed = counter * 1000;
+  }, [counter]);
+
+  useEffect(() => {
+    if (activeDevId.length < 10) setActiveDevId(props.deviceId);
+  });
+
+  const handleDevicePopover = (event) => {
+    setAnchorEl(event.currentTarget);
+    getDevices(props.token)
+      .then((res) => setDevices(res))
+      .then(() => console.log(devices));
+  };
+
+  const handleDeviceSelection = (id) => {
+    console.log("this is the ID", activeDevId, id);
+    setActiveDevId(id);
+    transferDevice(props.token, id);
+
+    // .then(() => setActiveDevId(id))
+    // .then(() => resumePlayback(props.token, id))
+    // .then(() => console.log("LOOK", activeDevId, id));
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
 
   return (
     <div>
@@ -182,9 +248,70 @@ const Player = (props) => {
             </div>
             <div className="on-deck-card-description">
               <div className="player-container">
+                <PopupState variant="popover" popupId="demo-popup-popover">
+                  {(popupState) => (
+                    <div>
+                      <Button {...bindTrigger(popupState)}>
+                        <VolumeUpIcon />
+                      </Button>
+                      <Popover
+                        {...bindPopover(popupState)}
+                        anchorOrigin={{
+                          vertical: "top",
+                          horizontal: "center",
+                        }}
+                        transformOrigin={{
+                          vertical: "bottom",
+                          horizontal: "center",
+                        }}
+                      >
+                        <Box className="volume" autoWidth="true" p={2}>
+                          <Volume />
+                        </Box>
+                      </Popover>
+                    </div>
+                  )}
+                </PopupState>
+
                 <Sdk token={props.token} />
-                <PauseCircleFilled onClick={pause} />
-                <PlayCircleFilled onClick={play} />
+                <div>
+                  <PauseCircleFilled onClick={pause} />
+                  <PlayCircleFilled onClick={play} />
+                </div>
+                <DevicesIcon onClick={handleDevicePopover} />
+                <Popover
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                >
+                  <List>
+                    {devices.length > 1 &&
+                      devices.map((device, ind) => {
+                        return (
+                          <ListItem
+                            button
+                            onClick={() => handleDeviceSelection(device.id)}
+                            key={ind}
+                          >
+                            <ListItemText primary={device.name} />
+                          </ListItem>
+                        );
+                      })}
+                  </List>
+                </Popover>
+              </div>
+              <div className="progress-container">
+                <span>{msConversion(timeElapsed)}</span>
+                <span>{msConversion(playingEp.duration_ms)}</span>
               </div>
               <LinearProgress variant="determinate" value={currentPosition} />
             </div>
@@ -199,72 +326,16 @@ const Player = (props) => {
         </Card>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const stateToProps = (state) => ({
   deviceId: state.deviceId,
   userData: state.userData,
-})
+});
 
 const dispatchToProps = (dispatch) => ({
   setDeviceId: (code) => dispatch(setDeviceId(code)),
-})
+});
 
-export default connect(stateToProps, dispatchToProps)(Player)
-
-// const tick = () => {
-//   set
-// };
-
-// //Triggered by timer
-// useEffect(() => {
-//   setCurrentPosition(Date.now() - this.state.start + (this.props.position || 0))
-//   setProgress(+(
-//     (currentPosition * 100) /
-//     props.track.duration_ms
-//   ).toFixed(2) + "%")
-// }, []);
-
-//   //Triggered by playing status
-
-// const progressTick = (status, width = 1) => {
-//   if (status) {
-//     var elem = document.getElementById("progress");
-//     var id = setInterval(tick, 1000);
-//     function tick() {
-//       if (width >= 100) {
-//         clearInterval(id);
-//       } else {
-//         width++;
-//         elem.style.width = width + "%";
-//       }
-//     }
-//   } else {
-//     clearInterval(id);
-//   }
-// };
-
-// useEffect(() => {
-//   setProgress(0)
-//   function progressFunc() {
-//     setCurrentPosition(progress++)
-//   }
-
-//   const timer = setInterval(progressFunc, 1000);
-
-//   while(currentPosition < 100) {
-
-//   }
-//   return () => {
-//     clearInterval(timer);
-//   };
-// }, []);
-
-// let timer = null;
-// playing = !playing;
-// if (playing) {
-//   timer = setInterval(setCurrentPosition(currentPosition++), 300);
-// } else {
-//   clearInterval(timer);
-// }
+export default connect(stateToProps, dispatchToProps)(Player);
