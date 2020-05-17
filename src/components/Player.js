@@ -13,6 +13,7 @@ import {
   resumePlayback,
   getEpisode,
   getDevices,
+  transferDevice,
 } from "../api/spotifyApi";
 import Sdk from "./Sdk";
 import Card from "@material-ui/core/Card";
@@ -49,6 +50,7 @@ const Player = (props) => {
   let [timeElapsed, setTimeElapsed] = useState(0);
   let [devices, setDevices] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [activeDevId, setActiveDevId] = useState(props.deviceId);
 
   // const [state, setState] = useState({
   //   timeElapsed: "",
@@ -111,7 +113,7 @@ const Player = (props) => {
         ) {
           console.log("PLAYINGEP", playingEp);
           console.log("selected", selectedEp);
-          startPodcast(props.token, deviceId, value.playing.uri, 0)
+          startPodcast(props.token, activeDevId, value.playing.uri, 0)
             .then(() => {
               if (value.playing.uri !== playingEp.uri) {
                 setPlayingEp(selectedEp);
@@ -128,11 +130,9 @@ const Player = (props) => {
           value.playing.status === true &&
           value.playing.progress !== 0
         ) {
-          resumePlayback(props.token).then(() =>
-            setTimer(setInterval(increment, 1000))
-          );
+          resumePlayback(props.token, activeDevId);
         } else if (value.playing.status === false) {
-          pausePlayback(props.token).then(() => clearInterval(timer));
+          pausePlayback(props.token, activeDevId);
         }
         if (value.queued.status === true && queueTimeElapsed < 500) {
           getEpisode(value.queued.epId, props.token).then((res) =>
@@ -155,6 +155,10 @@ const Player = (props) => {
     timeElapsed = counter * 1000;
   }, [counter]);
 
+  useEffect(() => {
+    if (activeDevId.length < 10) setActiveDevId(props.deviceId);
+  });
+
   const handleDevicePopover = (event) => {
     setAnchorEl(event.currentTarget);
     getDevices(props.token)
@@ -163,11 +167,13 @@ const Player = (props) => {
   };
 
   const handleDeviceSelection = (id) => {
-    console.log("this is the ID", id);
+    console.log("this is the ID", activeDevId, id);
+    setActiveDevId(id);
+    transferDevice(props.token, id);
 
-    // getDevices(props.token)
-    //   .then((res) => setDevices(res))
-    //   .then(() => console.log(devices));
+    // .then(() => setActiveDevId(id))
+    // .then(() => resumePlayback(props.token, id))
+    // .then(() => console.log("LOOK", activeDevId, id));
   };
 
   const handleClose = () => {
@@ -254,11 +260,12 @@ const Player = (props) => {
                 >
                   <List component="nav" aria-label="secondary mailbox folders">
                     {devices.length > 1 &&
-                      devices.map((device) => {
+                      devices.map((device, ind) => {
                         return (
                           <ListItem
                             button
                             onClick={() => handleDeviceSelection(device.id)}
+                            key={ind}
                           >
                             <ListItemText primary={device.name} />
                           </ListItem>
