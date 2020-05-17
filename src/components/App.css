@@ -94,7 +94,15 @@ button {
 .header {
   display: flex;
   justify-content: flex-start;
+  background-color: cornflowerblue;
+  min-height: 5%;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-start;
   background-color: black;
+  min-height: 100px;
 }
 
 .main-container {
