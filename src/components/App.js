@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import Routes from "../routes"
 import SearchBar from "./SearchBar"
 import "./App.css"
@@ -6,6 +6,7 @@ import { spotifyLogin } from "../spotifyLogin"
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
 import Rooms from "./Rooms"
+//import { browserHistory } from "react-router"
 
 function App(props) {
   useEffect(() => {
@@ -25,8 +26,15 @@ function App(props) {
   }, [props.access_token])
 
   useEffect(() => {
+    const roomId = window.sessionStorage.getItem("roomId")
+    console.log("roomId", roomId)
     if (!!props.userData.display_name) {
-      props.history.push(`/home`)
+      if (roomId) {
+        window.sessionStorage.removeItem("roomId")
+        props.history.push(`/room/${roomId}`)
+      } else {
+        props.history.push(`/home`)
+      }
     }
   }, [props])
 
