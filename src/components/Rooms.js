@@ -11,6 +11,11 @@ import { Link } from "react-router-dom"
 import { withRouter } from "react-router-dom"
 import { connect } from "react-redux"
 import { getUserData, setRoomCode } from "../redux/store"
+import { Button } from '@material-ui/core';
+import { spacing } from '@material-ui/system';
+import Box from '@material-ui/core/Box';
+import TextField from '@material-ui/core/TextField';
+import "./App.css"
 
 class Rooms extends React.Component {
   constructor() {
@@ -18,6 +23,7 @@ class Rooms extends React.Component {
     this.state = {
       joinForm: false,
       wrongRoomCode: false,
+      open: false
     }
     this.getRooms = this.getRooms.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -74,7 +80,6 @@ class Rooms extends React.Component {
       })
       console.log("wrong room code")
     }
-
   }
   showForm() {
     this.setState({
@@ -87,28 +92,38 @@ class Rooms extends React.Component {
   }
   render() {
     return (
-      <div>
-        {/* redirect when room is created */}
-        <button onClick={this.handleSubmit} type="button">
+      <div className='roomContainer'>
+        <Box display="flex" justifyContent="center">
+        <Box m={5} display='inline'>
+        <Button variant='contained' onClick={this.handleSubmit} type="button">
           Create Room
-        </button>
-        <br />
-        <button onClick={this.showForm} type="button">
+        </Button>
+        </Box>
+        <Box m={5} display='inline'>
+        <Button variant='contained' onClick={this.showForm} type="button">
           Join Room
-        </button>
+        </Button>
+        </Box>
+        </Box>
+        <Box display="flex" justifyContent="center">
         {this.state.joinForm ? (
           <form>
-            <label>Room Code:</label>
-            <input
+            <TextField
+            size='small'
               name="roomCode"
               value={this.props.roomCode}
               onChange={this.handleChange}
+              variant="outlined"
+              label="Room Code"
             />
-            <button onClick={this.joinSubmit} type="button">
+             <Box m={2} display='inline'>
+            <Button variant='contained' onClick={this.joinSubmit} type="button">
               Submit
-            </button>
+            </Button>
+            </Box>
           </form>
         ) : null}
+        </Box>
         {this.state.wrongRoomCode && <p>Opps, wrong code. Please try again</p>}
         {/* <div>
           <h2>All Rooms</h2>
