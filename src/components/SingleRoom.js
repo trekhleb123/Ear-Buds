@@ -8,6 +8,8 @@ import { connect } from 'react-redux';
 import { Modal } from '@material-ui/core';
 import Messages from './Messages';
 import { SearchBar } from '.';
+import { Button } from '@material-ui/core';
+
 class SingleRoom extends React.Component {
   constructor() {
     super();
@@ -58,7 +60,9 @@ class SingleRoom extends React.Component {
             return <li key={i}>{user.name}</li>;
           })}
         </div>
-        <button
+        <Button
+        size='small'
+        variant='contained'
           type="button"
           onClick={() =>
             this.leaveRoom(
@@ -68,8 +72,8 @@ class SingleRoom extends React.Component {
           }
         >
           Leave Room
-        </button>
-        <button type="button">Invite Friend</button>
+        </Button>
+        <Button size='small' variant='contained' type="button">Invite Friend</Button>
         {/* {this.state.open ?
         <Modal open={this.state.open}>
           hello

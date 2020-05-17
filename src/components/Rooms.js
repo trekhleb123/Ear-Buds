@@ -6,13 +6,10 @@ import {
   findRoom,
   getRoom,
 } from "../firebase/firebase"
-import { Route } from "react-router-dom"
-import { Link } from "react-router-dom"
 import { withRouter } from "react-router-dom"
 import { connect } from "react-redux"
 import { getUserData, setRoomCode } from "../redux/store"
 import { Button } from '@material-ui/core';
-import { spacing } from '@material-ui/system';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import "./App.css"
@@ -92,7 +89,7 @@ class Rooms extends React.Component {
   }
   render() {
     return (
-      <div className='roomContainer'>
+      <div className='App-header'>
         <Box display="flex" justifyContent="center">
         <Box m={5} display='inline'>
         <Button variant='contained' onClick={this.handleSubmit} type="button">
