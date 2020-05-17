@@ -3,7 +3,7 @@ import { setDeviceId } from "../redux/store"
 import { connect } from "react-redux"
 import { useDocumentData } from "react-firebase-hooks/firestore"
 import { isEqual } from "lodash"
-
+import Volume from './Volume'
 import LinearProgress from "@material-ui/core/LinearProgress"
 import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons"
 import {
@@ -155,7 +155,7 @@ const Player = (props) => {
               {selectedEp.uri && <Sync onClick={start} />}
             </div>
           </div>
-
+          
           <CardMedia
             component="img"
             src={selectedEp.images[1].url}
@@ -185,7 +185,9 @@ const Player = (props) => {
                 <Sdk token={props.token} />
                 <PauseCircleFilled onClick={pause} />
                 <PlayCircleFilled onClick={play} />
+                
               </div>
+              <Volume />
               <LinearProgress variant="determinate" value={currentPosition} />
             </div>
           </div>
@@ -197,6 +199,7 @@ const Player = (props) => {
             title="Show Artwork"
           />
         </Card>
+        
       </div>
     </div>
   )
