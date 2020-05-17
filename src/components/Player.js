@@ -144,17 +144,6 @@ const Player = (props) => {
     }
   });
 
-  // useEffect(() => {
-  //   console.log("Setting Time From:", playingEp);
-  //   setState({
-  //     ...state,
-  //     timeElapsed: msConversion(0),
-  //     timeElapsedMs: 0,
-  //     timeRemaining: msConversion(playingEp.duration_ms),
-  //     timeRemainingMs: playingEp.duration_ms
-  //   });
-  // }, [playingEp]);
-
   let counter = 0;
 
   const increment = () => {
@@ -166,14 +155,19 @@ const Player = (props) => {
     timeElapsed = counter * 1000;
   }, [counter]);
 
-  const handleDevicesClick = (event) => {
-    // event.persist();
-    // const eventVar = event;
-
+  const handleDevicePopover = (event) => {
     setAnchorEl(event.currentTarget);
     getDevices(props.token)
       .then((res) => setDevices(res))
       .then(() => console.log(devices));
+  };
+
+  const handleDeviceSelection = (id) => {
+    console.log("this is the ID", id);
+
+    // getDevices(props.token)
+    //   .then((res) => setDevices(res))
+    //   .then(() => console.log(devices));
   };
 
   const handleClose = () => {
@@ -243,7 +237,7 @@ const Player = (props) => {
                   <PauseCircleFilled onClick={pause} />
                   <PlayCircleFilled onClick={play} />
                 </div>
-                <DevicesIcon onClick={handleDevicesClick} />
+                <DevicesIcon onClick={handleDevicePopover} />
                 <Popover
                   id={id}
                   open={open}
@@ -262,7 +256,10 @@ const Player = (props) => {
                     {devices.length > 1 &&
                       devices.map((device) => {
                         return (
-                          <ListItem dense="true" button>
+                          <ListItem
+                            button
+                            onClick={() => handleDeviceSelection(device.id)}
+                          >
                             <ListItemText primary={device.name} />
                           </ListItem>
                         );
