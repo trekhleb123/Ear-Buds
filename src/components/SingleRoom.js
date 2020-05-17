@@ -16,7 +16,6 @@ class SingleRoom extends React.Component {
       // open: false
     };
     this.leaveRoom = this.leaveRoom.bind(this);
-    //this.open = this.open.bind(this);
   }
   async componentDidMount() {
     if (!Object.keys(this.props.userData).length) {
