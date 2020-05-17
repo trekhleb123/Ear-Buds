@@ -57,7 +57,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background-color: crimson;
+
   padding: 10px;
 }
 
@@ -85,4 +85,21 @@ button {
 
 #on-deck-card-image {
   max-width: 25%;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-start;
+  background-color: black;
+}
+
+.main-container {
+  display: flex;
+}
+
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 40%;
+  background-color: grey;
 }

@@ -133,8 +133,8 @@ const SearchBar = (props) => {
       {episodes.length > 1 ? (
         <div>
           <FormControl fullWidth="true" margin="normal" variant="outlined">
-            <InputLabel htmlFor="age-native-simple">Episodes</InputLabel>
-            <Select native value={"Select Episode"} onChange={handleChange}>
+            <InputLabel>{`Select from ${search} Episodes`}</InputLabel>
+            <Select native value="Episodes" onChange={handleChange}>
               <option aria-label="None" value="" />
               {episodes &&
                 episodes.map((episode) => (
@@ -160,8 +160,12 @@ const SearchBar = (props) => {
             margin="normal"
             variant="outlined"
           >
-            <InputLabel htmlFor="age-native-simple">Episodes</InputLabel>
-            <Select native value={"Select Episode"} onChange={handleChange}>
+            <InputLabel>Select Show from Above</InputLabel>
+            <Select
+              native
+              value={`Select Show from Above`}
+              onChange={handleChange}
+            >
               <option aria-label="None" value="" />
             </Select>
           </FormControl>

@@ -11,39 +11,51 @@ import {
   pausePlayback,
   startPodcast,
   resumePlayback,
-  sampleEp,
   getEpisode,
+  getDevices,
 } from "../api/spotifyApi";
 import Sdk from "./Sdk";
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
+import DevicesIcon from "@material-ui/icons/Devices";
+import VolumeUpIcon from "@material-ui/icons/VolumeUp";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Popover from "@material-ui/core/Popover";
 
 const Player = (props) => {
   const blank = {
     isBlank: true,
     name: "",
     show: { publisher: "" },
-    duration_ms: 1000,
+    duration_ms: 0,
     description: "",
     images: [
       { url: "" },
       {
-        url: "https://i.scdn.co/image/a7de7e0497e4b718a08d99e98241533f5113a3e1",
+        url:
+          "https://www.messy.fm/static/media/podcast_placeholder.b5c814ab.png",
       },
     ],
   };
   let [selectedEp, setSelectedEp] = useState(blank);
+  let [timer, setTimer] = useState(null);
   let [playingEp, setPlayingEp] = useState(blank);
-  const [state, setState] = useState({
-    timeElapsed: "",
-    timeElapsedMs: 0,
-    timeRemaining: "",
-    timeRemainingMs: 0,
-  });
+
+  let [timeElapsed, setTimeElapsed] = useState(0);
+  let [devices, setDevices] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  // const [state, setState] = useState({
+  //   timeElapsed: "",
+  //   timeElapsedMs: 0,
+  //   timeRemaining: "",
+  //   timeRemainingMs: 0,
+  // });
   const roomId = props.roomId;
   const [value, loading, error] = useDocumentData(db.doc(`Rooms/${roomId}`));
 
@@ -66,15 +78,14 @@ const Player = (props) => {
   };
 
   const msConversion = (s) => {
-    // var ms = s % 1000;
-    // s = (s - ms) / 1000;
-    // var secs = s % 60;
-    // s = (s - secs) / 60;
-    // var mins = s % 60;
-    // var hrs = (s - mins) / 60;
+    var ms = s % 1000;
+    s = (s - ms) / 1000;
+    var secs = s % 60;
+    s = (s - secs) / 60;
+    var mins = s % 60;
+    var hrs = (s - mins) / 60;
 
-    // return hrs + ":" + mins + ":" + secs;
-    return s;
+    return hrs + ":" + mins + ":" + secs;
   };
 
   const usePrevious = (val) => {
@@ -98,29 +109,30 @@ const Player = (props) => {
           value.playing.progress === 0 &&
           playTimeElapsed < 300
         ) {
+          console.log("PLAYINGEP", playingEp);
+          console.log("selected", selectedEp);
           startPodcast(props.token, deviceId, value.playing.uri, 0)
             .then(() => {
               if (value.playing.uri !== playingEp.uri) {
                 setPlayingEp(selectedEp);
                 setSelectedEp(blank);
               }
-              setState({
-                ...state,
-                timeElapsed: msConversion(0),
-                timeElapsedMs: 0,
-                timeRemaining: msConversion(playingEp.duration_ms),
-                timeRemainingMs: playingEp.duration_ms,
-              });
-              console.log("Initial Time", state);
             })
-            .then(() => tick(true));
+            .then(() => {
+              setTimeElapsed(0);
+            })
+            .then(() => {
+              // if (!timer) setTimer(setInterval(increment, 1000));
+            });
         } else if (
           value.playing.status === true &&
           value.playing.progress !== 0
         ) {
-          resumePlayback(props.token).then(() => tick(true));
+          resumePlayback(props.token).then(() =>
+            setTimer(setInterval(increment, 1000))
+          );
         } else if (value.playing.status === false) {
-          pausePlayback(props.token).then(() => tick(false));
+          pausePlayback(props.token).then(() => clearInterval(timer));
         }
         if (value.queued.status === true && queueTimeElapsed < 500) {
           getEpisode(value.queued.epId, props.token).then((res) =>
@@ -143,28 +155,33 @@ const Player = (props) => {
   //   });
   // }, [playingEp]);
 
-  const increment = () => {
-    console.log("Incrementing", state);
-    setState({
-      ...state,
-      timeElapsedMs: state.timeElapsedMs + 1000,
-      timeRemainingMs: state.timeRemainingMs - 1000,
-    });
-    setState({
-      ...state,
-      timeElapsed: msConversion(state.timeElapsedMs),
-      timeRemaining: msConversion(state.timeRemainingMs),
-    });
-  };
-  let timer;
+  let counter = 0;
 
-  const tick = (status) => {
-    if (status) {
-      timer = setInterval(increment, 1000);
-    } else {
-      clearInterval(timer);
-    }
+  const increment = () => {
+    console.log("Incrementing", counter);
+    counter++;
   };
+
+  useEffect(() => {
+    timeElapsed = counter * 1000;
+  }, [counter]);
+
+  const handleDevicesClick = (event) => {
+    // event.persist();
+    // const eventVar = event;
+
+    setAnchorEl(event.currentTarget);
+    getDevices(props.token)
+      .then((res) => setDevices(res))
+      .then(() => console.log(devices));
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
 
   return (
     <div>
@@ -220,17 +237,42 @@ const Player = (props) => {
             </div>
             <div className="on-deck-card-description">
               <div className="player-container">
-                <div>Vol</div>
+                <VolumeUpIcon />
                 <Sdk token={props.token} />
                 <div>
                   <PauseCircleFilled onClick={pause} />
                   <PlayCircleFilled onClick={play} />
                 </div>
-                <div>Status</div>
+                <DevicesIcon onClick={handleDevicesClick} />
+                <Popover
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                >
+                  <List component="nav" aria-label="secondary mailbox folders">
+                    {devices.length > 1 &&
+                      devices.map((device) => {
+                        return (
+                          <ListItem dense="true" button>
+                            <ListItemText primary={device.name} />
+                          </ListItem>
+                        );
+                      })}
+                  </List>
+                </Popover>
               </div>
               <div className="progress-container">
-                <span>{state.timeElapsed}</span>
-                <span>{state.timeRemaining}</span>
+                <span>{msConversion(timeElapsed)}</span>
+                <span>{msConversion(playingEp.duration_ms)}</span>
               </div>
               <LinearProgress variant="determinate" value={currentPosition} />
             </div>
@@ -258,59 +300,3 @@ const dispatchToProps = (dispatch) => ({
 });
 
 export default connect(stateToProps, dispatchToProps)(Player);
-
-// const tick = () => {
-//   set
-// };
-
-// //Triggered by timer
-// useEffect(() => {
-//   setCurrentPosition(Date.now() - this.state.start + (this.props.position || 0))
-//   setProgress(+(
-//     (currentPosition * 100) /
-//     props.track.duration_ms
-//   ).toFixed(2) + "%")
-// }, []);
-
-//   //Triggered by playing status
-
-// const progressTick = (status, width = 1) => {
-//   if (status) {
-//     var elem = document.getElementById("progress");
-//     var id = setInterval(tick, 1000);
-//     function tick() {
-//       if (width >= 100) {
-//         clearInterval(id);
-//       } else {
-//         width++;
-//         elem.style.width = width + "%";
-//       }
-//     }
-//   } else {
-//     clearInterval(id);
-//   }
-// };
-
-// useEffect(() => {
-//   setProgress(0)
-//   function progressFunc() {
-//     setCurrentPosition(progress++)
-//   }
-
-//   const timer = setInterval(progressFunc, 1000);
-
-//   while(currentPosition < 100) {
-
-//   }
-//   return () => {
-//     clearInterval(timer);
-//   };
-// }, []);
-
-// let timer = null;
-// playing = !playing;
-// if (playing) {
-//   timer = setInterval(setCurrentPosition(currentPosition++), 300);
-// } else {
-//   clearInterval(timer);
-// }

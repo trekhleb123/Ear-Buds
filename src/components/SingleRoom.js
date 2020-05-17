@@ -1,11 +1,10 @@
-
 import React from "react";
 import Messages from "./Messages";
 import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase";
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store";
 import { connect } from "react-redux";
 import SearchBar from "./SearchBar";
-import { Modal } from '@material-ui/core';
+import { Modal } from "@material-ui/core";
 
 class SingleRoom extends React.Component {
   constructor() {
@@ -14,7 +13,6 @@ class SingleRoom extends React.Component {
       users: {},
     };
     this.leaveRoom = this.leaveRoom.bind(this);
-
   }
   async componentDidMount() {
     if (!Object.keys(this.props.userData).length) {
@@ -36,34 +34,34 @@ class SingleRoom extends React.Component {
   render() {
     return (
       <div>
-        <h2>Users</h2>
-        <div>
-          {Object.values(this.state.users).map((user) => {
-            return <li key={user}>{user}</li>;
-          })}
+        <div className="header">
+          <button
+            type="button"
+            onClick={() =>
+              this.leaveRoom(
+                this.props.match.params.roomId,
+                this.props.userData.display_name
+              )
+            }
+          >
+            Leave Room
+          </button>
+          <button type="button">Invite Friend</button>
         </div>
-        <button
-          type="button"
-          onClick={() =>
-            this.leaveRoom(
-              this.props.match.params.roomId,
-              this.props.userData.display_name
-            )
-          }
-        >
 
-          Leave Room
-        </button>
-        <button type="button">
-          Invite Friend
-        </button>
-        {/* {this.state.open ?
-        <Modal open={this.state.open}>
-          hello
-        </Modal> : null} */}
-        <Messages />
-        <SearchBar roomId={this.props.match.params.roomId} />
-        <button type="button">Invite Friend</button>
+        <div className="main-container">
+          <div className="messages-container">
+            <h2>Users</h2>
+            <div>
+              {Object.values(this.state.users).map((user) => {
+                return <li key={user}>{user}</li>;
+              })}
+            </div>
+            <Messages />
+          </div>
+
+          <SearchBar roomId={this.props.match.params.roomId} />
+        </div>
       </div>
     );
   }
