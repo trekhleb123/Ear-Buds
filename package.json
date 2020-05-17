@@ -16,6 +16,7 @@
     "firebase-admin": "^8.11.0",
     "lodash": "^4.17.15",
     "material-ui": "^0.20.2",
+    "material-ui-popup-state": "^1.5.4",
     "querystring": "^0.2.0",
     "react": "^16.13.1",
     "react-autosuggest": "^10.0.2",

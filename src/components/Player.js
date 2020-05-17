@@ -1,12 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
-import { setDeviceId } from "../redux/store";
-import { connect } from "react-redux";
-import { useDocumentData } from "react-firebase-hooks/firestore";
-import { isEqual } from "lodash";
-
-import LinearProgress from "@material-ui/core/LinearProgress";
-import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
-import { db, playbackUpdate, playbackStart } from "../firebase/firebase";
+import React, { useState, useEffect, useRef } from "react"
+import { setDeviceId } from "../redux/store"
+import { connect } from "react-redux"
+import { useDocumentData } from "react-firebase-hooks/firestore"
+import { isEqual } from "lodash"
+import Volume from './Volume'
+import LinearProgress from "@material-ui/core/LinearProgress"
+import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons"
+import {
+  getRoom,
+  getCurrentRoomData,
+  updateRoomData,
+  db,
+  playbackUpdate,
+  playbackStart,
+  clearQueue,
+} from "../firebase/firebase"
 import {
   pausePlayback,
   startPodcast,
@@ -27,6 +35,9 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Popover from "@material-ui/core/Popover";
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 
 const Player = (props) => {
   const blank = {
@@ -210,7 +221,7 @@ const Player = (props) => {
               {selectedEp.uri && <Sync onClick={start} />}
             </div>
           </div>
-
+          
           <CardMedia
             component="img"
             src={selectedEp.images[1].url}
@@ -237,7 +248,31 @@ const Player = (props) => {
             </div>
             <div className="on-deck-card-description">
               <div className="player-container">
-                <VolumeUpIcon />
+              <PopupState variant="popover" popupId="demo-popup-popover">
+                {(popupState) => (
+                  <div>
+                    <Button {...bindTrigger(popupState)}>
+                      <VolumeUpIcon />
+                    </Button>
+                    <Popover
+                      {...bindPopover(popupState)}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                      }}
+                    >
+                      <Box autoWidth="true" p={2}>
+                        <Volume />
+                      </Box>
+                    </Popover>
+                  </div>
+                )}
+              </PopupState>
+                
                 <Sdk token={props.token} />
                 <div>
                   <PauseCircleFilled onClick={pause} />
@@ -289,6 +324,7 @@ const Player = (props) => {
             title="Show Artwork"
           />
         </Card>
+        
       </div>
     </div>
   );
