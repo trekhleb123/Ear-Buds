@@ -135,6 +135,23 @@ export const fetchEpisodes = async (result, token) => {
   }
 };
 
+export const getDevices = async (token) => {
+  try {
+    const response = await axios.get(
+      `https://api.spotify.com/v1/me/player/devices`,
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+    console.log("DEVICES", response);
+    return response.data.devices;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const sampleEp = {
   audio_preview_url:
     "https://p.scdn.co/mp3-preview/ae962b343e142fa4cb7a03a28d8fc5bb69e11c4c",
