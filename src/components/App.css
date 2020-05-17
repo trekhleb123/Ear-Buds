@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-image: url('https://i.pinimg.com/originals/70/b4/d4/70b4d4080fc2cdb4bd1c70802148c3c0.jpg');
+  background-image: url("https://i.pinimg.com/originals/70/b4/d4/70b4d4080fc2cdb4bd1c70802148c3c0.jpg");
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -102,4 +102,8 @@ button {
   flex-direction: column;
   min-width: 40%;
   background-color: grey;
+}
+
+.volume {
+  width: 150px;
 }
