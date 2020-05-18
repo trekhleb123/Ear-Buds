@@ -102,7 +102,7 @@ const SearchBar = (props) => {
   };
 
   return (
-    <div>
+    <div className="right-panel">
       <div className="search-container">
         <Autocomplete
           className="search"
