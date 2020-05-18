@@ -108,13 +108,15 @@ button {
   display: flex;
 }
 
-.messages-container {
+#messages-container {
   display: flex;
   flex-direction: column;
   min-width: 40%;
   margin: auto 0 20px 20px;
 }
-
+#users{
+  overflow: scroll;
+}
 .volume {
   width: 150px;
 }
@@ -187,4 +189,8 @@ button {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+}
+#pic {
+border-radius: 50%;
+overflow: scroll;
 }

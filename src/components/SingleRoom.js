@@ -9,7 +9,7 @@ import { Modal } from "@material-ui/core"
 import Messages from "./Messages"
 import { SearchBar } from "."
 import Header from "./Header"
-
+import './App.css'
 class SingleRoom extends React.Component {
   constructor() {
     super()
@@ -52,7 +52,7 @@ class SingleRoom extends React.Component {
         />
 
         <div className="main-container">
-          <div className="messages-container">
+          <div id="users">
             <h2>Users</h2>
             <div>
               {Object.values(this.state.users).map((user, i) => {
@@ -61,7 +61,8 @@ class SingleRoom extends React.Component {
                   <div className="userList" key={i}>
                     <div>
                       <img
-                        style={{ width: "25px" }}
+                      id='pic'
+                        style={{ width: "25px"}}
                         alt="avatar"
                         src={
                           user.image.length > 0
