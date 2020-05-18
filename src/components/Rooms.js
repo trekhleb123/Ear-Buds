@@ -6,13 +6,10 @@ import {
   findRoom,
   getRoom,
 } from "../firebase/firebase"
-import { Route } from "react-router-dom"
-import { Link } from "react-router-dom"
 import { withRouter } from "react-router-dom"
 import { connect } from "react-redux"
 import { getUserData, setRoomCode } from "../redux/store"
 import { Button } from '@material-ui/core';
-import { spacing } from '@material-ui/system';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import "./App.css"
@@ -51,7 +48,8 @@ class Rooms extends React.Component {
     const roomCode = await createRoom(
       this.props.access_token,
       this.props.userData.display_name,
-      this.props.refresh_token
+      this.props.refresh_token,
+      this.props.userData.images
     )
     const id = await getRoom(roomCode)
     this.props.setRoomCode(roomCode)
@@ -67,7 +65,8 @@ class Rooms extends React.Component {
         this.props.userData.display_name,
         this.props.refresh_token,
         room,
-        this.props.roomCode
+        this.props.roomCode,
+        this.props.userData.images
       )
       this.props.history.push(`/room/${room}`)
       console.log("PROPS", this.props)
@@ -92,7 +91,7 @@ class Rooms extends React.Component {
   }
   render() {
     return (
-      <div className='roomContainer'>
+      <div className='App-header'>
         <Box display="flex" justifyContent="center">
         <Box m={5} display='inline'>
         <Button variant='contained' onClick={this.handleSubmit} type="button">
@@ -113,7 +112,7 @@ class Rooms extends React.Component {
               name="roomCode"
               value={this.props.roomCode}
               onChange={this.handleChange}
-              variant="outlined"
+              variant="filled"
               label="Room Code"
             />
              <Box m={2} display='inline'>
