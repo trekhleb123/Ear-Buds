@@ -1,8 +1,9 @@
-import React from 'react';
-import { db, userLeft, renderUsers, vacantRoom } from '../firebase/firebase';
-import { Route } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import React from "react"
+import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
+import { Route } from "react-router-dom"
+import { Link } from "react-router-dom"
 //import { getMyData } from "../spotifyLogin"
+<<<<<<< HEAD
 import { getAccessToken, setSpotifyCode, getUserData } from '../redux/store';
 import { connect } from 'react-redux';
 import { Modal } from '@material-ui/core';
@@ -11,43 +12,51 @@ import { SearchBar } from '.';
 import { Button } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { List } from '@material-ui/core';
+=======
+import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
+import { connect } from "react-redux"
+import { Modal } from "@material-ui/core"
+import Messages from "./Messages"
+import { SearchBar } from "."
+>>>>>>> a9a13ea7ddfd861a1333c623cefba8401b412da2
 class SingleRoom extends React.Component {
   constructor() {
-    super();
+    super()
     this.state = {
       users: [],
       // open: false
-    };
-    this.leaveRoom = this.leaveRoom.bind(this);
+    }
+    this.leaveRoom = this.leaveRoom.bind(this)
   }
   async componentDidMount() {
-    if (!Object.keys(this.props.userData).length) {
-      this.props.history.push('/');
+    if (!this.props.userData.display_name) {
+      window.sessionStorage.setItem("roomId", this.props.match.params.roomId)
+      this.props.history.push("/")
     }
-    this.props.getUserData(this.props.access_token);
+    this.props.getUserData(this.props.access_token)
     // await renderUsers(this.props.match.params.roomId);
     // this.setState({
     //   users: [...this.state.users, await renderUsers(this.props.match.params.roomId)],
     // })
     //     console.log('in mount', this.state.users)
     await db
-      .collection('Rooms')
+      .collection("Rooms")
       .doc(this.props.match.params.roomId)
-      .collection('Users')
-      .onSnapshot(snapshot => {
-        const allUsers = [];
-        snapshot.forEach(doc => allUsers.push(doc.data()));
+      .collection("Users")
+      .onSnapshot((snapshot) => {
+        const allUsers = []
+        snapshot.forEach((doc) => allUsers.push(doc.data()))
         this.setState({
           users: allUsers,
-        });
-      });
+        })
+      })
   }
 
   async leaveRoom(roomId, displayName) {
-    console.log(roomId, displayName);
-    await userLeft(roomId, displayName);
-    await vacantRoom(roomId);
-    this.props.history.push('/');
+    console.log(roomId, displayName)
+    await userLeft(roomId, displayName)
+    await vacantRoom(roomId)
+    this.props.history.push("/")
   }
 
   render() {
@@ -90,19 +99,19 @@ class SingleRoom extends React.Component {
         <SearchBar roomId={this.props.match.params.roomId} />
         <button type="button">Invite Friend</button>
       </div>
-    );
+    )
   }
 }
-const stateToProps = state => ({
+const stateToProps = (state) => ({
   access_token: state.access_token,
   userData: state.userData,
   refresh_token: state.refresh_token,
-});
+})
 
-const dispatchToProps = dispatch => ({
-  getAccessToken: code => dispatch(getAccessToken(code)),
-  setSpotifyCode: code => dispatch(setSpotifyCode(code)),
-  getUserData: token => dispatch(getUserData(token)),
-});
+const dispatchToProps = (dispatch) => ({
+  getAccessToken: (code) => dispatch(getAccessToken(code)),
+  setSpotifyCode: (code) => dispatch(setSpotifyCode(code)),
+  getUserData: (token) => dispatch(getUserData(token)),
+})
 
-export default connect(stateToProps, dispatchToProps)(SingleRoom);
+export default connect(stateToProps, dispatchToProps)(SingleRoom)

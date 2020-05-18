@@ -94,7 +94,15 @@ button {
 .header {
   display: flex;
   justify-content: flex-start;
+  background-color: cornflowerblue;
+  min-height: 5%;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-start;
   background-color: black;
+  min-height: 100px;
 }
 
 .main-container {
@@ -105,9 +113,46 @@ button {
   display: flex;
   flex-direction: column;
   min-width: 40%;
-  background-color: grey;
+  margin: auto 0 20px 20px;
 }
 
 .volume {
   width: 150px;
+}
+
+#message-form {
+  margin: 10px;
+  padding: 10px;
+}
+
+.right-box {
+  margin: 20px;
+}
+
+.card-media {
+  height: auto;
+  width: auto;
+}
+
+.right-message {
+  justify-content: flex-end !important;
+}
+.left-message {
+  justify-content: flex-start !important;
+}
+
+.message-name {
+  font-size: xx-small;
+}
+
+.chat-container {
+  padding: 10px;
+  height: 600px;
+  overflow-y: scroll;
+}
+
+.chat-send-container {
+  margin-top: 20px;
+  background-color: #353535;
+  border-radius: 10px;
 }
