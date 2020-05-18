@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-image: url("https://i.pinimg.com/originals/70/b4/d4/70b4d4080fc2cdb4bd1c70802148c3c0.jpg");
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -44,15 +44,20 @@ button {
 .player-container {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 16px;
+}
+
+.progress-container {
+  display: flex;
+  justify-content: space-between;
 }
 
 .podcast-info-container {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background-color: crimson;
+
   padding: 10px;
 }
 
@@ -80,4 +85,37 @@ button {
 
 #on-deck-card-image {
   max-width: 25%;
+}
+/* .roomContainer {
+  background-color: #282c34;
+
+} */
+
+.header {
+  display: flex;
+  justify-content: flex-start;
+  background-color: cornflowerblue;
+  min-height: 5%;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-start;
+  background-color: black;
+  min-height: 100px;
+}
+
+.main-container {
+  display: flex;
+}
+
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 40%;
+  background-color: grey;
+}
+
+.volume {
+  width: 150px;
 }

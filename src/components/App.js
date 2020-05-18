@@ -6,7 +6,7 @@ import { spotifyLogin } from "../spotifyLogin"
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
 import Rooms from "./Rooms"
-//import { browserHistory } from "react-router"
+import Button from "@material-ui/core/Button"
 
 function App(props) {
   useEffect(() => {
@@ -41,9 +41,9 @@ function App(props) {
   return (
     <div className="App">
       <header className="App-header">
-        <button onClick={() => spotifyLogin(props.code)}>
+        <Button variant="contained" onClick={() => spotifyLogin(props.code)}>
           Login to Spotify
-        </button>
+        </Button>
       </header>
     </div>
   )
