@@ -103,33 +103,36 @@ const SearchBar = (props) => {
 
   return (
     <div>
-      <Autocomplete
-        freeSolo
-        id="free-solo-2-demo"
-        disableClearable
-        onChange={(e, v) => activeSearch(v)}
-        options={results.map((item) => item.label)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            onChange={({ target }) => {
-              // activeSearch(target.value);
-              activeSearch(target.value);
-            }}
-            label="Search input"
-            margin="normal"
-            variant="outlined"
-          />
-        )}
-      />
-      <Button
-        aria-controls="simple-menu"
-        aria-haspopup="true"
-        onClick={getEpisodes}
-      >
-        Get Episodes
-      </Button>
-
+      <div className="search-container">
+        <Autocomplete
+          className="search"
+          freeSolo
+          id="free-solo-2-demo"
+          disableClearable
+          onChange={(e, v) => activeSearch(v)}
+          options={results.map((item) => item.label)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              onChange={({ target }) => {
+                // activeSearch(target.value);
+                activeSearch(target.value);
+              }}
+              label="Search input"
+              margin="normal"
+              variant="outlined"
+            />
+          )}
+        />
+        <Button
+          id="search-button"
+          variant="contained"
+          color="primary"
+          onClick={getEpisodes}
+        >
+          Search
+        </Button>
+      </div>
       {episodes.length > 1 ? (
         <div>
           <FormControl fullWidth="true" margin="normal" variant="outlined">
