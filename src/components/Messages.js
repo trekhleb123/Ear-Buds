@@ -62,7 +62,9 @@ const Messages = (props) => {
 
   const renderMessages = () => {
     if (!messages.length) {
-      return <div>There's no messages yet...</div>
+      return (
+        <div className={`${classes.bubble}`}>There's no messages yet...</div>
+      )
     }
 
     return messages.map(({ name, message }, index) => (
