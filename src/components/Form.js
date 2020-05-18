@@ -28,7 +28,7 @@ const Form = (props) => {
 
   return (
     <div id="message-form">
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} autocomplete="off">
         <TextField
           name="message"
           placeholder="Message"
