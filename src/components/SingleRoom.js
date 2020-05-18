@@ -19,7 +19,8 @@ class SingleRoom extends React.Component {
     };
   }
   async componentDidMount() {
-    if (!Object.keys(this.props.userData).length) {
+    if (!this.props.userData.display_name) {
+      window.sessionStorage.setItem("roomId", this.props.match.params.roomId);
       this.props.history.push("/");
     }
     this.props.getUserData(this.props.access_token);
@@ -61,8 +62,9 @@ class SingleRoom extends React.Component {
             </div>
             <Messages />
           </div>
-
-          <SearchBar roomId={this.props.match.params.roomId} />
+          <div className="right-box">
+            <SearchBar roomId={this.props.match.params.roomId} />
+          </div>
         </div>
         <div className="footer">Footer Text</div>
       </div>
