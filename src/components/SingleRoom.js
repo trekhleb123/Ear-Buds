@@ -55,10 +55,15 @@ class SingleRoom extends React.Component {
           <div className="messages-container">
             <h2>Users</h2>
             <div>
-              {Object.values(this.state.users).map((user, i) => {
-                console.log("user", user);
-                return <li key={i}>{user.name}</li>;
-              })}
+            {Object.values(this.state.users).map((user, i) => {
+            console.log('user', user);
+            return (
+            <div className='userList'key={i}>
+              <img alt='avatar' src={user.image.length > 0 ? user.image[0].url : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"}/>
+              <p>{user.name}</p>
+              </div>
+              );
+          })}
             </div>
             <Messages />
           </div>
