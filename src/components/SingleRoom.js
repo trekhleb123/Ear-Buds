@@ -1,7 +1,7 @@
-import React from "react";
-import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase";
-import { Route } from "react-router-dom";
-import { Link } from "react-router-dom";
+import React from "react"
+import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
+import { Route } from "react-router-dom"
+import { Link } from "react-router-dom"
 //import { getMyData } from "../spotifyLogin"
 import { getAccessToken, setSpotifyCode, getUserData } from '../redux/store';
 import { connect } from 'react-redux';
@@ -14,18 +14,18 @@ import Card from '@material-ui/core/Card';
 import { List } from '@material-ui/core';
 class SingleRoom extends React.Component {
   constructor() {
-    super();
+    super()
     this.state = {
       users: [],
       // open: false
-    };
+    }
   }
   async componentDidMount() {
     if (!this.props.userData.display_name) {
-      window.sessionStorage.setItem("roomId", this.props.match.params.roomId);
-      this.props.history.push("/");
+      window.sessionStorage.setItem("roomId", this.props.match.params.roomId)
+      this.props.history.push("/")
     }
-    this.props.getUserData(this.props.access_token);
+    this.props.getUserData(this.props.access_token)
     // await renderUsers(this.props.match.params.roomId);
     // this.setState({
     //   users: [...this.state.users, await renderUsers(this.props.match.params.roomId)],
@@ -36,16 +36,16 @@ class SingleRoom extends React.Component {
       .doc(this.props.match.params.roomId)
       .collection("Users")
       .onSnapshot((snapshot) => {
-        const allUsers = [];
-        snapshot.forEach((doc) => allUsers.push(doc.data()));
+        const allUsers = []
+        snapshot.forEach((doc) => allUsers.push(doc.data()))
         this.setState({
           users: allUsers,
-        });
-      });
+        })
+      })
   }
 
   render() {
-    console.log("users in render", this.state.users);
+    console.log("users in render", this.state.users)
     return (
       <div>
         <Header
@@ -57,15 +57,25 @@ class SingleRoom extends React.Component {
           <div className="messages-container">
             <h2>Users</h2>
             <div>
-            {Object.values(this.state.users).map((user, i) => {
-            console.log('user', user);
-            return (
-            <div className='userList'key={i}>
-              <img alt='avatar' src={user.image.length > 0 ? user.image[0].url : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"}/>
-              <p>{user.name}</p>
-              </div>
-              );
-          })}
+              {Object.values(this.state.users).map((user, i) => {
+                console.log("user", user)
+                return (
+                  <div className="userList" key={i}>
+                    <div>
+                      <img
+                        style={{ width: "25px" }}
+                        alt="avatar"
+                        src={
+                          user.image.length > 0
+                            ? user.image[0].url
+                            : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
+                        }
+                      />
+                    </div>
+                    <p>{user.name}</p>
+                  </div>
+                )
+              })}
             </div>
             <Messages />
           </div>
@@ -75,7 +85,7 @@ class SingleRoom extends React.Component {
         </div>
         <div className="footer">Footer Text</div>
       </div>
-    );
+    )
   }
 }
 const stateToProps = (state) => ({
@@ -83,12 +93,12 @@ const stateToProps = (state) => ({
   userData: state.userData,
   refresh_token: state.refresh_token,
   roomCode: state.roomCode,
-});
+})
 
 const dispatchToProps = (dispatch) => ({
   getAccessToken: (code) => dispatch(getAccessToken(code)),
   setSpotifyCode: (code) => dispatch(setSpotifyCode(code)),
   getUserData: (token) => dispatch(getUserData(token)),
-});
+})
 
-export default connect(stateToProps, dispatchToProps)(SingleRoom);
+export default connect(stateToProps, dispatchToProps)(SingleRoom)

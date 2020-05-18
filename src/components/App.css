@@ -87,8 +87,7 @@ button {
   max-width: 25%;
 }
 .userList {
-  border: gray
-
+  border: gray;
 }
 
 .header {
@@ -145,6 +144,10 @@ button {
 #message-form {
   margin: 10px;
   padding: 10px;
+  background-color: rgba(157, 206, 248, 0.315);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px 0 rgba(197, 192, 192, 0.2),
+    0 6px 20px 0 rgba(148, 144, 144, 0.19);
 }
 
 .right-box {
@@ -169,7 +172,7 @@ button {
 
 .chat-container {
   padding: 10px;
-  height: 600px;
+  height: 200px;
   overflow-y: scroll;
 }
 
@@ -177,4 +180,11 @@ button {
   margin-top: 20px;
   background-color: #353535;
   border-radius: 10px;
+}
+
+.right-panel {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
 }
