@@ -86,10 +86,10 @@ button {
 #on-deck-card-image {
   max-width: 25%;
 }
-/* .roomContainer {
-  background-color: #282c34;
+.userList {
+  border: gray
 
-} */
+}
 
 .header {
   display: flex;
