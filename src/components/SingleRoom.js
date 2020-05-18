@@ -9,7 +9,8 @@ import { Modal } from '@material-ui/core';
 import Messages from './Messages';
 import { SearchBar } from '.';
 import { Button } from '@material-ui/core';
-
+import Card from '@material-ui/core/Card';
+import { List } from '@material-ui/core';
 class SingleRoom extends React.Component {
   constructor() {
     super();
@@ -50,19 +51,24 @@ class SingleRoom extends React.Component {
   }
 
   render() {
-    console.log('users in render', this.state.users);
+    console.log('users in render', this.state.users, this.props.userData);
     return (
       <div>
         <h2>Users</h2>
         <div>
           {Object.values(this.state.users).map((user, i) => {
             console.log('user', user);
-            return <li key={i}>{user.name}</li>;
+            return (
+            <div className='userList'key={i}>
+              <img alt='avatar' src={user.image.length > 0 ? user.image[0].url : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"}/>
+              <p>{user.name}</p>
+              </div>
+              );
           })}
         </div>
         <Button
-        size='small'
-        variant='contained'
+          size="small"
+          variant="contained"
           type="button"
           onClick={() =>
             this.leaveRoom(
@@ -73,7 +79,9 @@ class SingleRoom extends React.Component {
         >
           Leave Room
         </Button>
-        <Button size='small' variant='contained' type="button">Invite Friend</Button>
+        <Button size="small" variant="contained" type="button">
+          Invite Friend
+        </Button>
         {/* {this.state.open ?
         <Modal open={this.state.open}>
           hello

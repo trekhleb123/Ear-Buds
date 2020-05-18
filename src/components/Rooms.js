@@ -48,7 +48,8 @@ class Rooms extends React.Component {
     const roomCode = await createRoom(
       this.props.access_token,
       this.props.userData.display_name,
-      this.props.refresh_token
+      this.props.refresh_token,
+      this.props.userData.images
     )
     const id = await getRoom(roomCode)
     this.props.setRoomCode(roomCode)
@@ -64,7 +65,8 @@ class Rooms extends React.Component {
         this.props.userData.display_name,
         this.props.refresh_token,
         room,
-        this.props.roomCode
+        this.props.roomCode,
+        this.props.userData.images
       )
       this.props.history.push(`/room/${room}`)
       console.log("PROPS", this.props)
@@ -110,7 +112,7 @@ class Rooms extends React.Component {
               name="roomCode"
               value={this.props.roomCode}
               onChange={this.handleChange}
-              variant="outlined"
+              variant="filled"
               label="Room Code"
             />
              <Box m={2} display='inline'>
