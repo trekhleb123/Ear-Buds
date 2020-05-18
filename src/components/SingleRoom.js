@@ -3,7 +3,6 @@ import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
 import { Route } from "react-router-dom"
 import { Link } from "react-router-dom"
 //import { getMyData } from "../spotifyLogin"
-<<<<<<< HEAD
 import { getAccessToken, setSpotifyCode, getUserData } from '../redux/store';
 import { connect } from 'react-redux';
 import { Modal } from '@material-ui/core';
@@ -12,13 +11,6 @@ import { SearchBar } from '.';
 import { Button } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { List } from '@material-ui/core';
-=======
-import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
-import { connect } from "react-redux"
-import { Modal } from "@material-ui/core"
-import Messages from "./Messages"
-import { SearchBar } from "."
->>>>>>> a9a13ea7ddfd861a1333c623cefba8401b412da2
 class SingleRoom extends React.Component {
   constructor() {
     super()
