@@ -48,17 +48,11 @@ const Header = (props) => {
         type="button"
         onClick={() => leaveRoom(props.roomId, props.userData.display_name)}
         variant="outlined"
-        color="primary"
       >
         Leave Room
       </Button>
 
-      <Button
-        type="button"
-        onClick={handleOpen}
-        variant="outlined"
-        color="primary"
-      >
+      <Button type="button" onClick={handleOpen} variant="outlined">
         Invite Friend
       </Button>
       <Popover

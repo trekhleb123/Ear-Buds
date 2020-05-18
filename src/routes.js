@@ -1,10 +1,10 @@
-import React, { Component } from "react"
-import { BrowserRouter, Route, Switch } from "react-router-dom"
+import React, { Component } from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import { Navbar } from "./components"
-import Rooms from "./components/Rooms"
-import App from "./components/App"
-import SingleRoom from "./components/SingleRoom"
+import { Navbar } from "./components";
+import Rooms from "./components/Rooms";
+import App from "./components/App";
+import SingleRoom from "./components/SingleRoom";
 
 /**
  * COMPONENT
@@ -13,7 +13,6 @@ class Routes extends Component {
   render() {
     return (
       <>
-        <Navbar />
         <Switch>
           <Route exact path="/" component={App} />
           <Route exact path="/home" component={Rooms} />
@@ -22,7 +21,7 @@ class Routes extends Component {
           {/* <Route exact path="/signin" component={SignIn} /> */}
         </Switch>
       </>
-    )
+    );
   }
 }
-export default Routes
+export default Routes;
