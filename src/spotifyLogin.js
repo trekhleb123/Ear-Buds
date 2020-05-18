@@ -1,7 +1,7 @@
 import axios from "axios"
 import queryString from "querystring"
 
-const redirectUri = "http://localhost:3000"
+const redirectUri = "https://podcastparty-402e2.web.app"
 const clientId = process.env.REACT_APP_CLIENT_ID
 const clientSecret = process.env.REACT_APP_CLIENT_SECRET
 const scopes =
@@ -67,4 +67,18 @@ export const getNewToken = (refreshToken) => {
       console.log(res)
       return res.data.access_token
     })
+}
+
+export const getMyData = (token) => {
+  if (token) {
+    fetch("https://api.spotify.com/v1/me", {
+      headers: { Authorization: "Bearer " + token },
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log(err))
+      .then((data) => {
+        console.log("data", data)
+        return data
+      })
+  }
 }
