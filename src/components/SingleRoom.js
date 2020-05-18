@@ -78,8 +78,9 @@ class SingleRoom extends React.Component {
             </div>
             <Messages />
           </div>
-
-          <SearchBar roomId={this.props.match.params.roomId} />
+          <div className="right-box">
+            <SearchBar roomId={this.props.match.params.roomId} />
+          </div>
         </div>
         <div className="footer">Footer Text</div>
       </div>
