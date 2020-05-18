@@ -86,8 +86,10 @@ button {
 #on-deck-card-image {
   max-width: 25%;
 }
-.userList {
+#userList {
   border: gray;
+  direction: flex;
+  flex-direction: row;
 }
 
 .header {
@@ -172,7 +174,7 @@ button {
 
 .chat-container {
   padding: 10px;
-  height: 600px;
+  height: 250px;
   overflow-y: scroll;
 }
 
