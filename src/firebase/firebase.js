@@ -76,7 +76,7 @@ export async function getRooms() {
   return res;
 }
 
-export async function createRoom(token, username, refreshToken) {
+export async function createRoom(token, username, refreshToken, image) {
   //event.preventDefault()
   const code =
     Math.random().toString(36).substring(2, 7) +
@@ -109,13 +109,14 @@ export async function createRoom(token, username, refreshToken) {
     roomCode: code,
     deviceId: 2,
     refreshToken,
+    image
   });
 
   await db.collection("Rooms").doc(newRoom.id).collection("messages").add({});
 
   return code;
 }
-export async function joinRoom(token, username, refreshToken, res, roomCode) {
+export async function joinRoom(token, username, refreshToken, res, roomCode, image) {
   await db
     .collection('Rooms')
     .doc(res)
@@ -126,6 +127,7 @@ export async function joinRoom(token, username, refreshToken, res, roomCode) {
       roomCode: roomCode,
       deviceId: 2,
       refreshToken,
+      image
     });
 }
 
