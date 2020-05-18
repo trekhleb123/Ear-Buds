@@ -34,9 +34,9 @@ const Form = (props) => {
           placeholder="Message"
           value={item.message}
           onChange={onChange}
-          style={{ width: "100%" }}
+          style={{ width: "75%" }}
         />
-        <Button type="submit" variant="outlined" size="small">
+        <Button type="submit" variant="outlined" style={{ margin: "5px" }}>
           Send
         </Button>
       </form>
