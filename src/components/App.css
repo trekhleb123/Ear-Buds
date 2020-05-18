@@ -119,3 +119,25 @@ button {
 .volume {
   width: 150px;
 }
+
+.invite-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  text-align: center;
+  justify-content: space-evenly;
+}
+
+.search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search {
+  width: 100%;
+}
+
+#search-button {
+  margin: 5px;
+}

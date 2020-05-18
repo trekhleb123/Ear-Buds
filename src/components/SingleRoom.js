@@ -8,6 +8,8 @@ import { connect } from "react-redux";
 import { Modal } from "@material-ui/core";
 import Messages from "./Messages";
 import { SearchBar } from ".";
+import Header from "./Header";
+
 class SingleRoom extends React.Component {
   constructor() {
     super();
@@ -15,7 +17,6 @@ class SingleRoom extends React.Component {
       users: [],
       // open: false
     };
-    this.leaveRoom = this.leaveRoom.bind(this);
   }
   async componentDidMount() {
     if (!Object.keys(this.props.userData).length) {
@@ -40,31 +41,14 @@ class SingleRoom extends React.Component {
       });
   }
 
-  async leaveRoom(roomId, displayName) {
-    console.log(roomId, displayName);
-    await userLeft(roomId, displayName);
-    await vacantRoom(roomId);
-    this.props.history.push("/");
-  }
-
   render() {
     console.log("users in render", this.state.users);
     return (
       <div>
-        <div className="header">
-          <button
-            type="button"
-            onClick={() =>
-              this.leaveRoom(
-                this.props.match.params.roomId,
-                this.props.userData.display_name
-              )
-            }
-          >
-            Leave Room
-          </button>
-          <button type="button">Invite Friend</button>
-        </div>
+        <Header
+          roomId={this.props.match.params.roomId}
+          history={this.props.history}
+        />
 
         <div className="main-container">
           <div className="messages-container">
@@ -89,6 +73,7 @@ const stateToProps = (state) => ({
   access_token: state.access_token,
   userData: state.userData,
   refresh_token: state.refresh_token,
+  roomCode: state.roomCode,
 });
 
 const dispatchToProps = (dispatch) => ({

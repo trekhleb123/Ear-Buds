@@ -294,7 +294,7 @@ const Player = (props) => {
                   }}
                 >
                   <List>
-                    {devices.length > 1 &&
+                    {devices.length > 0 &&
                       devices.map((device, ind) => {
                         return (
                           <ListItem
