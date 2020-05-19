@@ -22,24 +22,25 @@ class SingleRoom extends React.Component {
     if (!this.props.userData.display_name) {
       window.sessionStorage.setItem("roomId", this.props.match.params.roomId)
       this.props.history.push("/")
-    }
-    this.props.getUserData(this.props.access_token)
-    // await renderUsers(this.props.match.params.roomId);
-    // this.setState({
-    //   users: [...this.state.users, await renderUsers(this.props.match.params.roomId)],
-    // })
-    //     console.log('in mount', this.state.users)
-    await db
-      .collection("Rooms")
-      .doc(this.props.match.params.roomId)
-      .collection("Users")
-      .onSnapshot((snapshot) => {
-        const allUsers = []
-        snapshot.forEach((doc) => allUsers.push(doc.data()))
-        this.setState({
-          users: allUsers,
+    } else {
+      this.props.getUserData(this.props.access_token)
+      // await renderUsers(this.props.match.params.roomId);
+      // this.setState({
+      //   users: [...this.state.users, await renderUsers(this.props.match.params.roomId)],
+      // })
+      //     console.log('in mount', this.state.users)
+      await db
+        .collection("Rooms")
+        .doc(this.props.match.params.roomId)
+        .collection("Users")
+        .onSnapshot((snapshot) => {
+          const allUsers = []
+          snapshot.forEach((doc) => allUsers.push(doc.data()))
+          this.setState({
+            users: allUsers,
+          })
         })
-      })
+    }
   }
 
   render() {
@@ -77,7 +78,7 @@ class SingleRoom extends React.Component {
                 )
               })}
             </div>
-            <Messages />
+            <Messages roomId={this.props.match.params.roomId} />
           </div>
           <div className="right-box">
             <SearchBar roomId={this.props.match.params.roomId} />

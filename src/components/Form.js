@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { connect } from "react-redux"
 import { firestore, findRoom, addMessage } from "../firebase/firebase"
+import firebase from "firebase"
 import TextField from "@material-ui/core/TextField"
 import { Button } from "@material-ui/core"
 
@@ -8,7 +9,7 @@ const Form = (props) => {
   const initialItemValues = {
     name: props.userData.display_name,
     message: "",
-    timestamp: new Date(),
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
   }
   const [item, setItem] = useState(initialItemValues)
 
