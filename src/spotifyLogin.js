@@ -68,3 +68,17 @@ export const getNewToken = (refreshToken) => {
       return res.data.access_token
     })
 }
+
+export const getMyData = (token) => {
+  if (token) {
+    fetch("https://api.spotify.com/v1/me", {
+      headers: { Authorization: "Bearer " + token },
+    })
+      .then((res) => res.json())
+      .catch((err) => console.log(err))
+      .then((data) => {
+        console.log("data", data)
+        return data
+      })
+  }
+}
