@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { firestore, findRoom } from "../firebase/firebase"
 import Form from "./Form"
 import _sortBy from "lodash/sortBy"
@@ -35,9 +35,20 @@ const Messages = (props) => {
       .collection("messages")
       .orderBy("timestamp", "asc")
   )
+  const messagesEndRef = useRef(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current &&
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(scrollToBottom, [messages])
+
   const classes = useStyles()
+
   if (loading) return <div>Loading..</div>
   if (error) return <div>Error..</div>
+
   const renderMessages = () => {
     if (!messages.docs.length) {
       return (
@@ -66,7 +77,11 @@ const Messages = (props) => {
   }
   return (
     <div className="chat-send-container">
-      <div className="chat-container">{renderMessages()} </div>
+      <div className="chat-container">
+        {renderMessages()}
+        {messages && <div ref={messagesEndRef} />}
+      </div>
+
       <Form roomId={props.roomId} />
     </div>
   )
