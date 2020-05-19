@@ -15,20 +15,70 @@ import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store";
 import { connect } from "react-redux";
 import { getEpisode, fetchEpisodes, fetchShows } from "../api/spotifyApi";
 import { changeQueue } from "../firebase/firebase";
+import { makeStyles } from '@material-ui/core/styles';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import tileData from './tileData';
+
+const useStyles = makeStyles((theme) => ({
+  display: 'flex',
+  root: {
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'hidden',
+      backgroundColor: theme.palette.background.paper,
+    },
+    gridList: {
+    flexWrap: 'nowrap',
+    // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
+    transform: 'translateZ(0)',
+  },
+  title: {
+    color: theme.palette.primary.light,
+  },
+  titleBar: {
+    background:
+      'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+  },
+}));
 
 const SearchBar = (props) => {
   const token = props.token;
   // const [state, setState] = useState({
   //   epId: "",
   // });
+  const classes = useStyles();
   let [search, setSearch] = useState("");
   let [result, setResult] = useState([]);
   let [episodes, setEpisodes] = useState([]);
   let [chosenEpisode, setEpisode] = useState();
   let [uri, setUri] = useState();
-  let [results, setResults] = useState([
-    { value: "chocolate", label: "Chocolate" },
-  ]);
+  let [results, setResults] = useState([{value: "chocolate", label: "Start typing..."}]);
+  let [popularPodcasts, setPopularPodcasts] = useState([{}])
+    const popPodcasts = async () => {
+       const response = await fetch(
+      `https://api.spotify.com/v1/playlists/37i9dQZF1DXdlkPQJ1PlTQ/tracks`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const ppJSON = await response.json();
+    result = []
+    if(ppJSON.items){
+      result = await ppJSON.items.map((item) => {
+        return {
+          uri: item.track.uri,
+          name: item.track.name,
+          image: item.track.album.images[1].url,
+        }
+      })
+      setPopularPodcasts(result)
+    }
+    }
   const searchHandler = async () => {
     const res = await fetchShows(search, token, 50);
 
@@ -44,7 +94,7 @@ const SearchBar = (props) => {
     // );
     // const searchJSON = await response.json();
 
-    let searchArr = [{ value: "chocolate", label: "Chocolate" }];
+    let searchArr = [{ value: "chocolate", label: "Start typing..." }];
 
     if (res.shows) {
       searchArr = res.shows.items.map((item) => {
@@ -100,9 +150,25 @@ const SearchBar = (props) => {
       })
       .then((res) => setEpisodes(res));
   };
-
+  popPodcasts()
   return (
     <div className="right-panel">
+      <div className={classes.root}>
+        <GridList className={classes.gridList} cols={2.5}>
+          {popularPodcasts.map((podcast) => (
+            <GridListTile key={podcast.image}>
+              <img src={podcast.image} alt={podcast.name} />
+              <GridListTileBar
+                title={podcast.name}
+                classes={{
+                  root: classes.titleBar,
+                  title: classes.title,
+                }}
+              />
+            </GridListTile>
+          ))}
+        </GridList>
+      </div>
       <div className="search-container">
         <Autocomplete
           className="search"

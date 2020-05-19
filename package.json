@@ -21,6 +21,7 @@
     "react": "^16.13.1",
     "react-autosuggest": "^10.0.2",
     "react-bootstrap-carousel": "^4.0.6",
+    "react-bootstrap-validation": "^0.1.11",
     "react-dom": "^16.13.1",
     "react-firebase-hooks": "^2.1.1",
     "react-redux": "^7.2.0",
