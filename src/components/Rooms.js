@@ -9,10 +9,17 @@ import {
 import { withRouter } from "react-router-dom"
 import { connect } from "react-redux"
 import { getUserData, setRoomCode } from "../redux/store"
-import { Button } from '@material-ui/core';
+import { Button, Modal } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import "./App.css"
+import HelpIcon from '@material-ui/icons/Help';
+import IconButton from '@material-ui/core/IconButton';
+import Popper from '@material-ui/core/Popper';
+import Fade from '@material-ui/core/Fade';
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography';
+import { userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
 
 class Rooms extends React.Component {
   constructor() {
@@ -20,20 +27,30 @@ class Rooms extends React.Component {
     this.state = {
       joinForm: false,
       wrongRoomCode: false,
-      open: false
+      open: false,
+      anchorEl: null
     }
     this.getRooms = this.getRooms.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.showForm = this.showForm.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.joinSubmit = this.joinSubmit.bind(this)
+    this.handleOpen = this.handleOpen.bind(this)
+    this.handleClose = this.handleClose.bind(this)
   }
-  componentDidMount() {
+   componentDidMount() {
     this.getRooms()
     if (!Object.keys(this.props.userData).length) {
       this.props.history.push("/")
     }
+  //   window.addEventListener("beforeunload", async (ev) => {
+  //     ev.preventDefault();
+  //     await userLeft(this.props.match.params.roomId, this.props.userData.display_name)
+  // });
   }
+// async componentWillUnmount(){
+//   await userLeft(this.props.match.params.roomId, this.props.userData.display_name)
+// }
 
   async getRooms() {
     const doc = db.collection("Rooms")
@@ -89,9 +106,47 @@ class Rooms extends React.Component {
     console.log([event.target.name], event.target.value)
     this.props.setRoomCode(event.target.value)
   }
+  handleOpen = (event) => {
+    this.setState({
+    open: !this.state.open,
+    anchorEl: this.state.anchorEl ? null : event.currentTarget
+  })
+}
+
+ handleClose = () => {
+  this.setState({
+    open: false
+  })
+  };
   render() {
     return (
-      <div className='App-header'>
+      <div id='room'>
+        <Box left='25%' id='box' display='flex' justifyContent="flex-end">
+        <IconButton onClick={this.handleOpen} color="primary">
+        <HelpIcon />
+        </IconButton>
+        </Box>
+        <Popper anchorEl={this.state.anchorEl} placement='bottom-end' open={this.state.open} transition>
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={350}>
+            <div id='paper'>
+            <Paper>
+              <Typography>Welcome to earBudz, create A room and invite your friends to listen into a podcast with you, or join a room that was already created!
+              </Typography>
+            </Paper>
+            </div>
+          </Fade>
+        )}
+      </Popper>
+      <div id='subRoom'>
+        {/* <Modal
+        open={this.state.open}
+        onClose={this.handleClose}
+        // aria-labelledby="simple-modal-title"
+        // aria-describedby="simple-modal-description"
+      >
+        HELLO
+      </Modal> */}
         <Box display="flex" justifyContent="center">
         <Box m={5} display='inline'>
         <Button variant='contained' onClick={this.handleSubmit} type="button">
@@ -129,6 +184,7 @@ class Rooms extends React.Component {
           <div>
           </div>
         </div> */}
+      </div>
       </div>
     )
   }

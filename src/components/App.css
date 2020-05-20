@@ -12,7 +12,22 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
+#room{
+   background-image: url("https://i.pinimg.com/originals/70/b4/d4/70b4d4080fc2cdb4bd1c70802148c3c0.jpg");
+}
+#paper{
+  width:180px;
+  height:150px;
+}
+#subRoom {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
 .App-header {
   background-image: url("https://i.pinimg.com/originals/70/b4/d4/70b4d4080fc2cdb4bd1c70802148c3c0.jpg");
   min-height: 100vh;

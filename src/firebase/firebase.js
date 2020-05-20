@@ -117,7 +117,28 @@ export async function createRoom(token, username, refreshToken, image) {
   return code;
 }
 export async function joinRoom(token, username, refreshToken, res, roomCode, image) {
-  await db
+  const users = await db
+    .collection('Rooms')
+    .doc(res)
+    .collection('Users')
+    .get();
+   users.forEach(async el => {
+    console.log('ref', el.data())
+    if(el.data().name === username){
+      await db
+    .collection('Rooms')
+    .doc(res)
+    .collection('Users')
+    .add({
+      accessToken: el.data().accessToken,
+      name: username,
+      roomCode: el.data().roomCode,
+      deviceId: 2,
+      refreshToken: el.data().refreshToken,
+      image: el.data().image
+    })
+    } else {
+      await db
     .collection('Rooms')
     .doc(res)
     .collection('Users')
@@ -128,6 +149,9 @@ export async function joinRoom(token, username, refreshToken, res, roomCode, ima
       deviceId: 2,
       refreshToken,
       image
+    })
+    }
+
     });
 }
 

@@ -20,7 +20,7 @@ class SingleRoom extends React.Component {
   }
   async componentDidMount() {
     if (!this.props.userData.display_name) {
-      window.sessionStorage.setItem("roomId", this.props.match.params.roomId)
+    //   window.sessionStorage.setItem("roomId", this.props.match.params.roomId)
       this.props.history.push("/")
     }
     this.props.getUserData(this.props.access_token)
@@ -43,7 +43,7 @@ class SingleRoom extends React.Component {
   }
 
   render() {
-    console.log("users in render", this.state.users)
+    // console.log("users in render", this.state.users)
     return (
       <div>
         <Header
@@ -56,7 +56,7 @@ class SingleRoom extends React.Component {
             <h2>Users</h2>
             <div>
               {Object.values(this.state.users).map((user, i) => {
-                console.log("user", user)
+                // console.log("user", user)
                 return (
                   <div id="userList" key={i}>
                     <img
@@ -77,7 +77,7 @@ class SingleRoom extends React.Component {
                 )
               })}
             </div>
-            <Messages />
+            <Messages roomId={this.props.match.params.roomId}/>
           </div>
           <div className="right-box">
             <SearchBar roomId={this.props.match.params.roomId} />
