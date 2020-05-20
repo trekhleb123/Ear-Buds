@@ -23,34 +23,8 @@ import tileData from "./tileData"
 import MyCarousel from "./Carousel"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
 
-const useStyles = makeStyles((theme) => ({
-  display: "flex",
-  root: {
-    flexWrap: "wrap",
-    justifyContent: "space-around",
-    overflow: "hidden",
-    backgroundColor: theme.palette.background.paper,
-  },
-  gridList: {
-    flexWrap: "nowrap",
-    // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
-    transform: "translateZ(0)",
-  },
-  title: {
-    color: theme.palette.primary.light,
-  },
-  titleBar: {
-    background:
-      "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)",
-  },
-}))
-
 const SearchBar = (props) => {
   const token = props.token
-  // const [state, setState] = useState({
-  //   epId: "",
-  // });
-  const classes = useStyles()
   let [search, setSearch] = useState("")
   let [result, setResult] = useState([])
   let [episodes, setEpisodes] = useState([])
@@ -80,6 +54,7 @@ const SearchBar = (props) => {
           uri: item.track.uri,
           name: item.track.name,
           image: item.track.album.images[1].url,
+          id: item.track.id,
         }
       })
       setPopularPodcasts(result)
@@ -97,13 +72,16 @@ const SearchBar = (props) => {
       }
     )
     const plJSON = await response.json()
+
     result = []
     if (plJSON.items) {
+      console.log(plJSON)
       result = await plJSON.items.map((item) => {
         return {
           uri: item.track.uri,
           name: item.track.name,
           image: item.track.album.images[1].url,
+          id: item.track.id,
         }
       })
       setPlaylist(result)
@@ -112,18 +90,6 @@ const SearchBar = (props) => {
 
   const searchHandler = async () => {
     const res = await fetchShows(search, token, 50)
-
-    // const q = encodeURIComponent(`${search}`);
-    // const response = await fetch(
-    //   `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=50`,
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   }
-    // );
-    // const searchJSON = await response.json();
 
     let searchArr = [{ value: "chocolate", label: "Start typing..." }]
 
@@ -136,20 +102,9 @@ const SearchBar = (props) => {
     setResults(searchArr)
   }
 
-  // useEffect(() => {
-  //   const foo = async function () {
-  //     await searchHandler();
-  //   };
-  //   foo();
-  // }, [props.search]);
-
   const handleChange = async (event) => {
-    const name = event.target.name
     const value = event.target.value
-    // setState({
-    //   ...state,
-    //   [name]: value,
-    // });
+
     getEpisode(value, token).then((res) =>
       changeQueue(props.roomId, res, value, props.userData.display_name)
     )
@@ -204,7 +159,6 @@ const SearchBar = (props) => {
             <TextField
               {...params}
               onChange={({ target }) => {
-                // activeSearch(target.value);
                 activeSearch(target.value)
               }}
               label="Search input"
