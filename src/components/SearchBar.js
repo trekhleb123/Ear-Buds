@@ -60,6 +60,8 @@ const SearchBar = (props) => {
     { value: "chocolate", label: "Start typing..." },
   ])
   let [popularPodcasts, setPopularPodcasts] = useState([{}])
+  let [playlist, setPlaylist] = useState([{}])
+
   const popPodcasts = async () => {
     const response = await fetch(
       `https://api.spotify.com/v1/playlists/37i9dQZF1DXdlkPQJ1PlTQ/tracks`,
@@ -81,6 +83,30 @@ const SearchBar = (props) => {
         }
       })
       setPopularPodcasts(result)
+    }
+  }
+
+  const getPlaylist = async () => {
+    const response = await fetch(
+      `https://api.spotify.com/v1/playlists/37i9dQZF1DX0sZ6o42ll0w/tracks`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    const plJSON = await response.json()
+    result = []
+    if (plJSON.items) {
+      result = await plJSON.items.map((item) => {
+        return {
+          uri: item.track.uri,
+          name: item.track.name,
+          image: item.track.album.images[1].url,
+        }
+      })
+      setPlaylist(result)
     }
   }
 
@@ -155,29 +181,17 @@ const SearchBar = (props) => {
       })
       .then((res) => setEpisodes(res))
   }
-  popPodcasts()
+  useEffect(() => {
+    popPodcasts()
+    getPlaylist()
+  }, [])
+
   return (
     <div className="right-panel">
-      <div className="carousel">
-        <MyCarousel podcasts={popularPodcasts} />
+      <div>
+        <MyCarousel podcasts={popularPodcasts} playlist={playlist} />
       </div>
 
-      {/* <div className={classes.root}>
-        <GridList className={classes.gridList} cols={2.5}>
-          {popularPodcasts.map((podcast) => (
-            <GridListTile key={podcast.image}>
-              <img src={podcast.image} alt={podcast.name} />
-              <GridListTileBar
-                title={podcast.name}
-                classes={{
-                  root: classes.titleBar,
-                  title: classes.title,
-                }}
-              />
-            </GridListTile>
-          ))}
-        </GridList>
-      </div> */}
       <div className="search-container">
         <Autocomplete
           className="search"
