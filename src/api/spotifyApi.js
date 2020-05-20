@@ -120,7 +120,7 @@ export const fetchShows = async (search, token, num) => {
 export const fetchEpisodes = async (result, token) => {
   try {
     const episodes = await fetch(
-      `https://api.spotify.com/v1/shows/${result}/episodes`,
+      `https://api.spotify.com/v1/shows/${result}/episodes?limit=49`,
       {
         method: "GET",
         headers: {

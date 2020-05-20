@@ -35,12 +35,16 @@ const useStyles = makeStyles((theme) => ({
     transform: 'translateZ(0)',
   },
   title: {
-    color: theme.palette.primary.light,
+    color: theme.palette.text.primary.light,
+    fontWeight: 'bold'
   },
   titleBar: {
     background:
       'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
   },
+  img: {
+    variant: 'square'
+  }
 }));
 
 const SearchBar = (props) => {
@@ -73,6 +77,7 @@ const SearchBar = (props) => {
         return {
           uri: item.track.uri,
           name: item.track.name,
+          id: item.track.id,
           image: item.track.album.images[1].url,
         }
       })
@@ -132,33 +137,48 @@ const SearchBar = (props) => {
   const getEpisodes = async () => {
     fetchShows(search, token, 1)
       .then((res) => {
-        result = res.shows.items.map((item) => {
-          return item.id;
-        });
+        if(res.shows){
+          if(res.shows.items){
+            result = res.shows.items.map((item) => {
+              return item.id;
+            });
+          }
+         
+        }
       })
       .then(() => setResult(result))
       .then(() => fetchEpisodes(result, token))
       .then((res) => {
-        return res.items.map((item) => {
-          return {
-            uri: item.uri,
-            name: item.name,
-            date: item.release_date,
-            id: item.id,
-          };
-        });
+        if(res.items){
+          return res.items.map((item) => {
+            return {
+              uri: item.uri,
+              name: item.name,
+              date: item.release_date,
+              id: item.id,
+            };
+          });
+        }
       })
-      .then((res) => setEpisodes(res));
+      .then((res) => {
+        if(res !== undefined){
+          setEpisodes(res)
+        }
+      });
   };
   popPodcasts()
   return (
     <div className="right-panel">
-      <div className={classes.root}>
+      {/* <div className={classes.root}>
         <GridList className={classes.gridList} cols={2.5}>
           {popularPodcasts.map((podcast) => (
-            <GridListTile key={podcast.image}>
-              <img src={podcast.image} alt={podcast.name} />
+            <GridListTile cols={1} rows={1} key={podcast.image}>
+              <img src={podcast.image}  alt={podcast.name}  />
               <GridListTileBar
+              onTouchTap={() => {
+                getEpisode(podcast.id);
+                setUri(podcast.uri);
+              }} 
                 title={podcast.name}
                 classes={{
                   root: classes.titleBar,
@@ -168,7 +188,7 @@ const SearchBar = (props) => {
             </GridListTile>
           ))}
         </GridList>
-      </div>
+      </div> */}
       <div className="search-container">
         <Autocomplete
           className="search"
@@ -183,6 +203,7 @@ const SearchBar = (props) => {
               onChange={({ target }) => {
                 // activeSearch(target.value);
                 activeSearch(target.value);
+                getEpisodes();
               }}
               label="Search input"
               margin="normal"
@@ -190,14 +211,14 @@ const SearchBar = (props) => {
             />
           )}
         />
-        <Button
+        {/* <Button
           id="search-button"
           variant="contained"
           color="primary"
           onClick={getEpisodes}
         >
           Search
-        </Button>
+        </Button> */}
       </div>
       {episodes.length > 1 ? (
         <div>
