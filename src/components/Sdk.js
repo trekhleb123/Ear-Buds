@@ -1,6 +1,6 @@
 import React from "react";
 import Player from "./Player";
-import { setDeviceId } from "../redux/store";
+import { setDeviceId, setPosition } from "../redux/store";
 import { connect } from "react-redux";
 
 const Sdk = (props) => {
@@ -31,6 +31,7 @@ const Sdk = (props) => {
 
     // Playback status updates
     player.on("player_state_changed", (state) => {
+      setPosition(state.position);
       console.log(state);
     });
 
@@ -78,10 +79,12 @@ const Sdk = (props) => {
 
 const stateToProps = (state) => ({
   deviceId: state.deviceId,
+  position: state.position,
 });
 
 const dispatchToProps = (dispatch) => ({
   setDeviceId: (code) => dispatch(setDeviceId(code)),
+  setPosition: (position) => dispatch(setPosition(position)),
 });
 
 export default connect(stateToProps, dispatchToProps)(Sdk);

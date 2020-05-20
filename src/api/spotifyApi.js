@@ -48,6 +48,24 @@ export const startPodcast = async (token, devId, podcastUri, startTime) => {
   }
 };
 
+export const seekPodcast = async (token, devId, podcastUri, position) => {
+  try {
+    console.log("positionMS", position);
+    fetch(`https://api.spotify.com/v1/me/player/seek?device_id=${devId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        uris: [podcastUri],
+        position_ms: position,
+      }),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const startPodcastAnywhere = async (token, podcastUri) => {
   try {
     fetch(`https://api.spotify.com/v1/me/player/play`, {
@@ -91,6 +109,8 @@ export const getEpisode = async (id, token) => {
       },
     });
     const epJson = await episode.json();
+
+    console.log("GOT EPISODE", epJson);
 
     return epJson;
   } catch (err) {

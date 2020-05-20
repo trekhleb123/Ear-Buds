@@ -22,6 +22,7 @@ import {
   getEpisode,
   getDevices,
   transferDevice,
+  seekPodcast,
 } from "../api/spotifyApi";
 import Sdk from "./Sdk";
 import Card from "@material-ui/core/Card";
@@ -38,6 +39,9 @@ import Popover from "@material-ui/core/Popover";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
+import Ticker from "./Ticker";
+
+let counter = 0;
 
 const Player = (props) => {
   const blank = {
@@ -90,17 +94,6 @@ const Player = (props) => {
     playbackStart(roomId, props.userData.display_name);
   };
 
-  const msConversion = (s) => {
-    var ms = s % 1000;
-    s = (s - ms) / 1000;
-    var secs = s % 60;
-    s = (s - secs) / 60;
-    var mins = s % 60;
-    var hrs = (s - mins) / 60;
-
-    return hrs + ":" + mins + ":" + secs;
-  };
-
   const usePrevious = (val) => {
     const ref = useRef();
     useEffect(() => {
@@ -117,59 +110,104 @@ const Player = (props) => {
         const playTimeElapsed = Date.now() - value.playing.timestamp;
         const queueTimeElapsed = Date.now() - value.queued.timestamp;
 
+        // && value.playing.uri !== playingEp.uri
+        // value.playing.progress === 0 &&
+
+        //USER QUEUES UP NEW PODCAST OR ENTERS ROOM WHILE PODCAST IS QUEUED
         if (
-          value.playing.status === true &&
-          value.playing.progress === 0 &&
-          playTimeElapsed < 300
+          value.queued.status === true &&
+          value.queued.uri !== selectedEp.uri
         ) {
-          console.log("PLAYINGEP", playingEp);
-          console.log("selected", selectedEp);
-          startPodcast(props.token, activeDevId, value.playing.uri, 0)
-            .then(() => {
-              if (value.playing.uri !== playingEp.uri) {
-                setPlayingEp(selectedEp);
-                setSelectedEp(blank);
-              }
-            })
-            .then(() => {
-              setTimeElapsed(0);
-            })
-            .then(() => {
-              // if (!timer) setTimer(setInterval(increment, 1000));
-            });
-        } else if (
-          value.playing.status === true &&
-          value.playing.progress !== 0
-        ) {
-          resumePlayback(props.token, activeDevId);
-        } else if (value.playing.status === false) {
-          pausePlayback(props.token, activeDevId);
-        }
-        if (value.queued.status === true && queueTimeElapsed < 500) {
+          console.log("time elapsed", queueTimeElapsed);
           getEpisode(value.queued.epId, props.token).then((res) =>
             setSelectedEp(res)
           );
         }
-        console.log("value", value);
+
+        //PROPS ARE LOADED
+        //USER STARTS NEW PODCAST WHILE IN ROOM
+        if (
+          value.playing.status === true &&
+          value.playing.uri !== playingEp.uri
+        ) {
+          console.log("time elapsed", playTimeElapsed);
+          console.log("PLAYINGEP", playingEp);
+          console.log("selected", selectedEp);
+          startPodcast(
+            props.token,
+            activeDevId,
+            value.playing.uri,
+            value.playing.progress + playTimeElapsed
+          )
+            .then(() => setSelectedEp(blank))
+            .then(() => getEpisode(value.playing.epId, props.token))
+            .then((res) => setPlayingEp(res));
+          // .then(() =>
+          //   setTimeElapsed(value.playing.progress + playTimeElapsed)
+          // );
+          // .then(() => {
+          //   if (!timer) {
+          //     console.log("created timer", counter);
+          //     counter = value.playing.progress + playTimeElapsed;
+          //     setTimer(setInterval(increment, 1000));
+          //   }
+          // });
+          //USER RESUMES PODCAST WHILE PREVIOUSLY LISTENING TO PODCAST
+        } else if (
+          value.playing.status === true &&
+          value.playing.uri === playingEp.uri
+        ) {
+          resumePlayback(props.token, activeDevId);
+          // .then(() =>
+          //   setTimeElapsed(value.playing.progress + playTimeElapsed)
+          // );
+          //USER PAUSES PODCAST WHILE ALREADY LISTENING TO PODCAST
+        } else if (
+          value.playing.status === false &&
+          value.playing.uri === playingEp.uri
+        ) {
+          pausePlayback(props.token, activeDevId);
+          console.log("PROPPS", props);
+          // .then(() =>
+          //   setTimeElapsed(value.playing.progress + playTimeElapsed)
+          // );
+          //USER ENTERS ROOM WHILE PODCAST IS PAUSED
+        } else if (
+          value.playing.uri.length &&
+          value.playing.status === false &&
+          value.playing.uri !== playingEp.uri
+        ) {
+          getEpisode(value.playing.epId, props.token).then((res) => {
+            res.uri = "";
+            setPlayingEp(res);
+          });
+        }
       }
     }
   });
-
-  let counter = 0;
 
   const increment = () => {
     console.log("Incrementing", counter);
     counter++;
   };
 
-  useEffect(() => {
-    timeElapsed = counter * 1000;
-    console.log("TimeElapsed", timeElapsed);
-  }, [counter]);
+  // useEffect(() => {
+  //   timeElapsed = counter * 1000;
+  //   console.log("TimeElapsed", timeElapsed);
+  // }, [counter]);
 
   useEffect(() => {
     if (activeDevId.length < 10) setActiveDevId(props.deviceId);
   });
+
+  useEffect(() => {
+    if (playingEp.duration_ms) {
+      setTimeElapsed((props.position * 100) / playingEp.duration_ms);
+    }
+
+    console.log("position changing", props.position);
+    console.log("time changing", timeElapsed);
+  }, [props.position]);
 
   const handleDevicePopover = (event) => {
     setAnchorEl(event.currentTarget);
@@ -190,6 +228,17 @@ const Player = (props) => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const msConversion = (s) => {
+    var ms = s % 1000;
+    s = (s - ms) / 1000;
+    var secs = s % 60;
+    s = (s - secs) / 60;
+    var mins = s % 60;
+    var hrs = (s - mins) / 60;
+
+    return hrs + ":" + mins + ":" + secs;
   };
 
   const open = Boolean(anchorEl);
@@ -275,7 +324,7 @@ const Player = (props) => {
                   )}
                 </PopupState>
 
-                <Sdk token={props.token} />
+                {/* <Sdk token={props.token} /> */}
                 <div>
                   <PauseCircleFilled onClick={pause} />
                   <PlayCircleFilled onClick={play} />
@@ -311,11 +360,19 @@ const Player = (props) => {
                   </List>
                 </Popover>
               </div>
+
               <div className="progress-container">
-                <span>{msConversion(timeElapsed)}</span>
+                <span>{props.position}</span>
                 <span>{msConversion(playingEp.duration_ms)}</span>
               </div>
-              <LinearProgress variant="determinate" value={currentPosition} />
+              <LinearProgress variant="determinate" value={timeElapsed} />
+
+              {/* {value && value.playing.uri.length && (
+                <Ticker
+                  status={value.playing.status}
+                  duration={playingEp.duration_ms}
+                />
+              )} */}
             </div>
           </div>
 
@@ -335,6 +392,7 @@ const Player = (props) => {
 const stateToProps = (state) => ({
   deviceId: state.deviceId,
   userData: state.userData,
+  position: state.position,
 });
 
 const dispatchToProps = (dispatch) => ({

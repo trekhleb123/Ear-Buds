@@ -3,12 +3,12 @@ import { getNowPlaying } from "../api/spotifyApi";
 
 const firebaseApp = firebase.initializeApp({
   // copy and paste your firebase credential here
-  apiKey: 'AIzaSyBYMe0vrHWmvoWoMrZGB62EXeEhgdNVZvM',
-  authDomain: 'podcastparty-402e2.web.app',
-  databaseURL: 'https://podcastparty-402e2.firebaseio.com',
-  projectId: 'podcastparty-402e2',
-  storageBucket: 'gs://podcastparty-402e2.appspot.com',
-  messagingSenderId: '311285409494',
+  apiKey: "AIzaSyBYMe0vrHWmvoWoMrZGB62EXeEhgdNVZvM",
+  authDomain: "podcastparty-402e2.web.app",
+  databaseURL: "https://podcastparty-402e2.firebaseio.com",
+  projectId: "podcastparty-402e2",
+  storageBucket: "gs://podcastparty-402e2.appspot.com",
+  messagingSenderId: "311285409494",
 });
 
 const db = firebaseApp.firestore();
@@ -18,7 +18,7 @@ export { db, firestore };
 
 export async function createNewRoom(newRoom) {
   try {
-    const room = await db.collection('Rooms').add(newRoom);
+    const room = await db.collection("Rooms").add(newRoom);
     console.log(room);
   } catch (err) {
     console.error(err);
@@ -57,7 +57,7 @@ export async function getCurrentUserData(roomId, callback) {
     const users = db.collection("Rooms").doc(roomId).collection("Users");
     const result = await users.get();
 
-    result.forEach(user => console.log(user.id, '=>', user.data()));
+    result.forEach((user) => console.log(user.id, "=>", user.data()));
 
     // console.log(result.data());
     return result;
@@ -92,6 +92,7 @@ export async function createRoom(token, username, refreshToken, image) {
       duration_ms: 1000,
       username: "",
       name: "",
+      epId: "",
     },
     playing: {
       progress: "",
@@ -100,6 +101,7 @@ export async function createRoom(token, username, refreshToken, image) {
       status: false,
       duration_ms: 1000,
       username: "",
+      epId: "",
     },
   });
   console.log("newRoom", newRoom);
@@ -109,53 +111,53 @@ export async function createRoom(token, username, refreshToken, image) {
     roomCode: code,
     deviceId: 2,
     refreshToken,
-    image
+    image,
   });
 
   await db.collection("Rooms").doc(newRoom.id).collection("messages").add({});
 
   return code;
 }
-export async function joinRoom(token, username, refreshToken, res, roomCode, image) {
-  await db
-    .collection('Rooms')
-    .doc(res)
-    .collection('Users')
-    .add({
-      accessToken: token,
-      name: username,
-      roomCode: roomCode,
-      deviceId: 2,
-      refreshToken,
-      image
-    });
+export async function joinRoom(
+  token,
+  username,
+  refreshToken,
+  res,
+  roomCode,
+  image
+) {
+  await db.collection("Rooms").doc(res).collection("Users").add({
+    accessToken: token,
+    name: username,
+    roomCode: roomCode,
+    deviceId: 2,
+    refreshToken,
+    image,
+  });
 }
 
 export async function findRoom(roomCode) {
-  const rooms = db.collection('Rooms');
-  const currentRoom = await rooms.where('roomCode', '==', roomCode).get();
+  const rooms = db.collection("Rooms");
+  const currentRoom = await rooms.where("roomCode", "==", roomCode).get();
   let res = {};
-  currentRoom.forEach(el => {
+  currentRoom.forEach((el) => {
     res = el.id;
   });
-  console.log('currentroom', res, currentRoom);
+  console.log("currentroom", res, currentRoom);
   return res;
 }
 export async function userLeft(roomId, displayName) {
-  const users = await db
-    .collection('Rooms')
-    .doc(roomId)
-    .collection('Users');
-  const currentUser = await users.where('name', '==', displayName).get()
-   currentUser.forEach(async el => {
-    await el.ref.delete()
-  })
+  const users = await db.collection("Rooms").doc(roomId).collection("Users");
+  const currentUser = await users.where("name", "==", displayName).get();
+  currentUser.forEach(async (el) => {
+    await el.ref.delete();
+  });
 }
 
 export async function vacantRoom(roomId) {
   let userLength;
   await db
-    .collection('Rooms')
+    .collection("Rooms")
     .doc(roomId)
     .collection("Users")
     .get()
@@ -281,6 +283,7 @@ export async function playbackStart(roomId, username) {
         roomData.playing.duration_ms = roomData.queued.duration_ms;
         roomData.playing.status = true;
         roomData.playing.username = username;
+        roomData.playing.epId = roomData.queued.epId;
         return roomData;
       })
       .then((res) => updateRoomData(res, roomId))
