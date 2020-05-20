@@ -190,3 +190,14 @@ button {
   justify-content: space-between;
   flex-direction: column;
 }
+
+.carousel {
+  height: 200px;
+  width: 230px;
+  text-align: center;
+}
+
+.carousel .control-dots .dot {
+  width: 3px;
+  height: 3px;
+}
