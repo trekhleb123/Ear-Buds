@@ -9,6 +9,9 @@ import { Modal } from "@material-ui/core"
 import Messages from "./Messages"
 import { SearchBar } from "."
 import Header from "./Header"
+import { Button } from "@material-ui/core"
+import Card from "@material-ui/core/Card"
+import { List } from "@material-ui/core"
 import Footer from "./Footer"
 
 class SingleRoom extends React.Component {
@@ -85,7 +88,7 @@ class SingleRoom extends React.Component {
             <SearchBar roomId={this.props.match.params.roomId} />
           </div>
         </div>
-        <Footer roomCode={this.props.roomCode}/>
+        <Footer roomCode={this.props.roomCode} />
       </div>
     )
   }

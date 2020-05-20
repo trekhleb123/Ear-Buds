@@ -183,3 +183,21 @@ button {
   background-color: #353535;
   border-radius: 10px;
 }
+
+.right-panel {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.carousel {
+  height: 200px;
+  width: 230px;
+  text-align: center;
+}
+
+.carousel .control-dots .dot {
+  width: 3px;
+  height: 3px;
+}
