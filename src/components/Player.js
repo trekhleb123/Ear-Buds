@@ -46,6 +46,7 @@ let counter = 0;
 const Player = (props) => {
   const blank = {
     isBlank: true,
+    uri: null,
     name: "",
     show: { publisher: "" },
     duration_ms: 0,
@@ -61,26 +62,14 @@ const Player = (props) => {
   let [selectedEp, setSelectedEp] = useState(blank);
   let [timer, setTimer] = useState(null);
   let [playingEp, setPlayingEp] = useState(blank);
+  let [playingStatus, setPlayingStatus] = useState(false);
 
   let [timeElapsed, setTimeElapsed] = useState(0);
   let [devices, setDevices] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeDevId, setActiveDevId] = useState(props.deviceId);
-
-  // const [state, setState] = useState({
-  //   timeElapsed: "",
-  //   timeElapsedMs: 0,
-  //   timeRemaining: "",
-  //   timeRemainingMs: 0,
-  // });
   const roomId = props.roomId;
   const [value, loading, error] = useDocumentData(db.doc(`Rooms/${roomId}`));
-
-  let deviceId = props.deviceId;
-
-  let [currentPosition, setCurrentPosition] = useState(0);
-  // let [progress, setProgress] = useState("");
-  // let [nowPlaying, setNowPlaying] = useState({});
 
   const play = () => {
     playbackUpdate(props.token, roomId, true, props.userData.display_name);
@@ -110,29 +99,21 @@ const Player = (props) => {
         const playTimeElapsed = Date.now() - value.playing.timestamp;
         const queueTimeElapsed = Date.now() - value.queued.timestamp;
 
-        // && value.playing.uri !== playingEp.uri
-        // value.playing.progress === 0 &&
-
         //USER QUEUES UP NEW PODCAST OR ENTERS ROOM WHILE PODCAST IS QUEUED
         if (
           value.queued.status === true &&
           value.queued.uri !== selectedEp.uri
         ) {
-          console.log("time elapsed", queueTimeElapsed);
           getEpisode(value.queued.epId, props.token).then((res) =>
             setSelectedEp(res)
           );
         }
 
-        //PROPS ARE LOADED
         //USER STARTS NEW PODCAST WHILE IN ROOM
         if (
           value.playing.status === true &&
           value.playing.uri !== playingEp.uri
         ) {
-          console.log("time elapsed", playTimeElapsed);
-          console.log("PLAYINGEP", playingEp);
-          console.log("selected", selectedEp);
           startPodcast(
             props.token,
             activeDevId,
@@ -141,36 +122,27 @@ const Player = (props) => {
           )
             .then(() => setSelectedEp(blank))
             .then(() => getEpisode(value.playing.epId, props.token))
-            .then((res) => setPlayingEp(res));
-          // .then(() =>
-          //   setTimeElapsed(value.playing.progress + playTimeElapsed)
-          // );
-          // .then(() => {
-          //   if (!timer) {
-          //     console.log("created timer", counter);
-          //     counter = value.playing.progress + playTimeElapsed;
-          //     setTimer(setInterval(increment, 1000));
-          //   }
-          // });
+            .then((res) => setPlayingEp(res))
+            .then(() => setPlayingStatus(true));
+
           //USER RESUMES PODCAST WHILE PREVIOUSLY LISTENING TO PODCAST
         } else if (
           value.playing.status === true &&
           value.playing.uri === playingEp.uri
         ) {
-          resumePlayback(props.token, activeDevId);
-          // .then(() =>
-          //   setTimeElapsed(value.playing.progress + playTimeElapsed)
-          // );
+          resumePlayback(props.token, activeDevId).then(() =>
+            setPlayingStatus(true)
+          );
+
           //USER PAUSES PODCAST WHILE ALREADY LISTENING TO PODCAST
         } else if (
           value.playing.status === false &&
           value.playing.uri === playingEp.uri
         ) {
-          pausePlayback(props.token, activeDevId);
-          console.log("PROPPS", props);
-          // .then(() =>
-          //   setTimeElapsed(value.playing.progress + playTimeElapsed)
-          // );
+          pausePlayback(props.token, activeDevId).then(() =>
+            setPlayingStatus(false)
+          );
+
           //USER ENTERS ROOM WHILE PODCAST IS PAUSED
         } else if (
           value.playing.uri.length &&
@@ -186,28 +158,19 @@ const Player = (props) => {
     }
   });
 
+  useEffect(() => {
+    if (value) {
+      setTimeElapsed(value.playing.progress + props.position);
+    }
+  }, [props.position]);
+
   const increment = () => {
     console.log("Incrementing", counter);
     counter++;
   };
-
-  // useEffect(() => {
-  //   timeElapsed = counter * 1000;
-  //   console.log("TimeElapsed", timeElapsed);
-  // }, [counter]);
-
   useEffect(() => {
     if (activeDevId.length < 10) setActiveDevId(props.deviceId);
   });
-
-  useEffect(() => {
-    if (playingEp.duration_ms) {
-      setTimeElapsed((props.position * 100) / playingEp.duration_ms);
-    }
-
-    console.log("position changing", props.position);
-    console.log("time changing", timeElapsed);
-  }, [props.position]);
 
   const handleDevicePopover = (event) => {
     setAnchorEl(event.currentTarget);
@@ -220,10 +183,6 @@ const Player = (props) => {
     console.log("this is the ID", activeDevId, id);
     setActiveDevId(id);
     transferDevice(props.token, id);
-
-    // .then(() => setActiveDevId(id))
-    // .then(() => resumePlayback(props.token, id))
-    // .then(() => console.log("LOOK", activeDevId, id));
   };
 
   const handleClose = () => {
@@ -231,6 +190,9 @@ const Player = (props) => {
   };
 
   const msConversion = (s) => {
+    const intCheck = (num) => {
+      return (num < 10 ? "0" : "") + num;
+    };
     var ms = s % 1000;
     s = (s - ms) / 1000;
     var secs = s % 60;
@@ -238,7 +200,7 @@ const Player = (props) => {
     var mins = s % 60;
     var hrs = (s - mins) / 60;
 
-    return hrs + ":" + mins + ":" + secs;
+    return hrs + ":" + intCheck(mins) + ":" + intCheck(secs);
   };
 
   const open = Boolean(anchorEl);
@@ -323,11 +285,13 @@ const Player = (props) => {
                     </div>
                   )}
                 </PopupState>
-
-                {/* <Sdk token={props.token} /> */}
                 <div>
-                  <PauseCircleFilled onClick={pause} />
-                  <PlayCircleFilled onClick={play} />
+                  {playingEp.uri &&
+                    (playingStatus ? (
+                      <PauseCircleFilled onClick={pause} />
+                    ) : (
+                      <PlayCircleFilled onClick={play} />
+                    ))}
                 </div>
                 <DevicesIcon onClick={handleDevicePopover} />
                 <Popover
@@ -362,17 +326,15 @@ const Player = (props) => {
               </div>
 
               <div className="progress-container">
-                <span>{props.position}</span>
+                <span>{msConversion(timeElapsed)}</span>
                 <span>{msConversion(playingEp.duration_ms)}</span>
               </div>
-              <LinearProgress variant="determinate" value={timeElapsed} />
+              <LinearProgress
+                variant="determinate"
+                value={(timeElapsed * 100) / playingEp.duration_ms}
+              />
 
-              {/* {value && value.playing.uri.length && (
-                <Ticker
-                  status={value.playing.status}
-                  duration={playingEp.duration_ms}
-                />
-              )} */}
+              {value && value.playing.status && <Ticker />}
             </div>
           </div>
 
