@@ -18,7 +18,7 @@ const MyCarousel = (props) => {
   }
   const carousels = [
     {
-      title: "Top Podcasts",
+      title: "Popular Podcasts",
       data: props.podcasts,
     },
     {
@@ -26,7 +26,7 @@ const MyCarousel = (props) => {
       data: props.playlist,
     },
     {
-      title: "Your Daily Podcasts",
+      title: "Your Daily Picks",
       data: props.dailyPodcasts,
     },
   ]
