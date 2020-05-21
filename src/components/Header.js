@@ -9,6 +9,8 @@ import CardContent from "@material-ui/core/CardContent";
 import Popover from "@material-ui/core/Popover";
 import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase";
 import Typography from "@material-ui/core/Typography";
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import IconButton from '@material-ui/core/IconButton';
 
 const Header = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -51,11 +53,13 @@ const Header = (props) => {
       >
         Leave Room
       </Button>
-
-      <Button type="button" onClick={handleOpen} variant="outlined">
+      {/* <IconButton onClick={handleOpen}>
+        <PersonAddIcon/>
+        </IconButton> */}
+      {/* <Button type="button" onClick={handleOpen} variant="outlined">
         Invite Friend
-      </Button>
-      <Popover
+      </Button> */}
+      {/* <Popover
         id={id}
         open={open}
         anchorEl={anchorEl}
@@ -72,13 +76,6 @@ const Header = (props) => {
         <Card>
           <CardContent className="invite-card">
             <Typography variant="subtitle1" color="textSecondary">
-              Send Link
-            </Typography>
-            <input type="text" value="URL Placeholder" id="invite-url"></input>
-            <Button disabled="true" variant="contained" color="primary">
-              Copy Link
-            </Button>
-            <Typography variant="subtitle1" color="textSecondary">
               Send Invite Code
             </Typography>
             <input type="text" value={props.roomCode} id="room-code"></input>
@@ -92,7 +89,7 @@ const Header = (props) => {
             </Button>
           </CardContent>
         </Card>
-      </Popover>
+      </Popover> */}
     </div>
   );
 };

@@ -141,7 +141,7 @@ button {
 .invite-card {
   display: flex;
   flex-direction: column;
-  min-height: 200px;
+  min-height: 100px;
   text-align: center;
   justify-content: space-evenly;
 }

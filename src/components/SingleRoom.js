@@ -55,6 +55,7 @@ class SingleRoom extends React.Component {
           <div id="users">
             <h2>Users</h2>
             <div>
+
               {Object.values(this.state.users).map((user, i) => {
                 // console.log("user", user)
                 return (
