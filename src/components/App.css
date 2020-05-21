@@ -26,6 +26,13 @@ body.dark-mode {
   } */
 }
 
+p.light-mode {
+  color: #353535;
+}
+p.dark-mode {
+  color: rgb(250, 244, 244);
+}
+
 .App-header {
   background-image: url("https://i.pinimg.com/originals/70/b4/d4/70b4d4080fc2cdb4bd1c70802148c3c0.jpg");
   min-height: 100vh;
@@ -221,6 +228,10 @@ button {
 .carousel .control-dots .dot {
   width: 3px;
   height: 3px;
+  opacity: 0;
+}
+.carousel .control-dots .dot.selected {
+  opacity: 0;
 }
 
 .all-carousels {
@@ -235,9 +246,9 @@ button {
 }
 
 .playlist-name {
-  background-color: #3535353d;
-  color: azure;
-  box-shadow: 0 4px 8px 0 rgba(197, 192, 192, 0.2),
-    0 6px 20px 0 rgba(148, 144, 144, 0.19);
-  border-radius: 2px;
+  color: #353535;
+}
+
+.carousel .slide .legend {
+  opacity: 0;
 }

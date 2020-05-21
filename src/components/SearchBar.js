@@ -1,25 +1,14 @@
 import React, { useState, useEffect } from "react"
-import AsyncSelect from "react-select/async"
-import axios from "axios"
 import Autocomplete from "@material-ui/lab/Autocomplete"
 import TextField from "@material-ui/core/TextField"
-import ListItem from "@material-ui/core/ListItem"
 import Select from "@material-ui/core/Select"
 import InputLabel from "@material-ui/core/InputLabel"
 import FormControl from "@material-ui/core/FormControl"
 import Player from "./Player"
-import DropDownMenu from "material-ui/DropDownMenu"
-import MenuItem from "material-ui/MenuItem"
 import Button from "@material-ui/core/Button"
-import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
 import { getEpisode, fetchEpisodes, fetchShows } from "../api/spotifyApi"
-import { changeQueue } from "../firebase/firebase"
-import { makeStyles } from "@material-ui/core/styles"
-import GridList from "@material-ui/core/GridList"
-import GridListTile from "@material-ui/core/GridListTile"
-import GridListTileBar from "@material-ui/core/GridListTileBar"
-import tileData from "./tileData"
+import { changeQueue, getPlaylist } from "../firebase/firebase"
 import MyCarousel from "./Carousel"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
 
@@ -34,59 +23,20 @@ const SearchBar = (props) => {
     { value: "chocolate", label: "Start typing..." },
   ])
   let [popularPodcasts, setPopularPodcasts] = useState([{}])
-  let [playlist, setPlaylist] = useState([{}])
+  let [selectedPodcasts, setSelectedPodcasts] = useState([{}])
+  let [dailyPlaylist, setDailyPlaylist] = useState([{}])
 
-  const popPodcasts = async () => {
-    const response = await fetch(
-      `https://api.spotify.com/v1/playlists/37i9dQZF1DXdlkPQJ1PlTQ/tracks`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+  useEffect(() => {
+    getPlaylist("37i9dQZF1DXdlkPQJ1PlTQ", token).then((res) =>
+      setPopularPodcasts(res)
     )
-    const ppJSON = await response.json()
-    result = []
-    if (ppJSON.items) {
-      result = await ppJSON.items.map((item) => {
-        return {
-          uri: item.track.uri,
-          name: item.track.name,
-          image: item.track.album.images[1].url,
-          id: item.track.id,
-        }
-      })
-      setPopularPodcasts(result)
-    }
-  }
-
-  const getPlaylist = async () => {
-    const response = await fetch(
-      `https://api.spotify.com/v1/playlists/37i9dQZF1DX0sZ6o42ll0w/tracks`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    getPlaylist("37i9dQZF1DX0sZ6o42ll0w", token).then((res) =>
+      setSelectedPodcasts(res)
     )
-    const plJSON = await response.json()
-
-    result = []
-    if (plJSON.items) {
-      console.log(plJSON)
-      result = await plJSON.items.map((item) => {
-        return {
-          uri: item.track.uri,
-          name: item.track.name,
-          image: item.track.album.images[1].url,
-          id: item.track.id,
-        }
-      })
-      setPlaylist(result)
-    }
-  }
+    getPlaylist("37i9dQZF1EnOBYmteT8p3O", token).then((res) =>
+      setDailyPlaylist(res)
+    )
+  }, [])
 
   const searchHandler = async () => {
     const res = await fetchShows(search, token, 50)
@@ -136,15 +86,15 @@ const SearchBar = (props) => {
       })
       .then((res) => setEpisodes(res))
   }
-  useEffect(() => {
-    popPodcasts()
-    getPlaylist()
-  }, [])
 
   return (
     <div className="right-panel">
       <div>
-        <MyCarousel podcasts={popularPodcasts} playlist={playlist} />
+        <MyCarousel
+          podcasts={popularPodcasts}
+          playlist={selectedPodcasts}
+          dailyPodcasts={dailyPlaylist}
+        />
       </div>
 
       <div className="search-container">
