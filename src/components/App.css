@@ -12,6 +12,19 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+body.light-mode {
+  background-color: #fff;
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode {
+  background-color: #10171d;
+  color: #dfdfdf;
+  /* .header {
+    background-color: #1b2938;
+  } */
+}
 
 .App-header {
   background-image: url("https://i.pinimg.com/originals/70/b4/d4/70b4d4080fc2cdb4bd1c70802148c3c0.jpg");
@@ -95,15 +108,29 @@ button {
 .header {
   display: flex;
   justify-content: flex-start;
-  background-color: #3d5a80;
+  background-color: #636363;
+  color: azure;
   min-height: 5%;
 }
 
 .footer {
-  display: flex;
-  justify-content: flex-start;
   background-color: #bfc0c0;
   min-height: 100px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-size: x-large;
+}
+
+.social-media-text {
+  font-size: small;
 }
 
 .main-container {
@@ -146,10 +173,10 @@ button {
 #message-form {
   margin: 10px;
   padding: 10px;
-  background-color: rgba(157, 206, 248, 0.315);
+  background-color: rgba(96, 98, 100, 0.315);
   border-radius: 10px;
-  box-shadow: 0 4px 8px 0 rgba(197, 192, 192, 0.2),
-    0 6px 20px 0 rgba(148, 144, 144, 0.19);
+  box-shadow: 0 4px 8px 0 rgba(7, 7, 7, 0.5),
+    0 6px 20px 0 rgba(34, 33, 33, 0.486);
 }
 
 .right-box {
