@@ -11,11 +11,16 @@ import { getEpisode, fetchEpisodes, fetchShows } from "../api/spotifyApi"
 import { changeQueue, getPlaylist } from "../firebase/firebase"
 import MyCarousel from "./Carousel"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
-
+const style = {
+  background: "white",
+  color: "white",
+}
 const SearchBar = (props) => {
   const token = props.token
   let [search, setSearch] = useState("")
-  let [result, setResult] = useState([])
+  let [result, setResult] = useState([
+    { value: "chocolate", label: "Start typing..." },
+  ])
   let [episodes, setEpisodes] = useState([])
   let [chosenEpisode, setEpisode] = useState()
   let [uri, setUri] = useState()
@@ -68,25 +73,42 @@ const SearchBar = (props) => {
   const getEpisodes = async () => {
     fetchShows(search, token, 1)
       .then((res) => {
-        result = res.shows.items.map((item) => {
-          return item.id
-        })
+        if (res.shows) {
+          if (res.shows.items) {
+            result = res.shows.items.map((item) => {
+              return item.id
+            })
+          }
+        }
       })
       .then(() => setResult(result))
       .then(() => fetchEpisodes(result, token))
       .then((res) => {
-        return res.items.map((item) => {
-          return {
-            uri: item.uri,
-            name: item.name,
-            date: item.release_date,
-            id: item.id,
+        if (res !== undefined) {
+          if (res.items) {
+            return res.items.map((item) => {
+              return {
+                uri: item.uri,
+                name: item.name,
+                date: item.release_date,
+                id: item.id,
+              }
+            })
           }
-        })
+        }
       })
-      .then((res) => setEpisodes(res))
+      .then((res) => {
+        if (res !== undefined) {
+          setEpisodes(res)
+        }
+      })
   }
 
+  useEffect(() => {
+    getEpisodes()
+  }, [search])
+
+  console.log("USER DATA ", props.userData)
   return (
     <div className="right-panel">
       <div>
@@ -96,7 +118,6 @@ const SearchBar = (props) => {
           dailyPodcasts={dailyPlaylist}
         />
       </div>
-
       <div className="search-container">
         <Autocomplete
           className="search"
@@ -107,9 +128,12 @@ const SearchBar = (props) => {
           options={results.map((item) => item.label)}
           renderInput={(params) => (
             <TextField
+              style={style}
               {...params}
               onChange={({ target }) => {
+                // activeSearch(target.value);
                 activeSearch(target.value)
+                getEpisodes()
               }}
               label="Search input"
               margin="normal"
@@ -117,20 +141,25 @@ const SearchBar = (props) => {
             />
           )}
         />
-        <Button
+        {/* <Button
           id="search-button"
           variant="contained"
           color="primary"
           onClick={getEpisodes}
         >
           Search
-        </Button>
+        </Button> */}
       </div>
       {episodes.length > 1 ? (
         <div>
           <FormControl fullWidth="true" margin="normal" variant="outlined">
             <InputLabel>{`Select from ${search} Episodes`}</InputLabel>
-            <Select native value="Episodes" onChange={handleChange}>
+            <Select
+              style={style}
+              native
+              value="Episodes"
+              onChange={handleChange}
+            >
               <option aria-label="None" value="" />
               {episodes &&
                 episodes.map((episode) => (
@@ -173,6 +202,7 @@ const SearchBar = (props) => {
         uri={uri}
         roomId={props.roomId}
         episode={chosenEpisode}
+        showId={result[0].value}
       />
     </div>
   )
