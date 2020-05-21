@@ -34,6 +34,7 @@ import Button from "@material-ui/core/Button";
 import Ticker from "./Ticker";
 import IconButton from "@material-ui/core/IconButton";
 import InfoIcon from "@material-ui/icons/Info";
+import Tooltip from "@material-ui/core/Tooltip";
 
 let counter = 0;
 
@@ -206,38 +207,37 @@ const Player = (props) => {
         <Card className="on-deck-card">
           <div className="on-deck-card-details">
             <div className="card-label">
-              <Typography color="textSecondary" gutterBottom>
-                On Deck
-                {selectedEp.description && (
-                  <PopupState variant="popover" popupId="demo-popup-popover">
-                    {(popupState) => (
-                      <>
-                        <InfoIcon
-                          fontSize="small"
-                          {...bindTrigger(popupState)}
-                        />
-                        <Popover
-                          {...bindPopover(popupState)}
-                          anchorOrigin={{
-                            vertical: "center",
-                            horizontal: "center",
-                          }}
-                          transformOrigin={{
-                            vertical: "center",
-                            horizontal: "center",
-                          }}
-                        >
-                          <div className="on-deck-card-description">
-                            <Typography variant="body2" component="p">
-                              Episode Description: {selectedEp.description}
-                            </Typography>
-                          </div>
-                        </Popover>
-                      </>
-                    )}
-                  </PopupState>
-                )}
-              </Typography>
+              <Typography color="textSecondary">On Deck</Typography>
+              {selectedEp.description && (
+                <PopupState variant="popover" popupId="demo-popup-popover">
+                  {(popupState) => (
+                    <>
+                      <Tooltip title="Episode Info">
+                        <IconButton {...bindTrigger(popupState)}>
+                          <InfoIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Popover
+                        {...bindPopover(popupState)}
+                        anchorOrigin={{
+                          vertical: "center",
+                          horizontal: "right",
+                        }}
+                        transformOrigin={{
+                          vertical: "top",
+                          horizontal: "left",
+                        }}
+                      >
+                        <div className="on-deck-card-description">
+                          <Typography variant="body2" component="p">
+                            {selectedEp.description}
+                          </Typography>
+                        </div>
+                      </Popover>
+                    </>
+                  )}
+                </PopupState>
+              )}
             </div>
 
             <div className="on-deck-card-content">
@@ -250,9 +250,11 @@ const Player = (props) => {
             </div>
             {selectedEp.uri && (
               <div className="on-deck-button-container">
-                <IconButton onClick={start}>
-                  <PlayCircleFilled />
-                </IconButton>
+                <Tooltip title="Start Listening">
+                  <IconButton onClick={start}>
+                    <PlayCircleFilled />
+                  </IconButton>
+                </Tooltip>
               </div>
             )}
           </div>
@@ -270,9 +272,7 @@ const Player = (props) => {
       <div>
         <Card className="on-deck-card">
           <div className="on-deck-card-details">
-            <Typography color="textSecondary" gutterBottom>
-              Now Playing
-            </Typography>
+            <Typography color="textSecondary">Now Playing</Typography>
             <div className="on-deck-card-content">
               <CardContent id="card">
                 <Typography>{playingEp.name}</Typography>
@@ -298,9 +298,11 @@ const Player = (props) => {
           <PopupState variant="popover" popupId="demo-popup-popover">
             {(popupState) => (
               <div>
-                <IconButton {...bindTrigger(popupState)}>
-                  <VolumeUpIcon />
-                </IconButton>
+                <Tooltip title="Volume">
+                  <IconButton {...bindTrigger(popupState)}>
+                    <VolumeUpIcon />
+                  </IconButton>
+                </Tooltip>
                 <Popover
                   {...bindPopover(popupState)}
                   anchorOrigin={{
@@ -322,18 +324,24 @@ const Player = (props) => {
           <div>
             {playingEp.uri &&
               (playingStatus ? (
-                <IconButton onClick={pause}>
-                  <PauseCircleFilled />
-                </IconButton>
+                <Tooltip title="Pause">
+                  <IconButton onClick={pause}>
+                    <PauseCircleFilled />
+                  </IconButton>
+                </Tooltip>
               ) : (
-                <IconButton onClick={play}>
-                  <PlayCircleFilled />
-                </IconButton>
+                <Tooltip title="Play">
+                  <IconButton onClick={play}>
+                    <PlayCircleFilled />
+                  </IconButton>
+                </Tooltip>
               ))}
           </div>
-          <IconButton onClick={handleDevicePopover}>
-            <DevicesIcon />
-          </IconButton>
+          <Tooltip title="Devices Available">
+            <IconButton onClick={handleDevicePopover}>
+              <DevicesIcon />
+            </IconButton>
+          </Tooltip>
 
           <Popover
             fontSize="large"

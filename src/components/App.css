@@ -90,7 +90,9 @@ button {
 
 .card-label {
   display: flex;
-  align-content: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .on-deck-card-content {
@@ -148,6 +150,7 @@ button {
 
 .main-container {
   display: flex;
+
   max-height: 80%;
 }
 
@@ -218,7 +221,7 @@ button {
 
 .chat-container {
   padding: 5px;
-  /* height: 450px; */
+  height: 350px;
   display: flex;
   flex-direction: column;
   overflow-y: scroll;

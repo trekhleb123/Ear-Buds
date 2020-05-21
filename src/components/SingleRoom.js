@@ -11,6 +11,11 @@ import { SearchBar } from ".";
 import Header from "./Header";
 import Typography from "@material-ui/core/Typography";
 
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+
 class SingleRoom extends React.Component {
   constructor() {
     super();
@@ -59,10 +64,32 @@ class SingleRoom extends React.Component {
                 Users
               </Typography>
 
-              {Object.values(this.state.users).map((user, i) => {
-                console.log("user", user);
-                return (
-                  <div id="userList" key={i}>
+              <List>
+                {Object.values(this.state.users).map((user, i) => {
+                  console.log("user", user);
+                  return (
+                    <ListItem id="userList" key={i}>
+                      <ListItemIcon>
+                        <img
+                          style={{
+                            width: "25px",
+                            height: "25px",
+                            borderRadius: "30%",
+                          }}
+                          alt="avatar"
+                          src={
+                            user.image.length > 0
+                              ? user.image[0].url
+                              : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
+                          }
+                        />
+                      </ListItemIcon>
+                      <ListItemText primary={user.name} />
+                    </ListItem>
+                  );
+                })}
+                <ListItem>
+                  <ListItemIcon>
                     <img
                       style={{
                         width: "25px",
@@ -71,16 +98,13 @@ class SingleRoom extends React.Component {
                       }}
                       alt="avatar"
                       src={
-                        user.image.length > 0
-                          ? user.image[0].url
-                          : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
+                        "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
                       }
                     />
-                    {"  "}
-                    {user.name}
-                  </div>
-                );
-              })}
+                  </ListItemIcon>
+                  <ListItemText primary="Add Buddy" />
+                </ListItem>
+              </List>
             </div>
             <Messages />
           </div>
