@@ -5,26 +5,25 @@ import {
   joinRoom,
   findRoom,
   getRoom,
-} from "../firebase/firebase"
-import { withRouter } from "react-router-dom"
-import { connect } from "react-redux"
-import { getUserData, setRoomCode } from "../redux/store"
-import { Button, Modal } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
-import "./App.css"
-import HelpIcon from '@material-ui/icons/Help';
-import IconButton from '@material-ui/core/IconButton';
-import Popper from '@material-ui/core/Popper';
-import Fade from '@material-ui/core/Fade';
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography';
+} from "../firebase/firebase";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { getUserData, setRoomCode } from "../redux/store";
+import { Button, Modal } from "@material-ui/core";
+import Box from "@material-ui/core/Box";
+import TextField from "@material-ui/core/TextField";
+import "./App.css";
+import HelpIcon from "@material-ui/icons/Help";
+import IconButton from "@material-ui/core/IconButton";
+import Popper from "@material-ui/core/Popper";
+import Fade from "@material-ui/core/Fade";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
 import Sdk from "./Sdk";
 
 const style = {
-  background: 'white',
-  color: 'white',
-
+  background: "white",
+  color: "white",
 };
 
 class Rooms extends React.Component {
@@ -34,29 +33,29 @@ class Rooms extends React.Component {
       joinForm: false,
       wrongRoomCode: false,
       open: false,
-      anchorEl: null
-    }
-    this.getRooms = this.getRooms.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.showForm = this.showForm.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-    this.joinSubmit = this.joinSubmit.bind(this)
-    this.handleOpen = this.handleOpen.bind(this)
-    this.handleClose = this.handleClose.bind(this)
+      anchorEl: null,
+    };
+    this.getRooms = this.getRooms.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.showForm = this.showForm.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.joinSubmit = this.joinSubmit.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
-   componentDidMount() {
-    this.getRooms()
+  componentDidMount() {
+    this.getRooms();
     if (!Object.keys(this.props.userData).length) {
       this.props.history.push("/");
     }
-  //   window.addEventListener("beforeunload", async (ev) => {
-  //     ev.preventDefault();
-  //     await userLeft(this.props.match.params.roomId, this.props.userData.display_name)
-  // });
+    //   window.addEventListener("beforeunload", async (ev) => {
+    //     ev.preventDefault();
+    //     await userLeft(this.props.match.params.roomId, this.props.userData.display_name)
+    // });
   }
-// async componentWillUnmount(){
-//   await userLeft(this.props.match.params.roomId, this.props.userData.display_name)
-// }
+  // async componentWillUnmount(){
+  //   await userLeft(this.props.match.params.roomId, this.props.userData.display_name)
+  // }
 
   async getRooms() {
     const doc = db.collection("Rooms");
@@ -114,90 +113,125 @@ class Rooms extends React.Component {
   }
   handleOpen = (event) => {
     this.setState({
-    open: !this.state.open,
-    anchorEl: this.state.anchorEl ? null : event.currentTarget
-  })
-}
+      open: !this.state.open,
+      anchorEl: this.state.anchorEl ? null : event.currentTarget,
+    });
+  };
 
- handleClose = () => {
-  this.setState({
-    open: false
-  })
+  handleClose = () => {
+    this.setState({
+      open: false,
+    });
   };
   render() {
     return (
-      <div id='room'>
-        <Box left='25%' id='box' display='flex' justifyContent="flex-end">
-        <IconButton onClick={this.handleOpen} color="primary">
-        <HelpIcon />
-        </IconButton>
-        </Box>
-        <Popper anchorEl={this.state.anchorEl} placement='bottom-end' open={this.state.open} transition>
-        {({ TransitionProps }) => (
-          <Fade {...TransitionProps} timeout={350}>
-            <div id='paper'>
-            <Paper>
-              <Typography>Welcome to earBudz, create A room and invite your friends to listen into a podcast with you, or join a room that was already created!
-              </Typography>
-            </Paper>
-            </div>
-          </Fade>
-        )}
-      </Popper>
-      <div id='subRoom'>
-      <div className="App-header">
-        <Sdk token={this.props.access_token} />
-        <Box display="flex" justifyContent="center">
-          <Box m={5} display="inline">
-            <Button
-              variant="contained"
-              onClick={this.handleSubmit}
-              type="button"
-            >
-              Create Room
-            </Button>
+      <div>
+        <div className="App-header">
+          <Sdk token={this.props.access_token} />
+          <Box display="flex" justifyContent="center">
+            <Box m={5} display="inline">
+              <Button
+                variant="contained"
+                onClick={this.handleSubmit}
+                type="button"
+              >
+                Create Room
+              </Button>
+            </Box>
+            <Box m={5} display="inline">
+              <Button variant="contained" onClick={this.showForm} type="button">
+                Join Room
+              </Button>
+            </Box>
           </Box>
-          <Box m={5} display="inline">
-            <Button variant="contained" onClick={this.showForm} type="button">
-              Join Room
-            </Button>
+        </div>
+        <div id="room">
+          <Box left="25%" id="box" display="flex" justifyContent="flex-end">
+            <IconButton onClick={this.handleOpen} color="primary">
+              <HelpIcon />
+            </IconButton>
           </Box>
-        </Box>
-        <Box display="flex" justifyContent="center">
-          {this.state.joinForm ? (
-            <form>
-              <TextField
-                id="textForJoin"
-                style={style}
-                size="small"
-                name="roomCode"
-                value={this.props.roomCode}
-                onChange={this.handleChange}
-                variant="filled"
-                label="Room Code"
-              />
-              <Box m={2} display="inline">
-                <Button
-                  variant="contained"
-                  onClick={this.joinSubmit}
-                  type="button"
-                >
-                  Submit
-                </Button>
+          <Popper
+            anchorEl={this.state.anchorEl}
+            placement="bottom-end"
+            open={this.state.open}
+            transition
+          >
+            {({ TransitionProps }) => (
+              <Fade {...TransitionProps} timeout={350}>
+                <div id="paper">
+                  <Paper>
+                    <Typography>
+                      Welcome to earBudz, create A room and invite your friends
+                      to listen into a podcast with you, or join a room that was
+                      already created!
+                    </Typography>
+                  </Paper>
+                </div>
+              </Fade>
+            )}
+          </Popper>
+          <div id="subRoom">
+            <div className="App-header">
+              <Sdk token={this.props.access_token} />
+              <Box display="flex" justifyContent="center">
+                <Box m={5} display="inline">
+                  <Button
+                    variant="contained"
+                    onClick={this.handleSubmit}
+                    type="button"
+                  >
+                    Create Room
+                  </Button>
+                </Box>
+                <Box m={5} display="inline">
+                  <Button
+                    variant="contained"
+                    onClick={this.showForm}
+                    type="button"
+                  >
+                    Join Room
+                  </Button>
+                </Box>
               </Box>
-            </form>
-          ) : null}
-        </Box>
-        {this.state.wrongRoomCode && <p>Opps, wrong code. Please try again</p>}
-        {/* <div>
+              <Box display="flex" justifyContent="center">
+                {this.state.joinForm ? (
+                  <form>
+                    <TextField
+                      id="textForJoin"
+                      style={style}
+                      size="small"
+                      name="roomCode"
+                      value={this.props.roomCode}
+                      onChange={this.handleChange}
+                      variant="filled"
+                      label="Room Code"
+                    />
+                    <Box m={2} display="inline">
+                      <Button
+                        variant="contained"
+                        onClick={this.joinSubmit}
+                        type="button"
+                      >
+                        Submit
+                      </Button>
+                    </Box>
+                  </form>
+                ) : null}
+              </Box>
+              {this.state.wrongRoomCode && (
+                <p>Opps, wrong code. Please try again</p>
+              )}
+              {/* <div>
           <h2>All Rooms</h2>
           <div>
           </div>
         </div> */}
+            </div>
+          </div>
+        </div>
       </div>
-      </div>
-      </div>
-    )
+    );
   }
 }
 const stateToProps = (state) => ({

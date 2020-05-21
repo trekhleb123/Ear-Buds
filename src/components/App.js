@@ -29,21 +29,16 @@ function App(props) {
     const roomId = window.sessionStorage.getItem("roomId");
     console.log("roomId", roomId);
     if (!!props.userData.display_name) {
-      if (roomId) {
-        window.sessionStorage.removeItem("roomId");
-        props.history.push(`/room/${roomId}`);
-      } else {
-        props.history.push(`/home`);
-      }
+      console.log("LOOOOOOOK", props.userData);
+      props.history.push(`/home`);
     }
-    if(props.userData.product){
-      if(props.userData.product !== 'premium' || null || undefined){
+    if (props.userData.product) {
+      if (props.userData.product !== "premium" || null || undefined) {
         props.history.push(`/error`);
       }
     }
-    
   }, [props]);
-  console.log(props.userData)
+  console.log(props.userData);
   return (
     <div className="App">
       <header className="App-header">

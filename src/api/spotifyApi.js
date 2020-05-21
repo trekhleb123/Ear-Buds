@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from "axios";
 
 export const getNowPlaying = async (token) => {
   try {
@@ -9,13 +9,13 @@ export const getNowPlaying = async (token) => {
           Authorization: "Bearer " + token,
         },
       }
-    )
-    console.log("Now Playing", episode)
-    return episode
+    );
+    console.log("Now Playing", episode);
+    return episode;
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const pausePlayback = async (token, devId) => {
   try {
@@ -24,12 +24,12 @@ export const pausePlayback = async (token, devId) => {
       headers: {
         Authorization: "Bearer " + token,
       },
-    })
-    console.log("timeStamp", Date.now())
+    });
+    console.log("timeStamp", Date.now());
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const startPodcast = async (token, devId, podcastUri, startTime) => {
   try {
@@ -42,15 +42,15 @@ export const startPodcast = async (token, devId, podcastUri, startTime) => {
         uris: [podcastUri],
         position_ms: startTime,
       }),
-    })
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const seekPodcast = async (token, devId, podcastUri, position) => {
   try {
-    console.log("positionMS", position)
+    console.log("positionMS", position);
     fetch(`https://api.spotify.com/v1/me/player/seek?device_id=${devId}`, {
       method: "PUT",
       headers: {
@@ -60,11 +60,11 @@ export const seekPodcast = async (token, devId, podcastUri, position) => {
         uris: [podcastUri],
         position_ms: position,
       }),
-    })
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const startPodcastAnywhere = async (token, podcastUri) => {
   try {
@@ -77,12 +77,12 @@ export const startPodcastAnywhere = async (token, podcastUri) => {
         uris: [podcastUri],
         position_ms: 0,
       }),
-    })
-    console.log("timeStamp", Date.now())
+    });
+    console.log("timeStamp", Date.now());
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const resumePlayback = async (token, devId) => {
   try {
@@ -94,11 +94,11 @@ export const resumePlayback = async (token, devId) => {
       // body: JSON.stringify({
       //   uris: [`spotify:track:${action.track.id}`],
       // }),
-    })
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const getEpisode = async (id, token) => {
   try {
@@ -107,18 +107,18 @@ export const getEpisode = async (id, token) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-    const epJson = await episode.json()
+    });
+    const epJson = await episode.json();
 
-    return epJson
+    return epJson;
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const fetchShows = async (search, token, num) => {
   try {
-    const q = encodeURIComponent(`${search}`)
+    const q = encodeURIComponent(`${search}`);
     const response = await fetch(
       `https://api.spotify.com/v1/search?q=${q}&type=show&market=US&limit=${num}`,
       {
@@ -127,13 +127,13 @@ export const fetchShows = async (search, token, num) => {
           Authorization: `Bearer ${token}`,
         },
       }
-    )
-    const searchJSON = await response.json()
-    return searchJSON
+    );
+    const searchJSON = await response.json();
+    return searchJSON;
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const fetchEpisodes = async (result, token) => {
   try {
@@ -145,13 +145,13 @@ export const fetchEpisodes = async (result, token) => {
           Authorization: `Bearer ${token}`,
         },
       }
-    )
-    const episodesJSON = await episodes.json()
-    return episodesJSON
+    );
+    const episodesJSON = await episodes.json();
+    return episodesJSON;
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const getDevices = async (token) => {
   try {
@@ -162,13 +162,13 @@ export const getDevices = async (token) => {
           Authorization: "Bearer " + token,
         },
       }
-    )
-    console.log("DEVICES", response)
-    return response.data.devices
+    );
+    console.log("DEVICES", response);
+    return response.data.devices;
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
 
 export const transferDevice = async (token, devId) => {
   try {
@@ -180,8 +180,8 @@ export const transferDevice = async (token, devId) => {
       body: JSON.stringify({
         device_ids: [devId],
       }),
-    })
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
-}
+};
