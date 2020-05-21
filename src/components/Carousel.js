@@ -1,36 +1,58 @@
 import React from "react"
+import { withRouter } from "react-router-dom"
 import { Carousel } from "react-responsive-carousel"
-import { getEpisode, fetchEpisodes, fetchShows } from "../api/spotifyApi"
+import { connect } from "react-redux"
+import { getEpisode } from "../api/spotifyApi"
 import { changeQueue } from "../firebase/firebase"
 
 const MyCarousel = (props) => {
-  console.log(props)
+  const onCarouselClick = async (podcast) => {
+    getEpisode(podcast.id, props.token).then((res) =>
+      changeQueue(
+        props.match.params.roomId,
+        res,
+        podcast.id,
+        props.userData.display_name
+      )
+    )
+  }
+  const carousels = [
+    {
+      title: "Popular Podcasts",
+      data: props.podcasts,
+    },
+    {
+      title: "Podcast Essentials",
+      data: props.playlist,
+    },
+    {
+      title: "Your Daily Picks",
+      data: props.dailyPodcasts,
+    },
+  ]
+
   return (
     <div class="all-carousels">
-      <div class="single-carousel">
-        <div class="playlist-name">Top podcasts</div>
-        <Carousel autoPlay showThumbs={false} infiniteLoop={true}>
-          {props.podcasts.map((podcast) => (
-            <div>
-              <img alt="" src={podcast.image} />
-              <p className="legend">{podcast.name}</p>
-            </div>
-          ))}
-        </Carousel>
-      </div>
-      <div class="single-carousel">
-        <div class="playlist-name">Selected podcasts</div>
-        <Carousel autoPlay showThumbs={false} infiniteLoop={true}>
-          {props.playlist.map((podcast) => (
-            <div>
-              <img alt="" src={podcast.image} />
-              <p className="legend">{podcast.name}</p>
-            </div>
-          ))}
-        </Carousel>
-      </div>
+      {carousels.map((carousel) => (
+        <div class="single-carousel">
+          <div class="playlist-name">{carousel.title}</div>
+          <Carousel autoPlay showThumbs={false} infiniteLoop={true}>
+            {carousel.data.map((podcast) => (
+              <div onClick={() => onCarouselClick(podcast)}>
+                <img alt="" src={podcast.image} />
+                <p className="legend">{podcast.name}</p>
+              </div>
+            ))}
+          </Carousel>
+        </div>
+      ))}
     </div>
   )
 }
 
-export default MyCarousel
+const mapToProps = (state) => ({
+  token: state.access_token,
+  userData: state.userData,
+})
+
+export default withRouter(connect(mapToProps)(MyCarousel))

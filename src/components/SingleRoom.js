@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
 import { Route } from "react-router-dom"
 import { Link } from "react-router-dom"
@@ -13,85 +13,77 @@ import { Button } from "@material-ui/core"
 import Card from "@material-ui/core/Card"
 import { List } from "@material-ui/core"
 import Footer from "./Footer"
+import useDarkMode from "use-dark-mode"
 
-class SingleRoom extends React.Component {
-  constructor() {
-    super()
-    this.state = {
-      users: [],
-      // open: false
-    }
+const SingleRoom = (props) => {
+  const [users, setUsers] = useState([])
+  const darkMode = useDarkMode(false)
+
+  const getNewUsers = async () => {
+    await db
+      .collection("Rooms")
+      .doc(props.match.params.roomId)
+      .collection("Users")
+      .onSnapshot((snapshot) => {
+        const allUsers = []
+        snapshot.forEach((doc) => allUsers.push(doc.data()))
+        setUsers(allUsers)
+      })
   }
-  async componentDidMount() {
-    if (!this.props.userData.display_name) {
-      window.sessionStorage.setItem("roomId", this.props.match.params.roomId)
-      this.props.history.push("/")
+
+  useEffect(() => {
+    if (!props.userData.display_name) {
+      props.history.push("/")
     } else {
-      this.props.getUserData(this.props.access_token)
-      // await renderUsers(this.props.match.params.roomId);
-      // this.setState({
-      //   users: [...this.state.users, await renderUsers(this.props.match.params.roomId)],
-      // })
-      //     console.log('in mount', this.state.users)
-      await db
-        .collection("Rooms")
-        .doc(this.props.match.params.roomId)
-        .collection("Users")
-        .onSnapshot((snapshot) => {
-          const allUsers = []
-          snapshot.forEach((doc) => allUsers.push(doc.data()))
-          this.setState({
-            users: allUsers,
-          })
-        })
+      getNewUsers()
     }
+  }, [])
+
+  const click = () => {
+    darkMode.toggle()
+    console.log(darkMode.value)
   }
 
-  render() {
-    console.log("users in render", this.state.users)
-    return (
-      <div>
-        <Header
-          roomId={this.props.match.params.roomId}
-          history={this.props.history}
-        />
-
-        <div className="main-container">
-          <div className="messages-container">
-            <h2>Users</h2>
-            <div>
-              {Object.values(this.state.users).map((user, i) => {
-                console.log("user", user)
-                return (
-                  <div id="userList" key={i}>
-                    <img
-                      style={{
-                        width: "25px",
-                        height: "25px",
-                        borderRadius: "30%",
-                      }}
-                      alt="avatar"
-                      src={
-                        user.image.length > 0
-                          ? user.image[0].url
-                          : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
-                      }
-                    />{" "}
-                    {user.name}
-                  </div>
-                )
-              })}
-            </div>
-            <Messages roomId={this.props.match.params.roomId} />
+  console.log("users in render", users)
+  return (
+    <div>
+      <Header roomId={props.match.params.roomId} history={props.history} />
+      <div className="main-container">
+        <div className="messages-container">
+          <button onClick={click}>Toggle Day / Night</button>
+          <h2>Users</h2>
+          <div>
+            {Object.values(users).map((user, i) => {
+              console.log("user", user)
+              return (
+                <div id="userList" key={i}>
+                  <img
+                    style={{
+                      width: "25px",
+                      height: "25px",
+                      borderRadius: "30%",
+                    }}
+                    alt="avatar"
+                    src={
+                      user.image.length > 0
+                        ? user.image[0].url
+                        : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
+                    }
+                  />{" "}
+                  {user.name}
+                </div>
+              )
+            })}
           </div>
-          <div className="right-box">
-            <SearchBar roomId={this.props.match.params.roomId} />
-          </div>
+          <Messages roomId={props.match.params.roomId} />
         </div>
-        <Footer roomCode={this.props.roomCode} />
+        <div className="right-box">
+          <SearchBar roomId={props.match.params.roomId} />
+        </div>
       </div>
-    )
-  }
+      <Footer roomCode={props.roomCode} />
+    </div>
+  )
 }
 const stateToProps = (state) => ({
   access_token: state.access_token,

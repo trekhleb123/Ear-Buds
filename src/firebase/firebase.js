@@ -293,3 +293,27 @@ export async function playbackStart(roomId, username) {
     console.error(err)
   }
 }
+
+export const getPlaylist = async (playlistId, token) => {
+  const response = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=10`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
+  const ppJSON = await response.json()
+
+  if (ppJSON.items) {
+    return await ppJSON.items.map((item) => {
+      return {
+        uri: item.track.uri,
+        name: item.track.name,
+        image: item.track.album.images[1].url,
+        id: item.track.id,
+      }
+    })
+  }
+}
