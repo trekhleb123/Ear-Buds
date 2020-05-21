@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { db, userLeft, renderUsers, vacantRoom } from '../firebase/firebase';
-import { Route } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-//import { getMyData } from "../spotifyLogin"
 import { getAccessToken, setSpotifyCode, getUserData } from '../redux/store';
 import { connect } from 'react-redux';
-import { Modal } from '@material-ui/core';
 import Messages from './Messages';
 import { SearchBar } from '.';
 import Header from './Header';
 import { Button } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
-import { List } from '@material-ui/core';
 import Footer from './Footer';
 import useDarkMode from 'use-dark-mode';
 import CardContent from '@material-ui/core/CardContent';
@@ -20,7 +15,6 @@ import Typography from '@material-ui/core/Typography';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import IconButton from '@material-ui/core/IconButton';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import Collapse from '@material-ui/core/Collapse';
 import Slide from '@material-ui/core/Slide';
 
 const SingleRoom = props => {

@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   db,
   createRoom,
@@ -19,11 +19,17 @@ import Popper from '@material-ui/core/Popper';
 import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography';
-import { userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
+import Sdk from "./Sdk";
+
+const style = {
+  background: 'white',
+  color: 'white',
+
+};
 
 class Rooms extends React.Component {
   constructor() {
-    super()
+    super();
     this.state = {
       joinForm: false,
       wrongRoomCode: false,
@@ -41,7 +47,7 @@ class Rooms extends React.Component {
    componentDidMount() {
     this.getRooms()
     if (!Object.keys(this.props.userData).length) {
-      this.props.history.push("/")
+      this.props.history.push("/");
     }
   //   window.addEventListener("beforeunload", async (ev) => {
   //     ev.preventDefault();
@@ -53,12 +59,12 @@ class Rooms extends React.Component {
 // }
 
   async getRooms() {
-    const doc = db.collection("Rooms")
+    const doc = db.collection("Rooms");
     const docs = await doc.get().then(function (room) {
       room.forEach(function (doc) {
         //console.log(doc.id, " => ", doc.data());
-      })
-    })
+      });
+    });
   }
 
   async handleSubmit() {
@@ -67,15 +73,15 @@ class Rooms extends React.Component {
       this.props.userData.display_name,
       this.props.refresh_token,
       this.props.userData.images
-    )
-    const id = await getRoom(roomCode)
-    this.props.setRoomCode(roomCode)
-    this.props.history.push(`/room/${id}`)
+    );
+    const id = await getRoom(roomCode);
+    this.props.setRoomCode(roomCode);
+    this.props.history.push(`/room/${id}`);
   }
 
   async joinSubmit(event) {
-    event.preventDefault()
-    const room = await findRoom(this.props.roomCode)
+    event.preventDefault();
+    const room = await findRoom(this.props.roomCode);
     if (typeof room === "string") {
       await joinRoom(
         this.props.access_token,
@@ -84,27 +90,27 @@ class Rooms extends React.Component {
         room,
         this.props.roomCode,
         this.props.userData.images
-      )
-      this.props.history.push(`/room/${room}`)
-      console.log("PROPS", this.props)
+      );
+      this.props.history.push(`/room/${room}`);
+      console.log("PROPS", this.props);
       this.setState({
         joinForm: false,
-      })
+      });
     } else {
       this.setState({
         wrongRoomCode: true,
-      })
-      console.log("wrong room code")
+      });
+      console.log("wrong room code");
     }
   }
   showForm() {
     this.setState({
       joinForm: !this.state.joinForm,
-    })
+    });
   }
   handleChange(event) {
-    console.log([event.target.name], event.target.value)
-    this.props.setRoomCode(event.target.value)
+    console.log([event.target.name], event.target.value);
+    this.props.setRoomCode(event.target.value);
   }
   handleOpen = (event) => {
     this.setState({
@@ -139,44 +145,48 @@ class Rooms extends React.Component {
         )}
       </Popper>
       <div id='subRoom'>
-        {/* <Modal
-        open={this.state.open}
-        onClose={this.handleClose}
-        // aria-labelledby="simple-modal-title"
-        // aria-describedby="simple-modal-description"
-      >
-        HELLO
-      </Modal> */}
+      <div className="App-header">
+        <Sdk token={this.props.access_token} />
         <Box display="flex" justifyContent="center">
-        <Box m={5} display='inline'>
-        <Button variant='contained' onClick={this.handleSubmit} type="button">
-          Create Room
-        </Button>
-        </Box>
-        <Box m={5} display='inline'>
-        <Button variant='contained' onClick={this.showForm} type="button">
-          Join Room
-        </Button>
-        </Box>
-        </Box>
-        <Box display="flex" justifyContent="center">
-        {this.state.joinForm ? (
-          <form>
-            <TextField
-            size='small'
-              name="roomCode"
-              value={this.props.roomCode}
-              onChange={this.handleChange}
-              variant="filled"
-              label="Room Code"
-            />
-             <Box m={2} display='inline'>
-            <Button variant='contained' onClick={this.joinSubmit} type="button">
-              Submit
+          <Box m={5} display="inline">
+            <Button
+              variant="contained"
+              onClick={this.handleSubmit}
+              type="button"
+            >
+              Create Room
             </Button>
-            </Box>
-          </form>
-        ) : null}
+          </Box>
+          <Box m={5} display="inline">
+            <Button variant="contained" onClick={this.showForm} type="button">
+              Join Room
+            </Button>
+          </Box>
+        </Box>
+        <Box display="flex" justifyContent="center">
+          {this.state.joinForm ? (
+            <form>
+              <TextField
+                id="textForJoin"
+                style={style}
+                size="small"
+                name="roomCode"
+                value={this.props.roomCode}
+                onChange={this.handleChange}
+                variant="filled"
+                label="Room Code"
+              />
+              <Box m={2} display="inline">
+                <Button
+                  variant="contained"
+                  onClick={this.joinSubmit}
+                  type="button"
+                >
+                  Submit
+                </Button>
+              </Box>
+            </form>
+          ) : null}
         </Box>
         {this.state.wrongRoomCode && <p>Opps, wrong code. Please try again</p>}
         {/* <div>
@@ -184,6 +194,7 @@ class Rooms extends React.Component {
           <div>
           </div>
         </div> */}
+      </div>
       </div>
       </div>
     )
@@ -194,11 +205,11 @@ const stateToProps = (state) => ({
   userData: state.userData,
   refresh_token: state.refresh_token,
   roomCode: state.roomCode,
-})
+});
 
 const dispatchToProps = (dispatch) => ({
   getUserData: (token) => dispatch(getUserData(token)),
   setRoomCode: (roomCode) => dispatch(setRoomCode(roomCode)),
-})
+});
 
-export default withRouter(connect(stateToProps, dispatchToProps)(Rooms))
+export default withRouter(connect(stateToProps, dispatchToProps)(Rooms));

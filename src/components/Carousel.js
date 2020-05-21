@@ -16,32 +16,36 @@ const MyCarousel = (props) => {
       )
     )
   }
+  const carousels = [
+    {
+      title: "Popular Podcasts",
+      data: props.podcasts,
+    },
+    {
+      title: "Podcast Essentials",
+      data: props.playlist,
+    },
+    {
+      title: "Your Daily Picks",
+      data: props.dailyPodcasts,
+    },
+  ]
 
   return (
     <div class="all-carousels">
-      <div class="single-carousel">
-        <div class="playlist-name">Top podcasts</div>
-        <Carousel autoPlay showThumbs={false} infiniteLoop={true}>
-          {props.podcasts.map((podcast) => (
-            <div onClick={() => onCarouselClick(podcast)}>
-              <img alt="" src={podcast.image} />
-              <p className="legend">{podcast.name}</p>
-            </div>
-          ))}
-        </Carousel>
-      </div>
-
-      <div class="single-carousel">
-        <div class="playlist-name">Selected podcasts</div>
-        <Carousel autoPlay showThumbs={false} infiniteLoop={true}>
-          {props.playlist.map((podcast) => (
-            <div onClick={() => onCarouselClick(podcast)}>
-              <img alt="" src={podcast.image} />
-              <p className="legend">{podcast.name}</p>
-            </div>
-          ))}
-        </Carousel>
-      </div>
+      {carousels.map((carousel) => (
+        <div class="single-carousel">
+          <div class="playlist-name">{carousel.title}</div>
+          <Carousel autoPlay showThumbs={false} infiniteLoop={true}>
+            {carousel.data.map((podcast) => (
+              <div onClick={() => onCarouselClick(podcast)}>
+                <img alt="" src={podcast.image} />
+                <p className="legend">{podcast.name}</p>
+              </div>
+            ))}
+          </Carousel>
+        </div>
+      ))}
     </div>
   )
 }
