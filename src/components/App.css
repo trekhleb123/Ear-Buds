@@ -12,6 +12,22 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+#room{
+   background-image: url("https://i.pinimg.com/originals/70/b4/d4/70b4d4080fc2cdb4bd1c70802148c3c0.jpg");
+}
+#paper{
+  width:180px;
+  height:150px;
+}
+#subRoom {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
 body.light-mode {
   background-color: #dfdfdfa1;
   color: #353535;
@@ -137,8 +153,12 @@ button {
   border: gray;
   direction: flex;
   flex-direction: row;
+  right: 0
 }
-
+#adding{
+  display: flex;
+ align-content: flex-end
+}
 .header {
   display: flex;
   justify-content: flex-start;
@@ -146,7 +166,10 @@ button {
   color: azure;
   min-height: 5%;
 }
-
+#popover{
+  width: 200px;
+  height: 100px;
+}
 .footer {
   background-color: #bfc0c0;
   min-height: 100px;
@@ -171,13 +194,15 @@ button {
   display: flex;
 }
 
-.messages-container {
+#messages-container {
   display: flex;
   flex-direction: column;
   min-width: 40%;
   margin: auto 0 20px 20px;
 }
-
+#users{
+  overflow: scroll;
+}
 .volume {
   width: 150px;
 }
@@ -185,7 +210,7 @@ button {
 .invite-card {
   display: flex;
   flex-direction: column;
-  min-height: 200px;
+  min-height: 100px;
   text-align: center;
   justify-content: space-evenly;
 }
@@ -251,7 +276,10 @@ button {
   justify-content: space-between;
   flex-direction: column;
 }
-
+#pic {
+border-radius: 50%;
+overflow: scroll;
+}
 .carousel .control-dots .dot {
   width: 3px;
   height: 3px;

@@ -137,7 +137,7 @@ const SearchBar = (props) => {
               }}
               label="Search input"
               margin="normal"
-              variant="outlined"
+              variant="filled"
             />
           )}
         />
@@ -183,7 +183,7 @@ const SearchBar = (props) => {
             disabled="true"
             fullWidth="true"
             margin="normal"
-            variant="outlined"
+            variant="filled"
           >
             <InputLabel>Select Show from Above</InputLabel>
             <Select
