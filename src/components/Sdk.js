@@ -31,6 +31,7 @@ const Sdk = (props) => {
 
     // Playback status updates
     player.on("player_state_changed", (state) => {
+      setPosition(state.position);
       console.log(state);
     });
 

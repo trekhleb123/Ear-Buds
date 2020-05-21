@@ -19,10 +19,73 @@ body {
     animation: App-logo-spin infinite 20s linear;
   }
 }
+#room {
+  background-image: url("https://i.pinimg.com/originals/70/b4/d4/70b4d4080fc2cdb4bd1c70802148c3c0.jpg");
+}
+#paper {
+  width: 180px;
+  height: 150px;
+}
+#subRoom {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+body.light-mode {
+  background-color: #dfdfdfa1;
+  color: #353535;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode {
+  background-color: #353535;
+  color: #ffffff;
+  /* .header {
+    background-color: #1b2938;
+  } */
+}
+
+body.dark-mode .chat-send-container {
+  background-color: rgb(61, 61, 61);
+  box-shadow: 0 4px 8px 0 rgba(44, 43, 43, 0.5),
+    0 6px 15px 0 rgba(5, 5, 5, 0.486);
+}
+body.light-mode .chat-send-container {
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px 0 rgba(141, 138, 138, 0.5),
+    0 6px 20px 0 rgba(141, 139, 139, 0.486);
+}
+
+body.dark-mode .playlist-name {
+  color: #fdfafa;
+}
+
+body.dark-mode .all-carousels {
+  background-color: rgb(61, 61, 61);
+  box-shadow: 0 4px 8px 0 rgba(44, 43, 43, 0.5),
+    0 6px 15px 0 rgba(5, 5, 5, 0.486);
+}
+
+body.dark-mode .makeStyles-bubble-56 {
+  color: white;
+}
+
+p.light-mode {
+  color: #353535;
+}
+p.dark-mode {
+  color: rgb(250, 244, 244);
+}
 
 .App-header {
-  background-image: url("https://i.pinimg.com/originals/70/b4/d4/70b4d4080fc2cdb4bd1c70802148c3c0.jpg");
+  background-image: url("https://miro.medium.com/max/3000/1*mzpTFpyQ3jQ3-ib_7WbIig.gif");
+  background-repeat: no-repeat;
   min-height: 100vh;
+  min-width: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -132,20 +195,41 @@ button {
   border: gray;
   direction: flex;
   flex-direction: row;
+  right: 0;
 }
-
+#adding {
+  display: flex;
+  align-content: flex-end;
+}
 .header {
   display: flex;
   justify-content: flex-start;
-  background-color: #3d5a80;
-  height: 10%;
+  background-color: #636363;
+  color: azure;
+  min-height: 5%;
+}
+#popover {
+  width: 200px;
+  height: 100px;
+}
+.footer {
+  background-color: #bfc0c0;
+  min-height: 100px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.footer {
+.footer-content {
   display: flex;
-  justify-content: flex-start;
-  background-color: #bfc0c0;
-  height: 10%;
+  flex-direction: row;
+  justify-content: center;
+  font-size: x-large;
+}
+
+.social-media-text {
+  font-size: small;
 }
 
 .main-container {
@@ -154,7 +238,7 @@ button {
   max-height: 80%;
 }
 
-.messages-container {
+#messages-container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -163,6 +247,9 @@ button {
   margin: 20px;
 }
 
+#users {
+  overflow: scroll;
+}
 .volume {
   width: 150px;
 }
@@ -170,7 +257,7 @@ button {
 .invite-card {
   display: flex;
   flex-direction: column;
-  min-height: 200px;
+  min-height: 100px;
   text-align: center;
   justify-content: space-evenly;
 }
@@ -192,10 +279,10 @@ button {
 #message-form {
   margin: 10px;
   padding: 10px;
-  background-color: rgba(157, 206, 248, 0.315);
-  border-radius: 10px;
-  box-shadow: 0 4px 8px 0 rgba(197, 192, 192, 0.2),
-    0 6px 20px 0 rgba(148, 144, 144, 0.19);
+  background-color: rgba(96, 98, 100, 0.315);
+  border-radius: 4px;
+  box-shadow: 0 4px 8px 0 rgba(7, 7, 7, 0.5),
+    0 6px 20px 0 rgba(34, 33, 33, 0.486);
 }
 
 .right-box {
@@ -211,6 +298,7 @@ button {
 .right-message {
   justify-content: flex-end !important;
 }
+
 .left-message {
   justify-content: flex-start !important;
 }
@@ -245,7 +333,7 @@ button {
   /* min-height: 70%; */
   /* max-height: 80%; */
   background-color: #353535;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 .panel {
@@ -253,4 +341,39 @@ button {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+}
+#pic {
+  border-radius: 50%;
+  overflow: scroll;
+}
+.carousel .control-dots .dot {
+  width: 3px;
+  height: 3px;
+  opacity: 0;
+}
+.carousel .control-dots .dot.selected {
+  opacity: 0;
+}
+
+.all-carousels {
+  display: flex;
+  flex-direction: row;
+  background-color: #dfdfdfa1;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px 0 rgba(129, 126, 126, 0.5),
+    0 6px 15px 0 rgba(139, 135, 135, 0.486);
+}
+
+.single-carousel {
+  flex: 1;
+  margin: 40px;
+}
+
+.playlist-name {
+  color: #353535;
+  font-size: small;
+}
+
+.carousel .slide .legend {
+  opacity: 0;
 }

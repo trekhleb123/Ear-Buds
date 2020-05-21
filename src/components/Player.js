@@ -43,7 +43,7 @@ const Player = (props) => {
     isBlank: true,
     uri: null,
     name: "",
-    show: { publisher: "" },
+    show: { publisher: "", id: 0 },
     duration_ms: 0,
     description: "",
     images: [
