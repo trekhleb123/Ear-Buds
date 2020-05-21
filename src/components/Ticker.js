@@ -20,13 +20,7 @@ const Ticker = (props) => {
     console.log("secondsState", props);
   }, [seconds]);
 
-  return (
-    <div>
-      <div className="progress-container">
-        <span>{seconds}</span>
-      </div>
-    </div>
-  );
+  return <div></div>;
 };
 
 const stateToProps = (state) => ({

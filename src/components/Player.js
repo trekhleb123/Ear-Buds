@@ -6,15 +6,7 @@ import { isEqual } from "lodash";
 import Volume from "./Volume";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
-import {
-  getRoom,
-  getCurrentRoomData,
-  updateRoomData,
-  db,
-  playbackUpdate,
-  playbackStart,
-  clearQueue,
-} from "../firebase/firebase";
+import { db, playbackUpdate, playbackStart } from "../firebase/firebase";
 import {
   pausePlayback,
   startPodcast,
@@ -40,6 +32,8 @@ import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Ticker from "./Ticker";
+import IconButton from "@material-ui/core/IconButton";
+import InfoIcon from "@material-ui/icons/Info";
 
 let counter = 0;
 
@@ -207,98 +201,108 @@ const Player = (props) => {
   const id = open ? "simple-popover" : undefined;
 
   return (
-    <div>
-      <div className="podcast-info-container">
+    <div className="podcast-info-container">
+      <div>
         <Card className="on-deck-card">
-          <div className="on-deck-card-content">
-            <div className="on-deck-card-details">
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  On Deck
-                </Typography>
-                <Typography variant="h5" component="h2">
-                  {selectedEp.name}
-                </Typography>
+          <div className="on-deck-card-details">
+            <div className="card-label">
+              <Typography color="textSecondary" gutterBottom>
+                On Deck
+                {selectedEp.description && (
+                  <PopupState variant="popover" popupId="demo-popup-popover">
+                    {(popupState) => (
+                      <>
+                        <InfoIcon
+                          fontSize="small"
+                          {...bindTrigger(popupState)}
+                        />
+                        <Popover
+                          {...bindPopover(popupState)}
+                          anchorOrigin={{
+                            vertical: "center",
+                            horizontal: "center",
+                          }}
+                          transformOrigin={{
+                            vertical: "center",
+                            horizontal: "center",
+                          }}
+                        >
+                          <div className="on-deck-card-description">
+                            <Typography variant="body2" component="p">
+                              Episode Description: {selectedEp.description}
+                            </Typography>
+                          </div>
+                        </Popover>
+                      </>
+                    )}
+                  </PopupState>
+                )}
+              </Typography>
+            </div>
+
+            <div className="on-deck-card-content">
+              <CardContent id="card">
+                <Typography>{selectedEp.name}</Typography>
                 <Typography variant="subtitle1" color="textSecondary">
                   {selectedEp.show.publisher}
                 </Typography>
               </CardContent>
             </div>
-            <div className="on-deck-card-description">
-              <Typography variant="body2" component="p">
-                {selectedEp.description}
-              </Typography>
-            </div>
-            <div className="player-container">
-              {selectedEp.uri && <Sync onClick={start} />}
-            </div>
+            {selectedEp.uri && (
+              <div className="on-deck-button-container">
+                <IconButton onClick={start}>
+                  <PlayCircleFilled />
+                </IconButton>
+              </div>
+            )}
           </div>
-
-          <CardMedia
-            component="img"
-            src={selectedEp.images[1].url}
-            id="on-deck-card-image"
-            title="Show Artwork"
-            className="card-media"
-          />
+          <div className="card-image-container">
+            <CardMedia
+              component="img"
+              src={selectedEp.images[1].url}
+              id="card-image"
+              title="Show Artwork"
+              className="card-media"
+            />
+          </div>
         </Card>
       </div>
-      <div className="podcast-info-container">
+      <div>
         <Card className="on-deck-card">
-          <div className="on-deck-card-content">
-            <div className="on-deck-card-details">
-              <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                  Now Playing
-                </Typography>
-                <Typography variant="h5" component="h2">
-                  {playingEp.name}
-                </Typography>
+          <div className="on-deck-card-details">
+            <Typography color="textSecondary" gutterBottom>
+              Now Playing
+            </Typography>
+            <div className="on-deck-card-content">
+              <CardContent id="card">
+                <Typography>{playingEp.name}</Typography>
                 <Typography variant="subtitle1" color="textSecondary">
                   {playingEp.show.publisher}
                 </Typography>
               </CardContent>
             </div>
-            <div className="on-deck-card-description">
-              <div className="player-container">
-                <PopupState variant="popover" popupId="demo-popup-popover">
-                  {(popupState) => (
-                    <div>
-                      <Button {...bindTrigger(popupState)}>
-                        <VolumeUpIcon />
-                      </Button>
-                      <Popover
-                        {...bindPopover(popupState)}
-                        anchorOrigin={{
-                          vertical: "top",
-                          horizontal: "center",
-                        }}
-                        transformOrigin={{
-                          vertical: "bottom",
-                          horizontal: "center",
-                        }}
-                      >
-                        <Box className="volume" autoWidth="true" p={2}>
-                          <Volume />
-                        </Box>
-                      </Popover>
-                    </div>
-                  )}
-                </PopupState>
-                <div>
-                  {playingEp.uri &&
-                    (playingStatus ? (
-                      <PauseCircleFilled onClick={pause} />
-                    ) : (
-                      <PlayCircleFilled onClick={play} />
-                    ))}
-                </div>
-                <DevicesIcon onClick={handleDevicePopover} />
+          </div>
+          <div className="card-image-container">
+            <CardMedia
+              component="img"
+              src={playingEp.images[1].url}
+              id="card-image"
+              title="Show Artwork"
+              className="card-media"
+            />
+          </div>
+        </Card>
+      </div>
+      <Card>
+        <div className="player-container">
+          <PopupState variant="popover" popupId="demo-popup-popover">
+            {(popupState) => (
+              <div>
+                <IconButton {...bindTrigger(popupState)}>
+                  <VolumeUpIcon />
+                </IconButton>
                 <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
+                  {...bindPopover(popupState)}
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "center",
@@ -308,45 +312,72 @@ const Player = (props) => {
                     horizontal: "center",
                   }}
                 >
-                  <List>
-                    {devices.length > 0 &&
-                      devices.map((device, ind) => {
-                        return (
-                          <ListItem
-                            button
-                            onClick={() => handleDeviceSelection(device.id)}
-                            key={ind}
-                          >
-                            <ListItemText primary={device.name} />
-                          </ListItem>
-                        );
-                      })}
-                  </List>
+                  <Box className="volume" autoWidth="true" p={2}>
+                    <Volume />
+                  </Box>
                 </Popover>
               </div>
-
-              <div className="progress-container">
-                <span>{msConversion(timeElapsed)}</span>
-                <span>{msConversion(playingEp.duration_ms)}</span>
-              </div>
-              <LinearProgress
-                variant="determinate"
-                value={(timeElapsed * 100) / playingEp.duration_ms}
-              />
-
-              {value && value.playing.status && <Ticker />}
-            </div>
+            )}
+          </PopupState>
+          <div>
+            {playingEp.uri &&
+              (playingStatus ? (
+                <IconButton onClick={pause}>
+                  <PauseCircleFilled />
+                </IconButton>
+              ) : (
+                <IconButton onClick={play}>
+                  <PlayCircleFilled />
+                </IconButton>
+              ))}
           </div>
+          <IconButton onClick={handleDevicePopover}>
+            <DevicesIcon />
+          </IconButton>
 
-          <CardMedia
-            component="img"
-            src={playingEp.images[1].url}
-            id="on-deck-card-image"
-            title="Show Artwork"
-            className="card-media"
-          />
-        </Card>
-      </div>
+          <Popover
+            fontSize="large"
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "center",
+            }}
+            transformOrigin={{
+              vertical: "bottom",
+              horizontal: "center",
+            }}
+          >
+            <List>
+              {devices.length > 0 &&
+                devices.map((device, ind) => {
+                  return (
+                    <ListItem
+                      button
+                      onClick={() => handleDeviceSelection(device.id)}
+                      key={ind}
+                    >
+                      <ListItemText primary={device.name} />
+                    </ListItem>
+                  );
+                })}
+            </List>
+          </Popover>
+        </div>
+
+        <div className="progress-container">
+          <span>{msConversion(timeElapsed)}</span>
+          <span>{msConversion(playingEp.duration_ms)}</span>
+        </div>
+        <LinearProgress
+          variant="determinate"
+          value={(timeElapsed * 100) / playingEp.duration_ms}
+        />
+
+        {value && value.playing.status && <Ticker />}
+      </Card>
     </div>
   );
 };

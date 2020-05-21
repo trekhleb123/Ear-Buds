@@ -26,16 +26,14 @@ function App(props) {
   }, [props.access_token]);
 
   useEffect(() => {
-    const roomId = window.sessionStorage.getItem("roomId");
-    console.log("roomId", roomId);
     if (!!props.userData.display_name) {
-      if (roomId) {
-        window.sessionStorage.removeItem("roomId");
-        props.history.push(`/room/${roomId}`);
-      } else {
-        props.history.push(`/home`);
-      }
+      console.log("LOOOOOOOK", props.userData);
+      props.history.push(`/home`);
     }
+
+    //ADD IN CHECK FOR PREMIUM ACCOUNT
+
+    //ADD IN CHECK FOR EXISTING DEVICES
   }, [props]);
 
   return (
