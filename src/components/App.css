@@ -197,3 +197,27 @@ button {
   justify-content: space-between;
   flex-direction: column;
 }
+
+.carousel .control-dots .dot {
+  width: 3px;
+  height: 3px;
+}
+
+.all-carousels {
+  display: flex;
+  flex-direction: row;
+}
+
+.single-carousel {
+  flex: 1;
+  margin: 20px;
+  border-radius: 5%;
+}
+
+.playlist-name {
+  background-color: #3535353d;
+  color: azure;
+  box-shadow: 0 4px 8px 0 rgba(197, 192, 192, 0.2),
+    0 6px 20px 0 rgba(148, 144, 144, 0.19);
+  border-radius: 2px;
+}

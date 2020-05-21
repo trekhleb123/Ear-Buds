@@ -3,15 +3,17 @@ import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
 import { Route } from "react-router-dom"
 import { Link } from "react-router-dom"
 //import { getMyData } from "../spotifyLogin"
-import { getAccessToken, setSpotifyCode, getUserData } from '../redux/store';
-import { connect } from 'react-redux';
-import { Modal } from '@material-ui/core';
-import Messages from './Messages';
-import { SearchBar } from '.';
-import Header from './Header'
-import { Button } from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import { List } from '@material-ui/core';
+import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
+import { connect } from "react-redux"
+import { Modal } from "@material-ui/core"
+import Messages from "./Messages"
+import { SearchBar } from "."
+import Header from "./Header"
+import { Button } from "@material-ui/core"
+import Card from "@material-ui/core/Card"
+import { List } from "@material-ui/core"
+import Footer from "./Footer"
+
 class SingleRoom extends React.Component {
   constructor() {
     super()
@@ -24,24 +26,25 @@ class SingleRoom extends React.Component {
     if (!this.props.userData.display_name) {
       window.sessionStorage.setItem("roomId", this.props.match.params.roomId)
       this.props.history.push("/")
-    }
-    this.props.getUserData(this.props.access_token)
-    // await renderUsers(this.props.match.params.roomId);
-    // this.setState({
-    //   users: [...this.state.users, await renderUsers(this.props.match.params.roomId)],
-    // })
-    //     console.log('in mount', this.state.users)
-    await db
-      .collection("Rooms")
-      .doc(this.props.match.params.roomId)
-      .collection("Users")
-      .onSnapshot((snapshot) => {
-        const allUsers = []
-        snapshot.forEach((doc) => allUsers.push(doc.data()))
-        this.setState({
-          users: allUsers,
+    } else {
+      this.props.getUserData(this.props.access_token)
+      // await renderUsers(this.props.match.params.roomId);
+      // this.setState({
+      //   users: [...this.state.users, await renderUsers(this.props.match.params.roomId)],
+      // })
+      //     console.log('in mount', this.state.users)
+      await db
+        .collection("Rooms")
+        .doc(this.props.match.params.roomId)
+        .collection("Users")
+        .onSnapshot((snapshot) => {
+          const allUsers = []
+          snapshot.forEach((doc) => allUsers.push(doc.data()))
+          this.setState({
+            users: allUsers,
+          })
         })
-      })
+    }
   }
 
   render() {
@@ -79,13 +82,13 @@ class SingleRoom extends React.Component {
                 )
               })}
             </div>
-            <Messages />
+            <Messages roomId={this.props.match.params.roomId} />
           </div>
           <div className="right-box">
             <SearchBar roomId={this.props.match.params.roomId} />
           </div>
         </div>
-        <div className="footer">Footer Text</div>
+        <Footer roomCode={this.props.roomCode} />
       </div>
     )
   }

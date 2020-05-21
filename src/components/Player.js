@@ -6,6 +6,7 @@ import { isEqual } from "lodash"
 import Volume from "./Volume"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons"
+import axios from 'axios'
 import {
   getRoom,
   getCurrentRoomData,
@@ -44,7 +45,7 @@ const Player = (props) => {
   const blank = {
     isBlank: true,
     name: "",
-    show: { publisher: "" },
+    show: { publisher: "", id: 0, },
     duration_ms: 0,
     description: "",
     images: [
@@ -191,10 +192,8 @@ const Player = (props) => {
   const handleClose = () => {
     setAnchorEl(null)
   }
-
   const open = Boolean(anchorEl)
   const id = open ? "simple-popover" : undefined
-
   return (
     <div>
       <div className="podcast-info-container">
