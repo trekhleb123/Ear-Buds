@@ -113,6 +113,8 @@ const Player = (props) => {
 
   const previousValue = usePrevious(value)
 
+
+
   useEffect(() => {
     if (!isEqual(value, previousValue)) {
       if (value) {

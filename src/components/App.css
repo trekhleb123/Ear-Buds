@@ -12,7 +12,9 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
+.mess {
+  color: white
+}
 .App-header {
   background-image: url("https://miro.medium.com/max/3000/1*mzpTFpyQ3jQ3-ib_7WbIig.gif");
   background-repeat: no-repeat;

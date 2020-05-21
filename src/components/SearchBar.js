@@ -17,7 +17,10 @@ import { getEpisode, fetchEpisodes, fetchShows } from "../api/spotifyApi"
 import { changeQueue } from "../firebase/firebase"
 import MyCarousel from "./Carousel"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
-
+const style = {
+  background: 'white',
+  color: 'white', 
+};
 const SearchBar = (props) => {
   const token = props.token
   // const [state, setState] = useState({
@@ -155,6 +158,8 @@ const SearchBar = (props) => {
   useEffect(() => {
     getEpisodes()
   },[search])
+
+  console.log('USER DATA ', props.userData)
   return (
     <div className="right-panel">
          <div>
@@ -170,6 +175,7 @@ const SearchBar = (props) => {
           options={results.map((item) => item.label)}
           renderInput={(params) => (
             <TextField
+              style={style}
               {...params}
               onChange={({ target }) => {
                 // activeSearch(target.value);
@@ -195,7 +201,7 @@ const SearchBar = (props) => {
         <div>
           <FormControl fullWidth="true" margin="normal" variant="outlined">
             <InputLabel>{`Select from ${search} Episodes`}</InputLabel>
-            <Select native value="Episodes" onChange={handleChange}>
+            <Select style={style} native value="Episodes" onChange={handleChange}>
               <option aria-label="None" value="" />
               {episodes &&
                 episodes.map((episode) => (

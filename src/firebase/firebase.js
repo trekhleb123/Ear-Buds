@@ -9,7 +9,7 @@ const firebaseApp = firebase.initializeApp({
   projectId: "podcastparty-402e2",
   storageBucket: "gs://podcastparty-402e2.appspot.com",
   messagingSenderId: "311285409494",
-})
+});
 
 const db = firebaseApp.firestore()
 //const firestore = getFirestore()
@@ -18,8 +18,8 @@ export { db, firestore }
 
 export async function createNewRoom(newRoom) {
   try {
-    const room = await db.collection("Rooms").add(newRoom)
-    console.log(room)
+    const room = await db.collection("Rooms").add(newRoom);
+    console.log(room);
   } catch (err) {
     console.error(err)
   }
@@ -92,6 +92,7 @@ export async function createRoom(token, username, refreshToken, image) {
       duration_ms: 1000,
       username: "",
       name: "",
+      epId: "",
     },
     playing: {
       progress: "",
@@ -100,6 +101,7 @@ export async function createRoom(token, username, refreshToken, image) {
       status: false,
       duration_ms: 1000,
       username: "",
+      epId: "",
     },
   })
   console.log("newRoom", newRoom)
@@ -110,7 +112,7 @@ export async function createRoom(token, username, refreshToken, image) {
     deviceId: 2,
     refreshToken,
     image,
-  })
+  });
 
   await db.collection("Rooms").doc(newRoom.id).collection("messages").add({})
 
@@ -274,14 +276,15 @@ export async function playbackStart(roomId, username) {
     let title
     getCurrentRoomData(roomId)
       .then((roomData) => {
-        title = roomData.queued.name
-        roomData.playing.progress = 0
-        roomData.playing.timestamp = Date.now()
-        roomData.playing.uri = roomData.queued.uri
-        roomData.playing.duration_ms = roomData.queued.duration_ms
-        roomData.playing.status = true
-        roomData.playing.username = username
-        return roomData
+        title = roomData.queued.name;
+        roomData.playing.progress = 0;
+        roomData.playing.timestamp = Date.now();
+        roomData.playing.uri = roomData.queued.uri;
+        roomData.playing.duration_ms = roomData.queued.duration_ms;
+        roomData.playing.status = true;
+        roomData.playing.username = username;
+        roomData.playing.epId = roomData.queued.epId;
+        return roomData;
       })
       .then((res) => updateRoomData(res, roomId))
       .then(() => clearQueue(roomId))

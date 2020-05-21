@@ -67,7 +67,7 @@ const Messages = (props) => {
             }`}
           >
             <div className={classes.bubble}>
-              <div>{message}</div>
+              <div  >{message}</div>
               <div className="message-name">{name}</div>
             </div>
           </div>
