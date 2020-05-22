@@ -35,15 +35,13 @@ const Messages = (props) => {
       .collection("messages")
       .orderBy("timestamp", "asc")
   )
-  const messagesEndRef = useRef(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current &&
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-  }
-
-  useEffect(scrollToBottom, [messages])
-
+  useEffect(() => {
+    var div = document.querySelector(".chat-container")
+    if (div) {
+      div.scrollTop = div.scrollHeight - div.clientHeight
+    }
+  }, [messages])
   const classes = useStyles()
 
   if (loading) return <div>Loading..</div>
@@ -67,7 +65,7 @@ const Messages = (props) => {
             }`}
           >
             <div className={classes.bubble}>
-              <div  >{message}</div>
+              <div>{message}</div>
               <div className="message-name">{name}</div>
             </div>
           </div>
@@ -77,10 +75,7 @@ const Messages = (props) => {
   }
   return (
     <div className="chat-send-container">
-      <div className="chat-container">
-        {renderMessages()}
-        {messages && <div ref={messagesEndRef} />}
-      </div>
+      <div className="chat-container">{renderMessages()}</div>
 
       <Form roomId={props.roomId} />
     </div>
@@ -165,4 +160,4 @@ const stateToProps = (state) => ({
 //   roomCode: state.roomCode,
 //   userData: state.userData,
 // });
-export default connect(stateToProps, null)(Messages);
+export default connect(stateToProps, null)(Messages)
