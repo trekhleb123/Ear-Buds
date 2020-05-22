@@ -244,6 +244,12 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.left-pannel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   min-width: 40%;
   max-width: 40%;
   margin: 20px;
@@ -378,4 +384,8 @@ button {
 
 .carousel .slide .legend {
   opacity: 0;
+}
+
+div {
+  font-size: small;
 }

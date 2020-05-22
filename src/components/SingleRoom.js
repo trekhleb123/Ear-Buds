@@ -17,11 +17,26 @@ import IconButton from "@material-ui/core/IconButton"
 import { Alert, AlertTitle } from "@material-ui/lab"
 import Slide from "@material-ui/core/Slide"
 import Switch from "@material-ui/core/Switch"
-
+import { withStyles } from "@material-ui/core/styles"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
+import Grid from "@material-ui/core/Grid"
+import { grey } from "@material-ui/core/colors"
+const SwitchStyle = withStyles({
+  switchBase: {
+    color: grey[300],
+    "&$checked": {
+      color: grey[800],
+    },
+    "&$checked + $track": {
+      backgroundColor: grey[500],
+    },
+  },
+  checked: {},
+  track: {},
+})(Switch)
 
 const SingleRoom = (props) => {
   const [anchorEl, setAnchorEl] = useState(null)
@@ -107,7 +122,16 @@ const SingleRoom = (props) => {
       ) : null}
       <div className="main-container">
         <div className="messages-container">
-          <Switch onChange={toggleDarkMode} />
+          <div style={{ margin: "10px" }}>
+            <Grid component="label" container alignItems="center" spacing={1}>
+              <Grid item>Light</Grid>
+              <Grid item>
+                <SwitchStyle onChange={toggleDarkMode} />
+              </Grid>
+              <Grid item>Dark</Grid>
+            </Grid>
+          </div>
+
           <div className="users-container">
             <Typography color="textSecondary" gutterBottom>
               Users
