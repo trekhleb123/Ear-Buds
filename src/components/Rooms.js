@@ -21,10 +21,6 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import Sdk from "./Sdk";
 
-const style = {
-  background: "white",
-  color: "white",
-};
 
 class Rooms extends React.Component {
   constructor() {
@@ -199,7 +195,6 @@ class Rooms extends React.Component {
                   <form>
                     <TextField
                       id="textForJoin"
-                      style={style}
                       size="small"
                       name="roomCode"
                       value={this.props.roomCode}
