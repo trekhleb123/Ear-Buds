@@ -105,14 +105,13 @@ const SingleRoom = (props) => {
         </Slide>
       ) : null}
       <div className="main-container">
-        <div className="messages-container">
+        <div className="left-box">
           <button onClick={click}>Toggle Day / Night</button>
-          <div className="users-container">
-            <Typography color="textSecondary" gutterBottom>
-              Users
-            </Typography>
+          <div className="messages-container">
+            <div className="users-container">
+              <Typography color="textSecondary">Users</Typography>
 
-            {/* <h2 id="adding">Buddys</h2>
+              {/* <h2 id="adding">Buddys</h2>
             <IconButton size="small" id="addPerson" onClick={handleOpen}>
               <p fontSize="small" id="adding">
                 <PersonAddIcon /> Add Buddy
@@ -141,88 +140,89 @@ const SingleRoom = (props) => {
                 </CardContent>
               </Card>
             </Popover> */}
-            <List>
-              {Object.values(users).map((user, i) => {
-                console.log("user", user);
-                return (
-                  <ListItem id="userList" key={i}>
-                    <ListItemIcon>
-                      <img
+              <List>
+                {Object.values(users).map((user, i) => {
+                  console.log("user", user);
+                  return (
+                    <ListItem id="userList" key={i}>
+                      <ListItemIcon>
+                        <img
+                          style={{
+                            width: "25px",
+                            height: "25px",
+                            borderRadius: "30%",
+                            padding: "5px",
+                          }}
+                          alt="avatar"
+                          src={
+                            user.image.length > 0
+                              ? user.image[0].url
+                              : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
+                          }
+                        />
+                      </ListItemIcon>
+                      <ListItemText primary={user.name} />
+                    </ListItem>
+                  );
+                })}
+                <ListItem>
+                  <ListItemIcon>
+                    <IconButton
+                      style={{
+                        padding: "5px",
+                      }}
+                      onClick={handleOpen}
+                    >
+                      <PersonAddIcon
                         style={{
                           width: "25px",
                           height: "25px",
-                          borderRadius: "30%",
-                          padding: "5px",
                         }}
-                        alt="avatar"
-                        src={
-                          user.image.length > 0
-                            ? user.image[0].url
-                            : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
-                        }
                       />
-                    </ListItemIcon>
-                    <ListItemText primary={user.name} />
-                  </ListItem>
-                );
-              })}
-              <ListItem>
-                <ListItemIcon>
-                  <IconButton
-                    style={{
-                      padding: "5px",
+                    </IconButton>
+                  </ListItemIcon>
+                  <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
                     }}
-                    onClick={handleOpen}
+                    transformOrigin={{
+                      vertical: "center",
+                      horizontal: "left",
+                    }}
                   >
-                    <PersonAddIcon
-                      style={{
-                        width: "25px",
-                        height: "25px",
-                      }}
-                    />
-                  </IconButton>
-                </ListItemIcon>
-                <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "center",
-                    horizontal: "left",
-                  }}
-                >
-                  <Card>
-                    <CardContent className="invite-card">
-                      <Typography variant="subtitle1" color="textSecondary">
-                        Send Invite Code
-                      </Typography>
-                      <input
-                        type="text"
-                        value={props.roomCode}
-                        id="room-code"
-                      ></input>
-                      <Button
-                        onClick={() => copyText()}
-                        variant="contained"
-                        color="primary"
-                        id="search-button"
-                      >
-                        Copy Code
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Popover>
+                    <Card>
+                      <CardContent className="invite-card">
+                        <Typography variant="subtitle1" color="textSecondary">
+                          Send Invite Code
+                        </Typography>
+                        <input
+                          type="text"
+                          value={props.roomCode}
+                          id="room-code"
+                        ></input>
+                        <Button
+                          onClick={() => copyText()}
+                          variant="contained"
+                          color="primary"
+                          id="search-button"
+                        >
+                          Copy Code
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Popover>
 
-                <ListItemText primary="Add Buddy" />
-              </ListItem>
-            </List>
+                  <ListItemText primary="Add Buddy" />
+                </ListItem>
+              </List>
+            </div>
+            <Messages roomId={props.match.params.roomId} />
           </div>
-          <Messages roomId={props.match.params.roomId} />
         </div>
         <div className="right-box">
           <SearchBar roomId={props.match.params.roomId} />
