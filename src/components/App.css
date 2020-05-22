@@ -399,3 +399,7 @@ button {
 .carousel .slide .legend {
   opacity: 0;
 }
+
+div {
+  font-size: small;
+}
