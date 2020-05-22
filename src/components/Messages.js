@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from "react"
-import { firestore, findRoom } from "../firebase/firebase"
+import React, { useEffect } from "react"
+import { firestore } from "../firebase/firebase"
 import Form from "./Form"
-import _sortBy from "lodash/sortBy"
 import { connect } from "react-redux"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import { useCollection } from "react-firebase-hooks/firestore"
@@ -9,7 +8,6 @@ import { useCollection } from "react-firebase-hooks/firestore"
 const useStyles = makeStyles((theme) => ({
   container: {
     bottom: 0,
-    // position: "fixed" // remove this so we can apply flex design
   },
   bubbleContainer: {
     width: "100%",
@@ -28,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const Messages = (props) => {
+  const classes = useStyles()
   const [messages, loading, error] = useCollection(
     firestore
       .collection("Rooms")
@@ -35,16 +34,13 @@ const Messages = (props) => {
       .collection("messages")
       .orderBy("timestamp", "asc")
   )
-  const messagesEndRef = useRef(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current &&
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-  }
-
-  useEffect(scrollToBottom, [messages])
-
-  const classes = useStyles()
+  useEffect(() => {
+    var div = document.querySelector(".chat-container")
+    if (div) {
+      div.scrollTop = div.scrollHeight - div.clientHeight
+    }
+  }, [messages])
 
   if (loading) return <div>Loading..</div>
   if (error) return <div>Error..</div>
@@ -67,7 +63,7 @@ const Messages = (props) => {
             }`}
           >
             <div className={classes.bubble}>
-              <div  >{message}</div>
+              <div>{message}</div>
               <div className="message-name">{name}</div>
             </div>
           </div>
@@ -77,10 +73,7 @@ const Messages = (props) => {
   }
   return (
     <div className="chat-send-container">
-      <div className="chat-container">
-        {renderMessages()}
-        {messages && <div ref={messagesEndRef} />}
-      </div>
+      <div className="chat-container">{renderMessages()}</div>
 
       <Form roomId={props.roomId} />
     </div>
@@ -92,77 +85,4 @@ const stateToProps = (state) => ({
   userData: state.userData,
 })
 
-// export default connect(stateToProps, null)(Messages)
-// import React, { useState, useEffect } from "react";
-// import { firestore, findRoom } from "../firebase/firebase";
-// import Form from "./Form";
-// import _sortBy from "lodash/sortBy";
-// import { connect } from "react-redux";
-// import makeStyles from "@material-ui/core/styles/makeStyles";
-// import { useCollection } from "react-firebase-hooks/firestore";
-// const useStyles = makeStyles((theme) => ({
-//   container: {
-//     bottom: 0,
-//     // position: "fixed" // remove this so we can apply flex design
-//   },
-//   bubbleContainer: {
-//     width: "100%",
-//     display: "flex",
-//   },
-//   bubble: {
-//     border: "0.5px #353535",
-//     backgroundColor: "#E0FBFC",
-//     borderRadius: "10px",
-//     boxShadow:
-//       "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
-//     margin: "5px",
-//     padding: "10px",
-//     display: "inline-block",
-//   },
-// }));
-// const Messages = (props) => {
-//   const [messages, loading, error] = useCollection(
-//     firestore.collection("Rooms").doc(props.roomId).collection("messages"),
-//     {
-//       snapshotListenOptions: { includeMetadataChanges: true },
-//     }
-//   );
-//   const classes = useStyles();
-//   if (loading) return <div>Loading..</div>;
-//   if (error) return <div>Error..</div>;
-//   const renderMessages = () => {
-//     if (!messages.length) {
-//       return (
-//         <div className={`${classes.bubble}`}>There's no messages yet...</div>
-//       );
-//     }
-//     return messages.map(({ name, message }, index) => (
-//       <div
-//         key={index}
-//         className={`${classes.bubbleContainer} ${
-//           props.userData.display_name === name
-//             ? "right-message"
-//             : "left-message"
-//         }`}
-//       >
-//         {message && (
-//           <div className={classes.bubble}>
-//             <div>{message}</div>
-//             <div className="message-name">{name}</div>
-//           </div>
-//         )}
-//       </div>
-//     ));
-//   };
-//   return (
-//     <div className="chat-send-container">
-//       <div className="chat-container">{renderMessages()} </div>
-//       <Form />
-//     </div>
-//   );
-// };
-// const stateToProps = (state) => ({
-//   roomCode: state.roomCode,
-//   userData: state.userData,
-// });
-export default connect(stateToProps, null)(Messages);
+export default connect(stateToProps, null)(Messages)
