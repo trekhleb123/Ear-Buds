@@ -35,6 +35,7 @@ import Ticker from "./Ticker";
 import IconButton from "@material-ui/core/IconButton";
 import InfoIcon from "@material-ui/icons/Info";
 import Tooltip from "@material-ui/core/Tooltip";
+import OverflowTip from "./OverflowTip";
 
 let counter = 0;
 
@@ -242,7 +243,10 @@ const Player = (props) => {
 
             <div className="on-deck-card-content">
               <CardContent id="card">
-                <Typography>{selectedEp.name}</Typography>
+                {selectedEp.name && (
+                  <OverflowTip>{selectedEp.name}</OverflowTip>
+                )}
+
                 <Typography variant="subtitle1" color="textSecondary">
                   {selectedEp.show.publisher}
                 </Typography>
@@ -272,10 +276,13 @@ const Player = (props) => {
       <div>
         <Card className="on-deck-card">
           <div className="on-deck-card-details">
-            <Typography color="textSecondary">Now Playing</Typography>
+            <div className="card-label">
+              <Typography color="textSecondary">Now Playing</Typography>
+            </div>
             <div className="on-deck-card-content">
               <CardContent id="card">
-                <Typography>{playingEp.name}</Typography>
+                {playingEp.name && <OverflowTip>{playingEp.name}</OverflowTip>}
+
                 <Typography variant="subtitle1" color="textSecondary">
                   {playingEp.show.publisher}
                 </Typography>

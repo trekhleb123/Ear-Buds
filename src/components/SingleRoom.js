@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from "react"
-import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
-import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
-import { connect } from "react-redux"
-import Messages from "./Messages"
-import { SearchBar } from "."
-import Header from "./Header"
-import { Button } from "@material-ui/core"
-import Card from "@material-ui/core/Card"
-import Footer from "./Footer"
-import useDarkMode from "use-dark-mode"
-import CardContent from "@material-ui/core/CardContent"
-import Popover from "@material-ui/core/Popover"
-import Typography from "@material-ui/core/Typography"
-import PersonAddIcon from "@material-ui/icons/PersonAdd"
-import IconButton from "@material-ui/core/IconButton"
-import { Alert, AlertTitle } from "@material-ui/lab"
-import Slide from "@material-ui/core/Slide"
-import Switch from "@material-ui/core/Switch"
-import { withStyles } from "@material-ui/core/styles"
-import List from "@material-ui/core/List"
-import ListItem from "@material-ui/core/ListItem"
-import ListItemIcon from "@material-ui/core/ListItemIcon"
-import ListItemText from "@material-ui/core/ListItemText"
-import Grid from "@material-ui/core/Grid"
-import { grey } from "@material-ui/core/colors"
+import React, { useEffect, useState } from "react";
+import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase";
+import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store";
+import { connect } from "react-redux";
+import Messages from "./Messages";
+import { SearchBar } from ".";
+import Header from "./Header";
+import { Button } from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+import Footer from "./Footer";
+import useDarkMode from "use-dark-mode";
+import CardContent from "@material-ui/core/CardContent";
+import Popover from "@material-ui/core/Popover";
+import Typography from "@material-ui/core/Typography";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import IconButton from "@material-ui/core/IconButton";
+import { Alert, AlertTitle } from "@material-ui/lab";
+import Slide from "@material-ui/core/Slide";
+import Switch from "@material-ui/core/Switch";
+import { withStyles } from "@material-ui/core/styles";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Grid from "@material-ui/core/Grid";
+import { grey } from "@material-ui/core/colors";
 const SwitchStyle = withStyles({
   switchBase: {
     color: grey[300],
@@ -36,14 +36,14 @@ const SwitchStyle = withStyles({
   },
   checked: {},
   track: {},
-})(Switch)
+})(Switch);
 
 const SingleRoom = (props) => {
-  const [anchorEl, setAnchorEl] = useState(null)
-  const [users, setUsers] = useState([])
-  const darkMode = useDarkMode(false)
-  const [anchorEl2, setAnchorEl2] = useState(null)
-  const [alert, setAlert] = useState(false)
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [users, setUsers] = useState([]);
+  const darkMode = useDarkMode(false);
+  const [anchorEl2, setAnchorEl2] = useState(null);
+  const [alert, setAlert] = useState(false);
 
   const getNewUsers = async () => {
     await db
@@ -51,59 +51,59 @@ const SingleRoom = (props) => {
       .doc(props.match.params.roomId)
       .collection("Users")
       .onSnapshot((snapshot) => {
-        const allUsers = []
-        snapshot.forEach((doc) => allUsers.push(doc.data()))
-        setUsers(allUsers)
-      })
-  }
+        const allUsers = [];
+        snapshot.forEach((doc) => allUsers.push(doc.data()));
+        setUsers(allUsers);
+      });
+  };
 
   useEffect(() => {
     if (!props.userData.display_name) {
-      props.history.push("/")
+      props.history.push("/");
     } else {
-      getNewUsers()
+      getNewUsers();
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    var button = document.getElementById("addPerson")
-    console.log(button)
-    setAnchorEl2(button)
-  }, [])
+    var button = document.getElementById("addPerson");
+    console.log(button);
+    setAnchorEl2(button);
+  }, []);
 
   const toggleDarkMode = () => {
-    darkMode.toggle()
-  }
+    darkMode.toggle();
+  };
 
   const handleOpen = (event) => {
-    setAnchorEl(event.currentTarget)
-    console.log(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+    console.log(event.currentTarget);
+  };
   const handleClose = () => {
-    setAnchorEl(null)
-    console.log("HANDLING CLOSE", anchorEl)
-  }
+    setAnchorEl(null);
+    console.log("HANDLING CLOSE", anchorEl);
+  };
   const handleClose2 = () => {
-    setAnchorEl2(null)
-  }
+    setAnchorEl2(null);
+  };
   const copyText = () => {
-    var copyText = document.getElementById("room-code")
+    var copyText = document.getElementById("room-code");
 
-    copyText.select()
-    copyText.setSelectionRange(0, 99999) /*For mobile devices*/
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); /*For mobile devices*/
 
-    document.execCommand("copy")
-    setAlert(true)
-    handleClose()
+    document.execCommand("copy");
+    setAlert(true);
+    handleClose();
     setTimeout(() => {
-      setAlert(false)
-    }, 3000)
-  }
+      setAlert(false);
+    }, 3000);
+  };
 
-  const open3 = Boolean(anchorEl2)
-  const open = Boolean(anchorEl)
-  const id = open ? "simple-popover" : undefined
-  console.log("users in render", users)
+  const open3 = Boolean(anchorEl2);
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+  console.log("users in render", users);
   return (
     <div>
       <Header roomId={props.match.params.roomId} history={props.history} />
@@ -121,23 +121,22 @@ const SingleRoom = (props) => {
         </Slide>
       ) : null}
       <div className="main-container">
-        <div className="messages-container">
-          <div style={{ margin: "10px" }}>
-            <Grid component="label" container alignItems="center" spacing={1}>
-              <Grid item>Light</Grid>
-              <Grid item>
-                <SwitchStyle onChange={toggleDarkMode} />
+        <div className="left-box">
+          {/* <button onClick={click}>Toggle Day / Night</button> */}
+          <div className="messages-container">
+            <div style={{ margin: "10px" }}>
+              <Grid component="label" container alignItems="center" spacing={1}>
+                <Grid item>Light</Grid>
+                <Grid item>
+                  <SwitchStyle onChange={toggleDarkMode} />
+                </Grid>
+                <Grid item>Dark</Grid>
               </Grid>
-              <Grid item>Dark</Grid>
-            </Grid>
-          </div>
+            </div>
+            <div className="users-container">
+              <Typography color="textSecondary">Users</Typography>
 
-          <div className="users-container">
-            <Typography color="textSecondary" gutterBottom>
-              Users
-            </Typography>
-
-            {/* <h2 id="adding">Buddys</h2>
+              {/* <h2 id="adding">Buddys</h2>
             <IconButton size="small" id="addPerson" onClick={handleOpen}>
               <p fontSize="small" id="adding">
                 <PersonAddIcon /> Add Buddy
@@ -166,88 +165,89 @@ const SingleRoom = (props) => {
                 </CardContent>
               </Card>
             </Popover> */}
-            <List>
-              {Object.values(users).map((user, i) => {
-                console.log("user", user)
-                return (
-                  <ListItem id="userList" key={i}>
-                    <ListItemIcon>
-                      <img
+              <List>
+                {Object.values(users).map((user, i) => {
+                  console.log("user", user);
+                  return (
+                    <ListItem id="userList" key={i}>
+                      <ListItemIcon>
+                        <img
+                          style={{
+                            width: "25px",
+                            height: "25px",
+                            borderRadius: "30%",
+                            padding: "5px",
+                          }}
+                          alt="avatar"
+                          src={
+                            user.image.length > 0
+                              ? user.image[0].url
+                              : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
+                          }
+                        />
+                      </ListItemIcon>
+                      <ListItemText primary={user.name} />
+                    </ListItem>
+                  );
+                })}
+                <ListItem>
+                  <ListItemIcon>
+                    <IconButton
+                      style={{
+                        padding: "5px",
+                      }}
+                      onClick={handleOpen}
+                    >
+                      <PersonAddIcon
                         style={{
                           width: "25px",
                           height: "25px",
-                          borderRadius: "30%",
-                          padding: "5px",
                         }}
-                        alt="avatar"
-                        src={
-                          user.image.length > 0
-                            ? user.image[0].url
-                            : "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
-                        }
                       />
-                    </ListItemIcon>
-                    <ListItemText primary={user.name} />
-                  </ListItem>
-                )
-              })}
-              <ListItem>
-                <ListItemIcon>
-                  <IconButton
-                    style={{
-                      padding: "5px",
+                    </IconButton>
+                  </ListItemIcon>
+                  <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
                     }}
-                    onClick={handleOpen}
+                    transformOrigin={{
+                      vertical: "center",
+                      horizontal: "left",
+                    }}
                   >
-                    <PersonAddIcon
-                      style={{
-                        width: "25px",
-                        height: "25px",
-                      }}
-                    />
-                  </IconButton>
-                </ListItemIcon>
-                <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "center",
-                    horizontal: "left",
-                  }}
-                >
-                  <Card>
-                    <CardContent className="invite-card">
-                      <Typography variant="subtitle1" color="textSecondary">
-                        Send Invite Code
-                      </Typography>
-                      <input
-                        type="text"
-                        value={props.roomCode}
-                        id="room-code"
-                      ></input>
-                      <Button
-                        onClick={() => copyText()}
-                        variant="contained"
-                        color="primary"
-                        id="search-button"
-                      >
-                        Copy Code
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Popover>
+                    <Card>
+                      <CardContent className="invite-card">
+                        <Typography variant="subtitle1" color="textSecondary">
+                          Send Invite Code
+                        </Typography>
+                        <input
+                          type="text"
+                          value={props.roomCode}
+                          id="room-code"
+                        ></input>
+                        <Button
+                          onClick={() => copyText()}
+                          variant="contained"
+                          color="primary"
+                          id="search-button"
+                        >
+                          Copy Code
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Popover>
 
-                <ListItemText primary="Add Buddy" />
-              </ListItem>
-            </List>
+                  <ListItemText primary="Add Buddy" />
+                </ListItem>
+              </List>
+            </div>
+            <Messages roomId={props.match.params.roomId} />
           </div>
-          <Messages roomId={props.match.params.roomId} />
         </div>
         <div className="right-box">
           <SearchBar roomId={props.match.params.roomId} />
@@ -255,20 +255,20 @@ const SingleRoom = (props) => {
       </div>
       <Footer roomCode={props.roomCode} />
     </div>
-  )
-}
+  );
+};
 
 const stateToProps = (state) => ({
   access_token: state.access_token,
   userData: state.userData,
   refresh_token: state.refresh_token,
   roomCode: state.roomCode,
-})
+});
 
 const dispatchToProps = (dispatch) => ({
   getAccessToken: (code) => dispatch(getAccessToken(code)),
   setSpotifyCode: (code) => dispatch(setSpotifyCode(code)),
   getUserData: (token) => dispatch(getUserData(token)),
-})
+});
 
-export default connect(stateToProps, dispatchToProps)(SingleRoom)
+export default connect(stateToProps, dispatchToProps)(SingleRoom);

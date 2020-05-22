@@ -136,7 +136,8 @@ const SearchBar = (props) => {
                 getEpisodes();
               }}
               label="Search input"
-              margin="normal"
+              size="small"
+              margin="dense"
               variant="filled"
             />
           )}
@@ -152,7 +153,12 @@ const SearchBar = (props) => {
       </div>
       {episodes.length > 1 ? (
         <div>
-          <FormControl fullWidth="true" margin="normal" variant="outlined">
+          <FormControl
+            fullWidth="true"
+            size="small"
+            margin="dense"
+            variant="filled"
+          >
             <InputLabel>{`Select from ${search} Episodes`}</InputLabel>
             <Select
               style={style}
@@ -182,7 +188,8 @@ const SearchBar = (props) => {
           <FormControl
             disabled="true"
             fullWidth="true"
-            margin="normal"
+            size="small"
+            margin="dense"
             variant="filled"
           >
             <InputLabel>Select Show from Above</InputLabel>
@@ -190,6 +197,7 @@ const SearchBar = (props) => {
               native
               value={`Select Show from Above`}
               onChange={handleChange}
+              size="small"
             >
               <option aria-label="None" value="" />
             </Select>
