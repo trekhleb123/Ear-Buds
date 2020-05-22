@@ -81,8 +81,10 @@ p.dark-mode {
 }
 
 .App-header {
-  background-image: url("https://miro.medium.com/max/3000/1*mzpTFpyQ3jQ3-ib_7WbIig.gif");
+  background-image: url("https://bamcommunications.biz/wp-content/uploads/2018/10/bam-animations-v05-line2.gif");
+  background-color: rgb(174, 192, 199);
   background-repeat: no-repeat;
+  background-position: top center;
   min-height: 100vh;
   min-width: 100vh;
   display: flex;
