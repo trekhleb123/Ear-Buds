@@ -1,33 +1,49 @@
-import React, { useEffect, useState } from "react";
-import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase";
-import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store";
-import { connect } from "react-redux";
-import Messages from "./Messages";
-import { SearchBar } from ".";
-import Header from "./Header";
-import { Button } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
-import Footer from "./Footer";
-import useDarkMode from "use-dark-mode";
-import CardContent from "@material-ui/core/CardContent";
-import Popover from "@material-ui/core/Popover";
-import Typography from "@material-ui/core/Typography";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
-import IconButton from "@material-ui/core/IconButton";
-import { Alert, AlertTitle } from "@material-ui/lab";
-import Slide from "@material-ui/core/Slide";
-
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
+import React, { useEffect, useState } from "react"
+import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
+import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
+import { connect } from "react-redux"
+import Messages from "./Messages"
+import { SearchBar } from "."
+import Header from "./Header"
+import { Button } from "@material-ui/core"
+import Card from "@material-ui/core/Card"
+import Footer from "./Footer"
+import useDarkMode from "use-dark-mode"
+import CardContent from "@material-ui/core/CardContent"
+import Popover from "@material-ui/core/Popover"
+import Typography from "@material-ui/core/Typography"
+import PersonAddIcon from "@material-ui/icons/PersonAdd"
+import IconButton from "@material-ui/core/IconButton"
+import { Alert, AlertTitle } from "@material-ui/lab"
+import Slide from "@material-ui/core/Slide"
+import Switch from "@material-ui/core/Switch"
+import { withStyles } from "@material-ui/core/styles"
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemIcon from "@material-ui/core/ListItemIcon"
+import ListItemText from "@material-ui/core/ListItemText"
+import Grid from "@material-ui/core/Grid"
+import { grey } from "@material-ui/core/colors"
+const SwitchStyle = withStyles({
+  switchBase: {
+    color: grey[300],
+    "&$checked": {
+      color: grey[800],
+    },
+    "&$checked + $track": {
+      backgroundColor: grey[500],
+    },
+  },
+  checked: {},
+  track: {},
+})(Switch)
 
 const SingleRoom = (props) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [users, setUsers] = useState([]);
-  const darkMode = useDarkMode(false);
-  const [anchorEl2, setAnchorEl2] = useState(null);
-  const [alert, setAlert] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [users, setUsers] = useState([])
+  const darkMode = useDarkMode(false)
+  const [anchorEl2, setAnchorEl2] = useState(null)
+  const [alert, setAlert] = useState(false)
 
   const getNewUsers = async () => {
     await db
@@ -35,59 +51,59 @@ const SingleRoom = (props) => {
       .doc(props.match.params.roomId)
       .collection("Users")
       .onSnapshot((snapshot) => {
-        const allUsers = [];
-        snapshot.forEach((doc) => allUsers.push(doc.data()));
-        setUsers(allUsers);
-      });
-  };
+        const allUsers = []
+        snapshot.forEach((doc) => allUsers.push(doc.data()))
+        setUsers(allUsers)
+      })
+  }
 
   useEffect(() => {
     if (!props.userData.display_name) {
-      props.history.push("/");
+      props.history.push("/")
     } else {
-      getNewUsers();
+      getNewUsers()
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    var button = document.getElementById("addPerson");
-    console.log(button);
-    setAnchorEl2(button);
-  }, []);
+    var button = document.getElementById("addPerson")
+    console.log(button)
+    setAnchorEl2(button)
+  }, [])
 
-  const click = () => {
-    darkMode.toggle();
-    console.log(darkMode.value);
-  };
+  const toggleDarkMode = () => {
+    darkMode.toggle()
+  }
+
   const handleOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-    console.log(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+    console.log(event.currentTarget)
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-    console.log("HANDLING CLOSE", anchorEl);
-  };
+    setAnchorEl(null)
+    console.log("HANDLING CLOSE", anchorEl)
+  }
   const handleClose2 = () => {
-    setAnchorEl2(null);
-  };
+    setAnchorEl2(null)
+  }
   const copyText = () => {
-    var copyText = document.getElementById("room-code");
+    var copyText = document.getElementById("room-code")
 
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+    copyText.select()
+    copyText.setSelectionRange(0, 99999) /*For mobile devices*/
 
-    document.execCommand("copy");
-    setAlert(true);
-    handleClose();
+    document.execCommand("copy")
+    setAlert(true)
+    handleClose()
     setTimeout(() => {
-      setAlert(false);
-    }, 3000);
-  };
+      setAlert(false)
+    }, 3000)
+  }
 
-  const open3 = Boolean(anchorEl2);
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
-  console.log("users in render", users);
+  const open3 = Boolean(anchorEl2)
+  const open = Boolean(anchorEl)
+  const id = open ? "simple-popover" : undefined
+  console.log("users in render", users)
   return (
     <div>
       <Header roomId={props.match.params.roomId} history={props.history} />
@@ -106,7 +122,16 @@ const SingleRoom = (props) => {
       ) : null}
       <div className="main-container">
         <div className="messages-container">
-          <button onClick={click}>Toggle Day / Night</button>
+          <div style={{ margin: "10px" }}>
+            <Grid component="label" container alignItems="center" spacing={1}>
+              <Grid item>Light</Grid>
+              <Grid item>
+                <SwitchStyle onChange={toggleDarkMode} />
+              </Grid>
+              <Grid item>Dark</Grid>
+            </Grid>
+          </div>
+
           <div className="users-container">
             <Typography color="textSecondary" gutterBottom>
               Users
@@ -143,7 +168,7 @@ const SingleRoom = (props) => {
             </Popover> */}
             <List>
               {Object.values(users).map((user, i) => {
-                console.log("user", user);
+                console.log("user", user)
                 return (
                   <ListItem id="userList" key={i}>
                     <ListItemIcon>
@@ -164,7 +189,7 @@ const SingleRoom = (props) => {
                     </ListItemIcon>
                     <ListItemText primary={user.name} />
                   </ListItem>
-                );
+                )
               })}
               <ListItem>
                 <ListItemIcon>
@@ -230,20 +255,20 @@ const SingleRoom = (props) => {
       </div>
       <Footer roomCode={props.roomCode} />
     </div>
-  );
-};
+  )
+}
 
 const stateToProps = (state) => ({
   access_token: state.access_token,
   userData: state.userData,
   refresh_token: state.refresh_token,
   roomCode: state.roomCode,
-});
+})
 
 const dispatchToProps = (dispatch) => ({
   getAccessToken: (code) => dispatch(getAccessToken(code)),
   setSpotifyCode: (code) => dispatch(setSpotifyCode(code)),
   getUserData: (token) => dispatch(getUserData(token)),
-});
+})
 
-export default connect(stateToProps, dispatchToProps)(SingleRoom);
+export default connect(stateToProps, dispatchToProps)(SingleRoom)
