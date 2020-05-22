@@ -65,6 +65,7 @@ const SingleRoom = (props) => {
   };
   const handleClose = () => {
     setAnchorEl(null);
+    console.log("HANDLING CLOSE", anchorEl);
   };
   const handleClose2 = () => {
     setAnchorEl2(null);
@@ -76,12 +77,13 @@ const SingleRoom = (props) => {
     copyText.setSelectionRange(0, 99999); /*For mobile devices*/
 
     document.execCommand("copy");
-    handleClose();
     setAlert(true);
+    handleClose();
     setTimeout(() => {
       setAlert(false);
-    }, 5000);
+    }, 3000);
   };
+
   const open3 = Boolean(anchorEl2);
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
@@ -94,63 +96,29 @@ const SingleRoom = (props) => {
           <Alert
             variant="filled"
             onClose={() => setAlert(false)}
-            severity="success"
+            severity="info"
           >
-            <AlertTitle>Success</AlertTitle>
-            Code was Successfully copied to clipboard —{" "}
-            <strong>{props.roomCode}</strong>
+            {/* <AlertTitle>Success</AlertTitle> */}
+            Invite code was copied to clipboard!
+            {/* <strong>{props.roomCode}</strong> */}
           </Alert>
         </Slide>
       ) : null}
       <div className="main-container">
         <div className="messages-container">
+          <button onClick={click}>Toggle Day / Night</button>
           <div className="users-container">
             <Typography color="textSecondary" gutterBottom>
               Users
             </Typography>
 
-            <button onClick={click}>Toggle Day / Night</button>
-            <h2 id="adding">Buddys</h2>
+            {/* <h2 id="adding">Buddys</h2>
             <IconButton size="small" id="addPerson" onClick={handleOpen}>
               <p fontSize="small" id="adding">
                 <PersonAddIcon /> Add Buddy
               </p>
             </IconButton>
-            <Popover
-              id={id}
-              open={open}
-              anchorEl={anchorEl}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "center",
-                horizontal: "left",
-              }}
-            >
-              <Card>
-                <CardContent className="invite-card">
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Send Invite Code
-                  </Typography>
-                  <input
-                    type="text"
-                    value={props.roomCode}
-                    id="room-code"
-                  ></input>
-                  <Button
-                    onClick={() => copyText()}
-                    variant="contained"
-                    color="primary"
-                    id="search-button"
-                  >
-                    Copy Code
-                  </Button>
-                </CardContent>
-              </Card>
-            </Popover>
+
             <Popover
               // id='popover'
               open={open3}
@@ -172,7 +140,7 @@ const SingleRoom = (props) => {
                   </Typography>
                 </CardContent>
               </Card>
-            </Popover>
+            </Popover> */}
             <List>
               {Object.values(users).map((user, i) => {
                 console.log("user", user);
@@ -184,6 +152,7 @@ const SingleRoom = (props) => {
                           width: "25px",
                           height: "25px",
                           borderRadius: "30%",
+                          padding: "5px",
                         }}
                         alt="avatar"
                         src={
@@ -199,18 +168,56 @@ const SingleRoom = (props) => {
               })}
               <ListItem>
                 <ListItemIcon>
-                  <img
+                  <IconButton
                     style={{
-                      width: "25px",
-                      height: "25px",
-                      borderRadius: "30%",
+                      padding: "5px",
                     }}
-                    alt="avatar"
-                    src={
-                      "https://www.mentoring.org/new-site/wp-content/uploads/2019/05/default-user-300x300.png"
-                    }
-                  />
+                    onClick={handleOpen}
+                  >
+                    <PersonAddIcon
+                      style={{
+                        width: "25px",
+                        height: "25px",
+                      }}
+                    />
+                  </IconButton>
                 </ListItemIcon>
+                <Popover
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  transformOrigin={{
+                    vertical: "center",
+                    horizontal: "left",
+                  }}
+                >
+                  <Card>
+                    <CardContent className="invite-card">
+                      <Typography variant="subtitle1" color="textSecondary">
+                        Send Invite Code
+                      </Typography>
+                      <input
+                        type="text"
+                        value={props.roomCode}
+                        id="room-code"
+                      ></input>
+                      <Button
+                        onClick={() => copyText()}
+                        variant="contained"
+                        color="primary"
+                        id="search-button"
+                      >
+                        Copy Code
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </Popover>
+
                 <ListItemText primary="Add Buddy" />
               </ListItem>
             </List>
