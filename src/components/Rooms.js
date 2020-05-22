@@ -21,10 +21,6 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import Sdk from "./Sdk";
 
-const style = {
-  background: "white",
-  color: "white",
-};
 
 class Rooms extends React.Component {
   constructor() {
@@ -127,7 +123,7 @@ class Rooms extends React.Component {
     return (
       <div>
         <div className="App-header">
-          <Sdk token={this.props.access_token} />
+          {/* <Sdk token={this.props.access_token} />
           <Box display="flex" justifyContent="center">
             <Box m={5} display="inline">
               <Button
@@ -172,7 +168,7 @@ class Rooms extends React.Component {
             )}
           </Popper>
           <div id="subRoom">
-            <div className="App-header">
+            <div className="App-header"> */}
               <Sdk token={this.props.access_token} />
               <Box display="flex" justifyContent="center">
                 <Box m={5} display="inline">
@@ -199,7 +195,6 @@ class Rooms extends React.Component {
                   <form>
                     <TextField
                       id="textForJoin"
-                      style={style}
                       size="small"
                       name="roomCode"
                       value={this.props.roomCode}
@@ -229,8 +224,8 @@ class Rooms extends React.Component {
         </div> */}
             </div>
           </div>
-        </div>
-      </div>
+        // </div>
+      // </div>
     );
   }
 }
