@@ -42,7 +42,7 @@ function App(props) {
   return (
     <div className="App">
       <header className="App-header">
-        <Button variant="contained" onClick={() => spotifyLogin(props.code)}>
+        <Button variant="outlined" onClick={() => spotifyLogin(props.code)}>
           Login to Spotify
         </Button>
       </header>

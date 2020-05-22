@@ -21,7 +21,6 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import Sdk from "./Sdk";
 
-
 class Rooms extends React.Component {
   constructor() {
     super();
@@ -169,62 +168,58 @@ class Rooms extends React.Component {
           </Popper>
           <div id="subRoom">
             <div className="App-header"> */}
-              <Sdk token={this.props.access_token} />
-              <Box display="flex" justifyContent="center">
-                <Box m={5} display="inline">
+          <Sdk token={this.props.access_token} />
+          <Box display="flex" justifyContent="center">
+            <Box m={5} display="inline">
+              <Button
+                variant="outlined"
+                onClick={this.handleSubmit}
+                type="button"
+              >
+                Create Room
+              </Button>
+            </Box>
+            <Box m={5} display="inline">
+              <Button variant="outlined" onClick={this.showForm} type="button">
+                Join Room
+              </Button>
+            </Box>
+          </Box>
+          <Box display="flex" justifyContent="center">
+            {this.state.joinForm ? (
+              <form>
+                <TextField
+                  id="textForJoin"
+                  size="small"
+                  name="roomCode"
+                  value={this.props.roomCode}
+                  onChange={this.handleChange}
+                  variant="filled"
+                  label="Room Code"
+                />
+                <Box m={2} display="inline">
                   <Button
                     variant="contained"
-                    onClick={this.handleSubmit}
+                    onClick={this.joinSubmit}
                     type="button"
                   >
-                    Create Room
+                    Submit
                   </Button>
                 </Box>
-                <Box m={5} display="inline">
-                  <Button
-                    variant="contained"
-                    onClick={this.showForm}
-                    type="button"
-                  >
-                    Join Room
-                  </Button>
-                </Box>
-              </Box>
-              <Box display="flex" justifyContent="center">
-                {this.state.joinForm ? (
-                  <form>
-                    <TextField
-                      id="textForJoin"
-                      size="small"
-                      name="roomCode"
-                      value={this.props.roomCode}
-                      onChange={this.handleChange}
-                      variant="filled"
-                      label="Room Code"
-                    />
-                    <Box m={2} display="inline">
-                      <Button
-                        variant="contained"
-                        onClick={this.joinSubmit}
-                        type="button"
-                      >
-                        Submit
-                      </Button>
-                    </Box>
-                  </form>
-                ) : null}
-              </Box>
-              {this.state.wrongRoomCode && (
-                <p>Opps, wrong code. Please try again</p>
-              )}
-              {/* <div>
+              </form>
+            ) : null}
+          </Box>
+          {this.state.wrongRoomCode && (
+            <p>Opps, wrong code. Please try again</p>
+          )}
+          {/* <div>
           <h2>All Rooms</h2>
           <div>
           </div>
         </div> */}
-            </div>
-          </div>
-        // </div>
+        </div>
+      </div>
+      // </div>
       // </div>
     );
   }
