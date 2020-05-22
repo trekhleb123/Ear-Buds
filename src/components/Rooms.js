@@ -127,7 +127,7 @@ class Rooms extends React.Component {
     return (
       <div>
         <div className="App-header">
-          <Sdk token={this.props.access_token} />
+          {/* <Sdk token={this.props.access_token} />
           <Box display="flex" justifyContent="center">
             <Box m={5} display="inline">
               <Button
@@ -172,7 +172,7 @@ class Rooms extends React.Component {
             )}
           </Popper>
           <div id="subRoom">
-            <div className="App-header">
+            <div className="App-header"> */}
               <Sdk token={this.props.access_token} />
               <Box display="flex" justifyContent="center">
                 <Box m={5} display="inline">
@@ -229,8 +229,8 @@ class Rooms extends React.Component {
         </div> */}
             </div>
           </div>
-        </div>
-      </div>
+        // </div>
+      // </div>
     );
   }
 }
