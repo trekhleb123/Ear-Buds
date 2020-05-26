@@ -11,13 +11,37 @@ import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
 import Typography from "@material-ui/core/Typography"
 import PersonAddIcon from "@material-ui/icons/PersonAdd"
 import IconButton from "@material-ui/core/IconButton"
+import Grid from "@material-ui/core/Grid"
+import { grey, blue } from "@material-ui/core/colors"
+import Switch from "@material-ui/core/Switch"
+import { withStyles } from "@material-ui/core/styles"
+import useDarkMode from "use-dark-mode"
+
+const SwitchStyle = withStyles({
+  switchBase: {
+    color: blue[200],
+    "&$checked": {
+      color: blue[900],
+    },
+    "&$checked + $track": {
+      backgroundColor: grey[200],
+    },
+  },
+  checked: {},
+  track: {},
+})(Switch)
 
 const Header = (props) => {
+  const darkMode = useDarkMode(false)
   const leaveRoom = async (roomId, displayName) => {
     console.log(roomId, displayName)
     await userLeft(roomId, displayName)
     await vacantRoom(roomId)
     props.history.push("/")
+  }
+
+  const toggleDarkMode = () => {
+    darkMode.toggle()
   }
 
   return (
@@ -31,6 +55,15 @@ const Header = (props) => {
       >
         Leave Room
       </Button>
+      <div style={{ marginRight: "10px" }}>
+        <Grid component="label" container alignItems="center" spacing={1}>
+          <Grid item>Light</Grid>
+          <Grid item>
+            <SwitchStyle onChange={toggleDarkMode} />
+          </Grid>
+          <Grid item>Dark</Grid>
+        </Grid>
+      </div>
     </div>
   )
 }

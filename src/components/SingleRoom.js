@@ -8,7 +8,7 @@ import Header from "./Header"
 import { Button } from "@material-ui/core"
 import Card from "@material-ui/core/Card"
 import Footer from "./Footer"
-import useDarkMode from "use-dark-mode"
+
 import CardContent from "@material-ui/core/CardContent"
 import Popover from "@material-ui/core/Popover"
 import Typography from "@material-ui/core/Typography"
@@ -25,24 +25,10 @@ import ListItemText from "@material-ui/core/ListItemText"
 import Grid from "@material-ui/core/Grid"
 import { grey, blue } from "@material-ui/core/colors"
 
-const SwitchStyle = withStyles({
-  switchBase: {
-    color: blue[200],
-    "&$checked": {
-      color: blue[900],
-    },
-    "&$checked + $track": {
-      backgroundColor: grey[200],
-    },
-  },
-  checked: {},
-  track: {},
-})(Switch)
-
 const SingleRoom = (props) => {
   const [anchorEl, setAnchorEl] = useState(null)
   const [users, setUsers] = useState([])
-  const darkMode = useDarkMode(false)
+
   const [anchorEl2, setAnchorEl2] = useState(null)
   const [alert, setAlert] = useState(false)
 
@@ -71,10 +57,6 @@ const SingleRoom = (props) => {
     console.log(button)
     setAnchorEl2(button)
   }, [])
-
-  const toggleDarkMode = () => {
-    darkMode.toggle()
-  }
 
   const handleOpen = (event) => {
     setAnchorEl(event.currentTarget)
@@ -125,15 +107,6 @@ const SingleRoom = (props) => {
         <div className="left-box">
           {/* <button onClick={click}>Toggle Day / Night</button> */}
           <div className="messages-container">
-            <div style={{ margin: "10px" }}>
-              <Grid component="label" container alignItems="center" spacing={1}>
-                <Grid item>Light</Grid>
-                <Grid item>
-                  <SwitchStyle onChange={toggleDarkMode} />
-                </Grid>
-                <Grid item>Dark</Grid>
-              </Grid>
-            </div>
             <div className="users-container">
               <Typography color="textSecondary">Users</Typography>
 
