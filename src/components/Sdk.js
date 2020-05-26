@@ -49,7 +49,7 @@ const Sdk = (props) => {
     if (window.Spotify) {
       clearInterval(checkInterval);
       player = new window.Spotify.Player({
-        name: "earBudz",
+        name: "EarBuds Web Player",
         getOAuthToken: (cb) => {
           cb(props.token);
         },

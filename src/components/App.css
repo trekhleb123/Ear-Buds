@@ -397,7 +397,7 @@ button {
 
 .chat-container {
   padding: 5px;
-  height: 400px;
+  height: 435px;
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
@@ -405,9 +405,9 @@ button {
 
 .users-container {
   overflow: auto;
-  /* background-color: #bfc0c0; */
   border-radius: 4px;
-  min-height: 20%;
+  height: 250px;
+  overflow: scroll;
   padding: 10px;
   flex-wrap: wrap;
 }
