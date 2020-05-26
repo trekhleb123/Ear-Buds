@@ -1,10 +1,10 @@
-import React from "react"
-import { Twitter, Facebook, Mail } from "react-social-sharing"
+import React from "react";
+import { Twitter, Facebook, Mail } from "react-social-sharing";
 
 const Footer = (props) => {
   return (
     <div className="footer">
-      <div className="social-media-text">Share on social media</div>
+      <div className="social-media-text">Connect</div>
       <div className="footer-content">
         <div style={{ fontSize: "x-large" }}>
           <Twitter
@@ -25,7 +25,7 @@ const Footer = (props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

@@ -185,3 +185,19 @@ export const transferDevice = async (token, devId) => {
     console.log(err);
   }
 };
+
+export const subscribe = async (token, showId) => {
+  try {
+    fetch(`https://api.spotify.com/v1/me/shows?ids=${showId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+      // body: JSON.stringify({
+      //   uris: [`spotify:track:${action.track.id}`],
+      // }),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};

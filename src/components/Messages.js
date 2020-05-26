@@ -15,13 +15,15 @@ const useStyles = makeStyles((theme) => ({
   },
   bubble: {
     border: "0.5px azure",
-    color: "black",
+    color: "#353535",
     borderRadius: "10px",
     boxShadow:
-      "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+      "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19)",
     margin: "5px",
     padding: "10px",
     display: "inline-block",
+    fontSize: "1rem",
+    fontFamily: "Roboto, Helvetica, Arial, sans-serif",
   },
 }))
 
@@ -63,7 +65,7 @@ const Messages = (props) => {
             }`}
           >
             <div className={classes.bubble}>
-              <div>{message}</div>
+              <div className="message">{message}</div>
               <div className="message-name">{name}</div>
             </div>
           </div>
