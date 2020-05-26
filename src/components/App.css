@@ -34,6 +34,7 @@ body {
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
 body.light-mode {
   background-color: #dfdfdfa1;
   color: #353535;
@@ -43,9 +44,6 @@ body.light-mode {
 body.dark-mode {
   background-color: #353535;
   color: #ffffff;
-  /* .header {
-    background-color: #1b2938;
-  } */
 }
 
 body.dark-mode .chat-send-container {
@@ -54,13 +52,13 @@ body.dark-mode .chat-send-container {
     0 6px 15px 0 rgba(5, 5, 5, 0.486);
 }
 body.light-mode .chat-send-container {
-  background-color: #ffffff;
+  background-color: rgb(236, 236, 236);
   box-shadow: 0 4px 8px 0 rgba(141, 138, 138, 0.5),
     0 6px 20px 0 rgba(141, 139, 139, 0.486);
 }
 
 body.dark-mode .playlist-name {
-  color: #fdfafa;
+  color: rgba(184, 182, 182, 0.979);
 }
 
 body.dark-mode .all-carousels {
@@ -69,8 +67,48 @@ body.dark-mode .all-carousels {
     0 6px 15px 0 rgba(5, 5, 5, 0.486);
 }
 
+.MuiInputBase-input {
+  color: #353535;
+}
+
+body.dark-mode .MuiInputBase-input {
+  color: white;
+}
+
+body.dark-mode .MuiInputLabel-filled.MuiInputLabel-marginDense {
+  color: rgba(184, 182, 182, 0.979);
+}
+
+body.dark-mode #message-form {
+  background-color: rgb(49, 48, 48);
+}
+
+body.dark-mode .MuiPaper-rounded {
+  background-color: rgb(46, 45, 45);
+}
+
+body.dark-mode .MuiTypography-colorTextSecondary {
+  color: rgba(184, 182, 182, 0.979);
+}
+
 body.dark-mode .makeStyles-bubble-56 {
   color: white;
+}
+
+body.dark-mode .makeStyles-bubble-249 {
+  color: white;
+}
+
+body.dark-mode .MuiPaper-root {
+  color: white;
+}
+
+body.dark-mode .MuiSvgIcon-root {
+  color: rgba(184, 182, 182, 0.979);
+}
+
+body.dark-mode .MuiTypography-displayBlock {
+  color: rgba(184, 182, 182, 0.979);
 }
 
 p.light-mode {
@@ -78,6 +116,31 @@ p.light-mode {
 }
 p.dark-mode {
   color: rgb(250, 244, 244);
+}
+
+button.MuiButton-outlined {
+  color: #353535;
+}
+
+body.dark-mode button.MuiButton-outlined {
+  color: white;
+  border-color: rgba(184, 182, 182, 0.979);
+}
+
+body.dark-mode .footer {
+  background-color: #636363;
+}
+
+body.dark-mode .MuiList-root {
+  color: rgba(184, 182, 182, 0.979);
+}
+
+body.dark-mode .social-media-text {
+  color: rgba(184, 182, 182, 0.979);
+}
+
+.MuiLinearProgress-barColorPrimary {
+  background-color: none;
 }
 
 .App-header {
@@ -215,7 +278,8 @@ button {
 }
 .header {
   display: flex;
-  justify-content: flex-start;
+  flex-direction: row;
+  justify-content: space-between;
   background-color: #636363;
   color: azure;
   min-height: 5%;
@@ -249,6 +313,7 @@ button {
   width: 100%;
   max-height: 80%;
   justify-content: space-between;
+  margin-bottom: 2.5%;
 }
 
 #messages-container {
@@ -285,10 +350,6 @@ button {
 
 .search {
   width: 100%;
-}
-
-#search-button {
-  margin: 5px;
 }
 
 #message-form {
@@ -352,13 +413,10 @@ button {
 }
 
 .chat-send-container {
-  /* height: 100%; */
-  margin-top: 20px;
+  margin-top: 20px 0 40px 0;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  /* min-height: 70%; */
-  /* max-height: 80%; */
   background-color: #353535;
   border-radius: 4px;
 }
@@ -402,7 +460,11 @@ button {
 
 .playlist-name {
   color: #353535;
-  font-size: small;
+  font-size: 0.8rem;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.00938em;
 }
 
 .carousel .slide .legend {
@@ -411,6 +473,14 @@ button {
 
 div {
   font-size: small;
+}
+
+.message {
+  font-size: 1rem;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.00938em;
 }
 
 .accent-icon {
