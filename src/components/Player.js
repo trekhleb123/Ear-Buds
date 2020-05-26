@@ -15,6 +15,7 @@ import {
   getDevices,
   transferDevice,
   seekPodcast,
+  subscribe,
 } from "../api/spotifyApi";
 import Sdk from "./Sdk";
 import Card from "@material-ui/core/Card";
@@ -36,6 +37,7 @@ import IconButton from "@material-ui/core/IconButton";
 import InfoIcon from "@material-ui/icons/Info";
 import Tooltip from "@material-ui/core/Tooltip";
 import OverflowTip from "./OverflowTip";
+import PlaylistAddRoundedIcon from "@material-ui/icons/PlaylistAddRounded";
 
 let counter = 0;
 
@@ -208,13 +210,18 @@ const Player = (props) => {
         <Card className="on-deck-card">
           <div className="on-deck-card-details">
             <div className="card-label">
-              <Typography color="textSecondary">On Deck</Typography>
+              <Typography color="textSecondary">On Deck {"   "}</Typography>
               {selectedEp.description && (
                 <PopupState variant="popover" popupId="demo-popup-popover">
                   {(popupState) => (
                     <>
                       <Tooltip title="Episode Info">
-                        <IconButton {...bindTrigger(popupState)}>
+                        <IconButton
+                          style={{
+                            padding: "0px 5px 0px 5px",
+                          }}
+                          {...bindTrigger(popupState)}
+                        >
                           <InfoIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
@@ -244,10 +251,14 @@ const Player = (props) => {
             <div className="on-deck-card-content">
               <CardContent id="card">
                 {selectedEp.name && (
-                  <OverflowTip>{selectedEp.name}</OverflowTip>
+                  <OverflowTip>
+                    <Typography variant="subtitle1">
+                      {selectedEp.name}
+                    </Typography>
+                  </OverflowTip>
                 )}
 
-                <Typography variant="subtitle1" color="textSecondary">
+                <Typography variant="subtitle2" color="textSecondary">
                   {selectedEp.show.publisher}
                 </Typography>
               </CardContent>
@@ -255,9 +266,12 @@ const Player = (props) => {
             {selectedEp.uri && (
               <div className="on-deck-button-container">
                 <Tooltip title="Start Listening">
-                  <IconButton onClick={start}>
-                    <PlayCircleFilled />
-                  </IconButton>
+                  <Button size="small" variant="outlined" onClick={start}>
+                    Start
+                  </Button>
+                  {/* <IconButton onClick={start}>
+                    <PlayCircleFilled size="medium" className="accent-icon" />
+                  </IconButton> */}
                 </Tooltip>
               </div>
             )}
@@ -281,13 +295,39 @@ const Player = (props) => {
             </div>
             <div className="on-deck-card-content">
               <CardContent id="card">
-                {playingEp.name && <OverflowTip>{playingEp.name}</OverflowTip>}
-
-                <Typography variant="subtitle1" color="textSecondary">
+                {playingEp.name && (
+                  <OverflowTip>
+                    <Typography variant="subtitle1">
+                      {playingEp.name}
+                    </Typography>
+                  </OverflowTip>
+                )}
+                <Typography variant="subtitle2" color="textSecondary">
                   {playingEp.show.publisher}
                 </Typography>
               </CardContent>
             </div>
+            {playingEp.uri && (
+              <div className="on-deck-button-container">
+                <Tooltip title="Follow Podcast">
+                  <Button
+                    variant="outlined"
+                    onClick={() => subscribe(props.token, value.playing.epId)}
+                    size="small"
+                  >
+                    Subscribe
+                  </Button>
+                  {/* <IconButton
+                    onClick={() => subscribe(props.token, value.playing.epId)}
+                  >
+                    <PlaylistAddRoundedIcon
+                      size="medium"
+                      className="accent-icon"
+                    />
+                  </IconButton> */}
+                </Tooltip>
+              </div>
+            )}
           </div>
           <div className="card-image-container">
             <CardMedia

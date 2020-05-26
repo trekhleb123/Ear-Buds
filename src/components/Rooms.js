@@ -172,7 +172,7 @@ class Rooms extends React.Component {
           <Box display="flex" justifyContent="center">
             <Box m={5} display="inline">
               <Button
-                variant="contained"
+                variant="outlined"
                 onClick={this.handleSubmit}
                 type="button"
               >
@@ -180,7 +180,7 @@ class Rooms extends React.Component {
               </Button>
             </Box>
             <Box m={5} display="inline">
-              <Button variant="contained" onClick={this.showForm} type="button">
+              <Button variant="outlined" onClick={this.showForm} type="button">
                 Join Room
               </Button>
             </Box>
@@ -199,7 +199,7 @@ class Rooms extends React.Component {
                 />
                 <Box m={2} display="inline">
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     onClick={this.joinSubmit}
                     type="button"
                   >

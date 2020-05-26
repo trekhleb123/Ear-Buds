@@ -107,6 +107,10 @@ body.dark-mode .MuiSvgIcon-root {
   color: rgba(184, 182, 182, 0.979);
 }
 
+body.dark-mode .MuiTypography-displayBlock {
+  color: rgba(184, 182, 182, 0.979);
+}
+
 p.light-mode {
   color: #353535;
 }
@@ -210,7 +214,7 @@ button {
 }
 
 .on-deck-button-container {
-  padding: 0px 10px 0px 10px;
+  padding: 12px 0px 12px 0px;
   display: flex;
 }
 
@@ -227,6 +231,7 @@ button {
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
+  padding: 12px 0px 0px 0px;
 }
 
 .on-deck-card-content {
@@ -350,6 +355,9 @@ button {
 #message-form {
   margin: 10px;
   padding: 10px;
+  display: flex;
+  flex-wrap: nowrap;
+  /* justify-content: space-between; */
   background-color: rgba(96, 98, 100, 0.315);
   border-radius: 4px;
   box-shadow: 0 4px 8px 0 rgba(7, 7, 7, 0.5),
@@ -437,6 +445,7 @@ button {
   flex-direction: row;
   background-color: #dfdfdfa1;
   border-radius: 4px;
+  padding: 0px 12px 0px 12px;
   box-shadow: 0 4px 8px 0 rgba(129, 126, 126, 0.5),
     0 6px 15px 0 rgba(139, 135, 135, 0.486);
 }
@@ -444,7 +453,9 @@ button {
 .single-carousel {
   flex: 1;
   /* margin: 40px; */
-  margin: 5%;
+  /* margin: 5% 10% 5% 10%; */
+  margin: 24px;
+  /* margin: 12px 24px 12px 24px; */
 }
 
 .playlist-name {
@@ -470,4 +481,21 @@ div {
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: 0.00938em;
+}
+
+.accent-icon {
+  color: #98c1d9;
+}
+
+.MuiLinearProgress-barColorPrimary {
+  color: pink;
+  background-color: pink;
+}
+
+.MuiLinearProgress-barColorSecondary {
+  color: pink;
+  background-color: pink;
+}
+
+#carousel-header {
 }

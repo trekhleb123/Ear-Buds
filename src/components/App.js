@@ -48,7 +48,7 @@ function App(props) {
           alt=""
           style={{ width: "500px", paddingBottom: "100px" }}
         />
-        <Button variant="contained" onClick={() => spotifyLogin(props.code)}>
+        <Button variant="outlined" onClick={() => spotifyLogin(props.code)}>
           Login to Spotify
         </Button>
       </header>

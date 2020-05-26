@@ -4,6 +4,8 @@ import { Carousel } from "react-responsive-carousel"
 import { connect } from "react-redux"
 import { getEpisode } from "../api/spotifyApi"
 import { changeQueue } from "../firebase/firebase"
+import Typography from "@material-ui/core/Typography"
+import OverflowTip from "./OverflowTip"
 
 const MyCarousel = (props) => {
   const onCarouselClick = async (podcast) => {
@@ -35,7 +37,18 @@ const MyCarousel = (props) => {
     <div className="all-carousels">
       {carousels.map((carousel) => (
         <div className="single-carousel">
-          <div className="playlist-name">{carousel.title}</div>
+          {/* <div className="playlist-name">{carousel.title}</div> */}
+
+          <Typography
+            color="textSecondary"
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {carousel.title}
+          </Typography>
 
           <Carousel autoPlay showThumbs={false} infiniteLoop={true}>
             {carousel.data.map((podcast) => (
