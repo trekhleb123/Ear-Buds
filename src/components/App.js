@@ -46,7 +46,7 @@ function App(props) {
         <img
           src={bitmap}
           alt=""
-          style={{ width: "300px", paddingBottom: "100px" }}
+          style={{ width: "500px", paddingBottom: "100px" }}
         />
         <Button variant="contained" onClick={() => spotifyLogin(props.code)}>
           Login to Spotify
