@@ -199,7 +199,7 @@ class Rooms extends React.Component {
                 />
                 <Box m={2} display="inline">
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     onClick={this.joinSubmit}
                     type="button"
                   >

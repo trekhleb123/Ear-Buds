@@ -135,36 +135,6 @@ const SingleRoom = (props) => {
             </div>
             <div className="users-container">
               <Typography color="textSecondary">Users</Typography>
-
-              {/* <h2 id="adding">Buddys</h2>
-            <IconButton size="small" id="addPerson" onClick={handleOpen}>
-              <p fontSize="small" id="adding">
-                <PersonAddIcon /> Add Buddy
-              </p>
-            </IconButton>
-
-            <Popover
-              // id='popover'
-              open={open3}
-              anchorEl={anchorEl2}
-              onClose={handleClose2}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "center",
-                horizontal: "left",
-              }}
-            >
-              <Card id="popover">
-                <CardContent className="invite-card">
-                  <Typography variant="subtitle1" color="textSecondary">
-                    add friends here
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Popover> */}
               <List>
                 {Object.values(users).map((user, i) => {
                   console.log("user", user);
@@ -190,60 +160,59 @@ const SingleRoom = (props) => {
                     </ListItem>
                   );
                 })}
-                <ListItem>
-                  <ListItemIcon>
-                    <IconButton
-                      style={{
-                        padding: "5px",
-                      }}
-                      onClick={handleOpen}
-                    >
+                <Button
+                  style={{
+                    padding: "5px",
+                  }}
+                  onClick={handleOpen}
+                >
+                  <ListItem>
+                    <ListItemIcon>
                       <PersonAddIcon
                         style={{
                           width: "25px",
                           height: "25px",
                         }}
                       />
-                    </IconButton>
-                  </ListItemIcon>
-                  <Popover
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    transformOrigin={{
-                      vertical: "center",
-                      horizontal: "left",
-                    }}
-                  >
-                    <Card>
-                      <CardContent className="invite-card">
-                        <Typography variant="subtitle1" color="textSecondary">
-                          Send Invite Code
-                        </Typography>
-                        <input
-                          type="text"
-                          value={props.roomCode}
-                          id="room-code"
-                        ></input>
-                        <Button
-                          onClick={() => copyText()}
-                          variant="contained"
-                          color="primary"
-                          id="search-button"
-                        >
-                          Copy Code
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </Popover>
+                    </ListItemIcon>
 
-                  <ListItemText primary="Add Buddy" />
-                </ListItem>
+                    <ListItemText primary="Add Buddy" />
+                  </ListItem>
+                </Button>
+                <Popover
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  transformOrigin={{
+                    vertical: "center",
+                    horizontal: "left",
+                  }}
+                >
+                  <Card>
+                    <CardContent className="invite-card">
+                      <Typography variant="subtitle1" color="textSecondary">
+                        Send Invite Code
+                      </Typography>
+                      <input
+                        type="text"
+                        value={props.roomCode}
+                        id="room-code"
+                      ></input>
+                      <Button
+                        onClick={() => copyText()}
+                        variant="outlined"
+                        id="search-button"
+                      >
+                        Copy Code
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </Popover>
               </List>
             </div>
             <Messages roomId={props.match.params.roomId} />
