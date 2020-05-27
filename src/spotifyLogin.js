@@ -5,7 +5,7 @@ const redirectUri = "http://localhost:3000";
 const clientId = process.env.REACT_APP_CLIENT_ID;
 const clientSecret = process.env.REACT_APP_CLIENT_SECRET;
 const scopes =
-  "user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state streaming user-read-email user-read-private";
+  "user-library-read user-library-modify user-read-currently-playing user-read-playback-state user-modify-playback-state streaming user-read-email user-read-private";
 
 export const spotifyLogin = (code) => {
   if (code) {
@@ -24,7 +24,6 @@ export const spotifyLogin = (code) => {
 };
 
 export const loginHelper = async (code) => {
-  console.log("in login helper");
   const accessForm = queryString.stringify({
     grant_type: "authorization_code",
     code,
@@ -40,7 +39,6 @@ export const loginHelper = async (code) => {
       },
     })
     .then((res) => {
-      console.log(res);
       // removes 'code' query param to clean up URL
       window.history.replaceState(null, null, window.location.pathname);
       return res.data;
@@ -64,7 +62,6 @@ export const getNewToken = (refreshToken) => {
       },
     })
     .then((res) => {
-      console.log(res);
       return res.data.access_token;
     });
 };
@@ -77,7 +74,6 @@ export const getMyData = (token) => {
       .then((res) => res.json())
       .catch((err) => console.log(err))
       .then((data) => {
-        console.log("data", data);
         return data;
       });
   }

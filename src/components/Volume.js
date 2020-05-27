@@ -22,7 +22,6 @@ const Volume = (props) => {
         },
       }
     );
-    console.log("Volume has been set to ", volume);
   };
 
   return (

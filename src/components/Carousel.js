@@ -1,11 +1,11 @@
-import React from "react"
-import { withRouter } from "react-router-dom"
-import { Carousel } from "react-responsive-carousel"
-import { connect } from "react-redux"
-import { getEpisode } from "../api/spotifyApi"
-import { changeQueue } from "../firebase/firebase"
-import Typography from "@material-ui/core/Typography"
-import OverflowTip from "./OverflowTip"
+import React from "react";
+import { withRouter } from "react-router-dom";
+import { Carousel } from "react-responsive-carousel";
+import { connect } from "react-redux";
+import { getEpisode } from "../api/spotifyApi";
+import { changeQueue } from "../firebase/firebase";
+import Typography from "@material-ui/core/Typography";
+import OverflowTip from "./OverflowTip";
 
 const MyCarousel = (props) => {
   const onCarouselClick = async (podcast) => {
@@ -14,10 +14,11 @@ const MyCarousel = (props) => {
         props.match.params.roomId,
         res,
         podcast.id,
-        props.userData.display_name
+        props.userData.display_name,
+        0
       )
-    )
-  }
+    );
+  };
   const carousels = [
     {
       title: "Popular Podcasts",
@@ -31,7 +32,7 @@ const MyCarousel = (props) => {
       title: "Your Daily Picks",
       data: props.dailyPodcasts,
     },
-  ]
+  ];
 
   return (
     <div className="all-carousels">
@@ -61,12 +62,12 @@ const MyCarousel = (props) => {
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
 const mapToProps = (state) => ({
   token: state.access_token,
   userData: state.userData,
-})
+});
 
-export default withRouter(connect(mapToProps)(MyCarousel))
+export default withRouter(connect(mapToProps)(MyCarousel));
