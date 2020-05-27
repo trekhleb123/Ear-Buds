@@ -15,9 +15,7 @@ const Ticker = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log("seconds", seconds);
     props.setPosition(seconds);
-    console.log("secondsState", props);
   }, [seconds]);
 
   return <div></div>;

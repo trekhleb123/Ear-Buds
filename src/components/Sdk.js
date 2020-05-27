@@ -32,20 +32,17 @@ const Sdk = (props) => {
     // Playback status updates
     player.on("player_state_changed", (state) => {
       setPosition(state.position);
-      console.log(state);
     });
 
     // Ready
     player.on("ready", (data) => {
       let { device_id } = data;
-      console.log("Ready with Device ID", device_id);
+      // console.log("Ready with Device ID", device_id);
       props.setDeviceId(device_id);
-      console.log("props", props.deviceId);
     });
   };
 
   const checkForPlayer = () => {
-    // if (window.Spotify !== null && window.Spotify) {
     if (window.Spotify) {
       clearInterval(checkInterval);
       player = new window.Spotify.Player({
@@ -63,7 +60,6 @@ const Sdk = (props) => {
 
   const handleLogin = () => {
     if (props.token) {
-      console.log("ayyyyy");
       // check every second for the player.
       checkInterval = setInterval(() => checkForPlayer(), 1000);
     }

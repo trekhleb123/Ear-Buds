@@ -10,7 +10,6 @@ export const getNowPlaying = async (token) => {
         },
       }
     );
-    console.log("Now Playing", episode);
     return episode;
   } catch (err) {
     console.log(err);
@@ -25,7 +24,6 @@ export const pausePlayback = async (token, devId) => {
         Authorization: "Bearer " + token,
       },
     });
-    console.log("timeStamp", Date.now());
   } catch (err) {
     console.log(err);
   }
@@ -50,7 +48,6 @@ export const startPodcast = async (token, devId, podcastUri, startTime) => {
 
 export const seekPodcast = async (token, devId, podcastUri, position) => {
   try {
-    console.log("positionMS", position);
     fetch(`https://api.spotify.com/v1/me/player/seek?device_id=${devId}`, {
       method: "PUT",
       headers: {
@@ -78,7 +75,6 @@ export const startPodcastAnywhere = async (token, podcastUri) => {
         position_ms: 0,
       }),
     });
-    console.log("timeStamp", Date.now());
   } catch (err) {
     console.log(err);
   }
@@ -163,7 +159,6 @@ export const getDevices = async (token) => {
         },
       }
     );
-    console.log("DEVICES", response);
     return response.data.devices;
   } catch (err) {
     console.log(err);
@@ -197,6 +192,22 @@ export const subscribe = async (token, showId) => {
       //   uris: [`spotify:track:${action.track.id}`],
       // }),
     });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const checkSubscription = async (token, showId) => {
+  try {
+    const response = await axios.get(
+      `https://api.spotify.com/v1/me/shows/contains?ids=${showId}`,
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+    return response.data[0];
   } catch (err) {
     console.log(err);
   }

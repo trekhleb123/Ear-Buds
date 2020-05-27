@@ -19,7 +19,6 @@ export { db, firestore };
 export async function createNewRoom(newRoom) {
   try {
     const room = await db.collection("Rooms").add(newRoom);
-    console.log(room);
   } catch (err) {
     console.error(err);
   }
@@ -33,7 +32,6 @@ export async function getRoom(roomCode) {
     currentRoom.forEach((el) => {
       res = el.id;
     });
-    console.log(res);
     return res;
   } catch (err) {
     console.error(err);
@@ -44,8 +42,6 @@ export async function getCurrentRoomData(roomId) {
   try {
     const doc = db.collection("Rooms").doc(roomId);
     const result = await doc.get();
-
-    // console.log(result.data());
     return result.data();
   } catch (err) {
     console.error(err);
@@ -59,7 +55,6 @@ export async function getCurrentUserData(roomId, callback) {
 
     result.forEach((user) => console.log(user.id, "=>", user.data()));
 
-    // console.log(result.data());
     return result;
   } catch (err) {
     console.error(err);
@@ -72,16 +67,14 @@ export async function getRooms() {
   docs.forEach((el) => {
     res.push(el);
   });
-  console.log("res", res);
   return res;
 }
 
 export async function createRoom(token, username, refreshToken, image) {
-  //event.preventDefault()
   const code =
     Math.random().toString(36).substring(2, 7) +
     Math.random().toString(36).substring(2, 7);
-  console.log("in handle submit", code);
+
   const newRoom = await db.collection("Rooms").add({
     name: "room1",
     roomCode: code,
@@ -104,7 +97,7 @@ export async function createRoom(token, username, refreshToken, image) {
       epId: "",
     },
   });
-  console.log("newRoom", newRoom);
+
   await db.collection("Rooms").doc(newRoom.id).collection("Users").add({
     accessToken: token,
     name: username,
@@ -143,7 +136,6 @@ export async function findRoom(roomCode) {
   currentRoom.forEach((el) => {
     res = el.id;
   });
-  console.log("currentroom", res, currentRoom);
   return res;
 }
 export async function userLeft(roomId, displayName) {
@@ -173,8 +165,6 @@ export async function updateRoomData(roomData, roomId) {
   try {
     const roomRef = db.collection("Rooms").doc(roomId);
     roomRef.update(roomData);
-
-    // console.log("new room", roomRef);
   } catch (err) {
     console.error(err);
   }
@@ -204,15 +194,13 @@ export async function playbackUpdate(token, roomId, playingStatus, username) {
     });
 }
 
-export async function changeQueue(roomId, epInfo, epId, username) {
+export async function changeQueue(roomId, epInfo, epId, username, showId) {
   getCurrentRoomData(roomId)
     .then((roomData) => {
       roomData.queued.epId = epId;
       roomData.queued.name = epInfo.name;
-      // roomData.queued.show = epInfo.show.publisher;
+      roomData.queued.showId = showId;
       roomData.queued.duration = epInfo.duration_ms;
-      // roomData.queued.imageUrl = epInfo.images[1].url;
-      // roomData.queued.description = epInfo.description;
       roomData.queued.uri = epInfo.uri;
       roomData.queued.timestamp = Date.now();
       roomData.queued.status = true;
@@ -278,6 +266,7 @@ export async function playbackStart(roomId, username) {
       .then((roomData) => {
         title = roomData.queued.name;
         roomData.playing.progress = 0;
+        roomData.playing.showId = roomData.queued.showId;
         roomData.playing.timestamp = Date.now();
         roomData.playing.uri = roomData.queued.uri;
         roomData.playing.duration_ms = roomData.queued.duration_ms;
