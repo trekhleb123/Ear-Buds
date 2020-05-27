@@ -1,0 +1,30 @@
+[debug] [2020-05-27T18:24:58.520Z] ----------------------------------------------------------------------
+[debug] [2020-05-27T18:24:58.522Z] Command:       /Users/michaelhammer/n/bin/node /Users/michaelhammer/n/bin/firebase deploy --only hosting:earbuds
+[debug] [2020-05-27T18:24:58.522Z] CLI Version:   8.2.0
+[debug] [2020-05-27T18:24:58.522Z] Platform:      darwin
+[debug] [2020-05-27T18:24:58.522Z] Node Version:  v12.16.1
+[debug] [2020-05-27T18:24:58.523Z] Time:          Wed May 27 2020 13:24:58 GMT-0500 (Central Daylight Time)
+[debug] [2020-05-27T18:24:58.523Z] ----------------------------------------------------------------------
+[debug] [2020-05-27T18:24:58.523Z] 
+[debug] [2020-05-27T18:24:58.530Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-05-27T18:24:58.530Z] > authorizing via signed-in user
+[debug] [2020-05-27T18:24:58.530Z] [iam] checking project podcastparty-402e2 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-05-27T18:24:58.533Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/podcastparty-402e2:testIamPermissions  
+ {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-05-27T18:24:58.761Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Wed, 27 May 2020 18:24:58 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=47","alt-svc":"h3-27=\":443\"; ma=2592000,h3-25=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q049=\":443\"; ma=2592000,h3-Q048=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-05-27T18:24:58.763Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/podcastparty-402e2  
+ 
+[debug] [2020-05-27T18:24:58.954Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Wed, 27 May 2020 18:24:58 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-27=\":443\"; ma=2592000,h3-25=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q049=\":443\"; ma=2592000,h3-Q048=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'podcastparty-402e2'...
+[info] 
+[info] i  deploying hosting
+[info] 
+[info] ✔  Deploy complete!
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/podcastparty-402e2/overview
+[debug] [2020-05-27T18:25:01.031Z] TypeError: Cannot read property 'deploys' of undefined
+    at /Users/michaelhammer/n/lib/node_modules/firebase-tools/lib/deploy/index.js:84:36
+    at processTicksAndRejections (internal/process/task_queues.js:97:5)
+[error] 
+[error] Error: An unexpected error has occurred.
