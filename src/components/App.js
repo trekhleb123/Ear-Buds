@@ -28,9 +28,8 @@ function App(props) {
 
   useEffect(() => {
     const roomId = window.sessionStorage.getItem("roomId")
-    console.log("roomId", roomId)
+
     if (!!props.userData.display_name) {
-      console.log("LOOOOOOOK", props.userData)
       props.history.push(`/home`)
     }
     if (props.userData.product) {

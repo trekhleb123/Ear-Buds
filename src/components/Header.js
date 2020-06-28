@@ -32,9 +32,10 @@ const SwitchStyle = withStyles({
 })(Switch)
 
 const Header = (props) => {
-  const darkMode = useDarkMode(false)
+  let isDark = window.localStorage.getItem("darkMode") === "true" ? true : false
+  const darkMode = useDarkMode(isDark)
+
   const leaveRoom = async (roomId, displayName) => {
-    console.log(roomId, displayName)
     await userLeft(roomId, displayName)
     await vacantRoom(roomId)
     props.history.push("/")
@@ -59,7 +60,7 @@ const Header = (props) => {
         <Grid component="label" container alignItems="center" spacing={1}>
           <Grid item>Light</Grid>
           <Grid item>
-            <SwitchStyle onChange={toggleDarkMode} />
+            <SwitchStyle checked={darkMode.value} onChange={toggleDarkMode} />
           </Grid>
           <Grid item>Dark</Grid>
         </Grid>
