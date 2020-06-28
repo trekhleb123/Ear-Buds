@@ -5,7 +5,6 @@ import { connect } from "react-redux"
 import { getEpisode } from "../api/spotifyApi"
 import { changeQueue } from "../firebase/firebase"
 import Typography from "@material-ui/core/Typography"
-import OverflowTip from "./OverflowTip"
 
 const MyCarousel = (props) => {
   const onCarouselClick = async (podcast) => {

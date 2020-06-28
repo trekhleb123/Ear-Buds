@@ -52,11 +52,11 @@ const Header = (props) => {
         onClick={() => leaveRoom(props.roomId, props.userData.display_name)}
         variant="outlined"
         size="small"
-        style={{ margin: "7px" }}
+        style={{ margin: "7px 2.5%" }}
       >
         Leave Room
       </Button>
-      <div style={{ marginRight: "10px" }}>
+      <div style={{ margin: "7px 2.5%" }}>
         <Grid component="label" container alignItems="center" spacing={1}>
           <Grid item>Light</Grid>
           <Grid item>
