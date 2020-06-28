@@ -5,22 +5,11 @@ import Select from "@material-ui/core/Select"
 import InputLabel from "@material-ui/core/InputLabel"
 import FormControl from "@material-ui/core/FormControl"
 import Player from "./Player"
-import Button from "@material-ui/core/Button"
 import { connect } from "react-redux"
 import { getEpisode, fetchEpisodes, fetchShows } from "../api/spotifyApi"
 import { changeQueue, getPlaylist } from "../firebase/firebase"
 import MyCarousel from "./Carousel"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
-import { withStyles } from "@material-ui/core/styles"
-
-const styles = {
-  root: {
-    background: "black",
-  },
-  input: {
-    color: "white",
-  },
-}
 
 const SearchBar = (props) => {
   const token = props.token
@@ -60,7 +49,6 @@ const SearchBar = (props) => {
         return { value: item.id, label: item.name }
       })
     }
-    console.log("search arr!!", searchArr)
     setResults(searchArr)
   }
 
@@ -115,7 +103,6 @@ const SearchBar = (props) => {
     getEpisodes()
   }, [search])
 
-  console.log("USER DATA ", props.userData)
   return (
     <div className="panel">
       <div>
@@ -137,7 +124,6 @@ const SearchBar = (props) => {
             <TextField
               {...params}
               onChange={({ target }) => {
-                // activeSearch(target.value);
                 activeSearch(target.value)
                 getEpisodes()
               }}
@@ -148,14 +134,6 @@ const SearchBar = (props) => {
             />
           )}
         />
-        {/* <Button
-          id="search-button"
-          variant="contained"
-          color="primary"
-          onClick={getEpisodes}
-        >
-          Search
-        </Button> */}
       </div>
       {episodes.length > 1 ? (
         <div>

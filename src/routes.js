@@ -1,15 +1,10 @@
-import React, { Component } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import React, { Component } from "react"
+import { Route, Switch } from "react-router-dom"
+import Rooms from "./components/Rooms"
+import App from "./components/App"
+import Error from "./components/Error"
+import SingleRoom from "./components/SingleRoom"
 
-import { Navbar } from "./components";
-import Rooms from "./components/Rooms";
-import App from "./components/App";
-import Error from "./components/Error";
-import SingleRoom from "./components/SingleRoom";
-
-/**
- * COMPONENT
- */
 class Routes extends Component {
   render() {
     return (
@@ -19,11 +14,9 @@ class Routes extends Component {
           <Route exact path="/home" component={Rooms} />
           <Route exact path="/error" component={Error} />
           <Route exact path="/room/:roomId" component={SingleRoom} />
-          {/* <Route exact path='/home' component={App} /> */}
-          {/* <Route exact path="/signin" component={SignIn} /> */}
         </Switch>
       </>
-    );
+    )
   }
 }
-export default Routes;
+export default Routes

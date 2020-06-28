@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase"
+import { db } from "../firebase/firebase"
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
 import Messages from "./Messages"
@@ -8,28 +8,20 @@ import Header from "./Header"
 import { Button } from "@material-ui/core"
 import Card from "@material-ui/core/Card"
 import Footer from "./Footer"
-
 import CardContent from "@material-ui/core/CardContent"
 import Popover from "@material-ui/core/Popover"
 import Typography from "@material-ui/core/Typography"
 import PersonAddIcon from "@material-ui/icons/PersonAdd"
-import IconButton from "@material-ui/core/IconButton"
-import { Alert, AlertTitle } from "@material-ui/lab"
+import { Alert } from "@material-ui/lab"
 import Slide from "@material-ui/core/Slide"
-import Switch from "@material-ui/core/Switch"
-import { withStyles } from "@material-ui/core/styles"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
-import Grid from "@material-ui/core/Grid"
-import { grey, blue } from "@material-ui/core/colors"
 
 const SingleRoom = (props) => {
   const [anchorEl, setAnchorEl] = useState(null)
   const [users, setUsers] = useState([])
-
-  const [anchorEl2, setAnchorEl2] = useState(null)
   const [alert, setAlert] = useState(false)
 
   const getNewUsers = async () => {
@@ -52,41 +44,28 @@ const SingleRoom = (props) => {
     }
   }, [])
 
-  useEffect(() => {
-    var button = document.getElementById("addPerson")
-    console.log(button)
-    setAnchorEl2(button)
-  }, [])
-
-  const handleOpen = (event) => {
+  const handleOpenInviteBox = (event) => {
     setAnchorEl(event.currentTarget)
-    console.log(event.currentTarget)
   }
-  const handleClose = () => {
+  const handleCloseInviteBox = () => {
     setAnchorEl(null)
-    console.log("HANDLING CLOSE", anchorEl)
   }
-  const handleClose2 = () => {
-    setAnchorEl2(null)
-  }
-  const copyText = () => {
-    var copyText = document.getElementById("room-code")
 
-    copyText.select()
-    copyText.setSelectionRange(0, 99999) /*For mobile devices*/
+  const currentRoomCode = () => {
+    const currentRoomCode = document.getElementById("room-code")
+    currentRoomCode.select()
+    currentRoomCode.setSelectionRange(0, 99999) /*For mobile devices*/
 
     document.execCommand("copy")
     setAlert(true)
-    handleClose()
+    handleCloseInviteBox()
     setTimeout(() => {
       setAlert(false)
     }, 3000)
   }
 
-  const open3 = Boolean(anchorEl2)
   const open = Boolean(anchorEl)
   const id = open ? "simple-popover" : undefined
-  console.log("users in render", users)
   return (
     <div>
       <Header roomId={props.match.params.roomId} history={props.history} />
@@ -97,21 +76,17 @@ const SingleRoom = (props) => {
             onClose={() => setAlert(false)}
             severity="info"
           >
-            {/* <AlertTitle>Success</AlertTitle> */}
             Invite code was copied to clipboard!
-            {/* <strong>{props.roomCode}</strong> */}
           </Alert>
         </Slide>
       ) : null}
       <div className="main-container">
         <div className="left-box">
-          {/* <button onClick={click}>Toggle Day / Night</button> */}
           <div className="messages-container">
             <div className="users-container">
               <Typography color="textSecondary">Users</Typography>
               <List>
                 {Object.values(users).map((user, i) => {
-                  console.log("user", user)
                   return (
                     <ListItem id="userList" key={i}>
                       <ListItemIcon>
@@ -138,7 +113,7 @@ const SingleRoom = (props) => {
                   style={{
                     padding: "5px",
                   }}
-                  onClick={handleOpen}
+                  onClick={handleOpenInviteBox}
                 >
                   <ListItem>
                     <ListItemIcon>
@@ -157,7 +132,7 @@ const SingleRoom = (props) => {
                   id={id}
                   open={open}
                   anchorEl={anchorEl}
-                  onClose={handleClose}
+                  onClose={handleCloseInviteBox}
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "right",
@@ -178,7 +153,7 @@ const SingleRoom = (props) => {
                         id="room-code"
                       ></input>
                       <Button
-                        onClick={() => copyText()}
+                        onClick={() => currentRoomCode()}
                         variant="outlined"
                         id="search-button"
                       >

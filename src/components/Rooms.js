@@ -1,24 +1,12 @@
 import React from "react"
-import {
-  db,
-  createRoom,
-  joinRoom,
-  findRoom,
-  getRoom,
-} from "../firebase/firebase"
+import { createRoom, joinRoom, findRoom, getRoom } from "../firebase/firebase"
 import { withRouter } from "react-router-dom"
 import { connect } from "react-redux"
 import { getUserData, setRoomCode } from "../redux/store"
-import { Button, Modal } from "@material-ui/core"
+import { Button } from "@material-ui/core"
 import Box from "@material-ui/core/Box"
 import TextField from "@material-ui/core/TextField"
 import "./App.css"
-import HelpIcon from "@material-ui/icons/Help"
-import IconButton from "@material-ui/core/IconButton"
-import Popper from "@material-ui/core/Popper"
-import Fade from "@material-ui/core/Fade"
-import Paper from "@material-ui/core/Paper"
-import Typography from "@material-ui/core/Typography"
 import Sdk from "./Sdk"
 
 class Rooms extends React.Component {
@@ -30,7 +18,7 @@ class Rooms extends React.Component {
       open: false,
       anchorEl: null,
     }
-    this.getRooms = this.getRooms.bind(this)
+
     this.handleSubmit = this.handleSubmit.bind(this)
     this.showForm = this.showForm.bind(this)
     this.handleChange = this.handleChange.bind(this)
@@ -39,26 +27,9 @@ class Rooms extends React.Component {
     this.handleClose = this.handleClose.bind(this)
   }
   componentDidMount() {
-    this.getRooms()
     if (!Object.keys(this.props.userData).length) {
       this.props.history.push("/")
     }
-    //   window.addEventListener("beforeunload", async (ev) => {
-    //     ev.preventDefault();
-    //     await userLeft(this.props.match.params.roomId, this.props.userData.display_name)
-    // });
-  }
-  // async componentWillUnmount(){
-  //   await userLeft(this.props.match.params.roomId, this.props.userData.display_name)
-  // }
-
-  async getRooms() {
-    const doc = db.collection("Rooms")
-    const docs = await doc.get().then(function (room) {
-      room.forEach(function (doc) {
-        //console.log(doc.id, " => ", doc.data());
-      })
-    })
   }
 
   async handleSubmit() {
@@ -68,9 +39,9 @@ class Rooms extends React.Component {
       this.props.refresh_token,
       this.props.userData.images
     )
-    const id = await getRoom(roomCode)
+    const roomId = await getRoom(roomCode)
     this.props.setRoomCode(roomCode)
-    this.props.history.push(`/room/${id}`)
+    this.props.history.push(`/room/${roomId}`)
   }
 
   async joinSubmit(event) {
@@ -86,7 +57,6 @@ class Rooms extends React.Component {
         this.props.userData.images
       )
       this.props.history.push(`/room/${room}`)
-      console.log("PROPS", this.props)
       this.setState({
         joinForm: false,
       })
@@ -94,18 +64,19 @@ class Rooms extends React.Component {
       this.setState({
         wrongRoomCode: true,
       })
-      console.log("wrong room code")
     }
   }
+
   showForm() {
     this.setState({
       joinForm: !this.state.joinForm,
     })
   }
+
   handleChange(event) {
-    console.log([event.target.name], event.target.value)
     this.props.setRoomCode(event.target.value)
   }
+
   handleOpen = (event) => {
     this.setState({
       open: !this.state.open,
@@ -118,56 +89,11 @@ class Rooms extends React.Component {
       open: false,
     })
   }
+
   render() {
     return (
       <div>
         <div className="App-header">
-          {/* <Sdk token={this.props.access_token} />
-          <Box display="flex" justifyContent="center">
-            <Box m={5} display="inline">
-              <Button
-                variant="contained"
-                onClick={this.handleSubmit}
-                type="button"
-              >
-                Create Room
-              </Button>
-            </Box>
-            <Box m={5} display="inline">
-              <Button variant="contained" onClick={this.showForm} type="button">
-                Join Room
-              </Button>
-            </Box>
-          </Box>
-        </div>
-        <div id="room">
-          <Box left="25%" id="box" display="flex" justifyContent="flex-end">
-            <IconButton onClick={this.handleOpen} color="primary">
-              <HelpIcon />
-            </IconButton>
-          </Box>
-          <Popper
-            anchorEl={this.state.anchorEl}
-            placement="bottom-end"
-            open={this.state.open}
-            transition
-          >
-            {({ TransitionProps }) => (
-              <Fade {...TransitionProps} timeout={350}>
-                <div id="paper">
-                  <Paper>
-                    <Typography>
-                      Welcome to earBudz, create A room and invite your friends
-                      to listen into a podcast with you, or join a room that was
-                      already created!
-                    </Typography>
-                  </Paper>
-                </div>
-              </Fade>
-            )}
-          </Popper>
-          <div id="subRoom">
-            <div className="App-header"> */}
           <Sdk token={this.props.access_token} />
           <Box display="flex" justifyContent="center">
             <Box m={5} display="inline">
@@ -212,15 +138,8 @@ class Rooms extends React.Component {
           {this.state.wrongRoomCode && (
             <p>Opps, wrong code. Please try again</p>
           )}
-          {/* <div>
-          <h2>All Rooms</h2>
-          <div>
-          </div>
-        </div> */}
         </div>
       </div>
-      // </div>
-      // </div>
     )
   }
 }

@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react"
-import Routes from "../routes"
-import SearchBar from "./SearchBar"
+import React, { useEffect } from "react"
 import "./App.css"
 import { spotifyLogin } from "../spotifyLogin"
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
-import Rooms from "./Rooms"
+
 import Button from "@material-ui/core/Button"
 import bitmap from "./bitmap.png"
 
@@ -27,8 +25,6 @@ function App(props) {
   }, [props.access_token])
 
   useEffect(() => {
-    const roomId = window.sessionStorage.getItem("roomId")
-
     if (!!props.userData.display_name) {
       props.history.push(`/home`)
     }
@@ -38,7 +34,7 @@ function App(props) {
       }
     }
   }, [props])
-  console.log(props.userData)
+
   return (
     <div className="App">
       <header className="App-header">
