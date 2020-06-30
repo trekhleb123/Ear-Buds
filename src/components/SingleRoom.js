@@ -1,36 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { db, userLeft, renderUsers, vacantRoom } from "../firebase/firebase";
-import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store";
-import { connect } from "react-redux";
-import Messages from "./Messages";
-import { SearchBar } from ".";
-import Header from "./Header";
-import { Button } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
-import Footer from "./Footer";
-
-import CardContent from "@material-ui/core/CardContent";
-import Popover from "@material-ui/core/Popover";
-import Typography from "@material-ui/core/Typography";
-import PersonAddIcon from "@material-ui/icons/PersonAdd";
-import IconButton from "@material-ui/core/IconButton";
-import { Alert, AlertTitle } from "@material-ui/lab";
-import Slide from "@material-ui/core/Slide";
-import Switch from "@material-ui/core/Switch";
-import { withStyles } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Grid from "@material-ui/core/Grid";
-import { grey, blue } from "@material-ui/core/colors";
+import React, { useEffect, useState } from "react"
+import { db } from "../firebase/firebase"
+import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
+import { connect } from "react-redux"
+import Messages from "./Messages"
+import { SearchBar } from "."
+import Header from "./Header"
+import { Button } from "@material-ui/core"
+import Card from "@material-ui/core/Card"
+import Footer from "./Footer"
+import CardContent from "@material-ui/core/CardContent"
+import Popover from "@material-ui/core/Popover"
+import Typography from "@material-ui/core/Typography"
+import PersonAddIcon from "@material-ui/icons/PersonAdd"
+import { Alert } from "@material-ui/lab"
+import Slide from "@material-ui/core/Slide"
+import List from "@material-ui/core/List"
+import ListItem from "@material-ui/core/ListItem"
+import ListItemIcon from "@material-ui/core/ListItemIcon"
+import ListItemText from "@material-ui/core/ListItemText"
 
 const SingleRoom = (props) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [users, setUsers] = useState([]);
-
-  const [anchorEl2, setAnchorEl2] = useState(null);
-  const [alert, setAlert] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [users, setUsers] = useState([])
+  const [alert, setAlert] = useState(false)
 
   const getNewUsers = async () => {
     await db
@@ -38,51 +30,42 @@ const SingleRoom = (props) => {
       .doc(props.match.params.roomId)
       .collection("Users")
       .onSnapshot((snapshot) => {
-        const allUsers = [];
-        snapshot.forEach((doc) => allUsers.push(doc.data()));
-        setUsers(allUsers);
-      });
-  };
+        const allUsers = []
+        snapshot.forEach((doc) => allUsers.push(doc.data()))
+        setUsers(allUsers)
+      })
+  }
 
   useEffect(() => {
     if (!props.userData.display_name) {
-      props.history.push("/");
+      props.history.push("/")
     } else {
-      getNewUsers();
+      getNewUsers()
     }
-  }, []);
+  }, [])
 
-  useEffect(() => {
-    var button = document.getElementById("addPerson");
-    setAnchorEl2(button);
-  }, []);
+  const handleOpenInviteBox = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleCloseInviteBox = () => {
+    setAnchorEl(null)
+  }
 
-  const handleOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleClose2 = () => {
-    setAnchorEl2(null);
-  };
-  const copyText = () => {
-    var copyText = document.getElementById("room-code");
+  const currentRoomCode = () => {
+    const currentRoomCode = document.getElementById("room-code")
+    currentRoomCode.select()
+    currentRoomCode.setSelectionRange(0, 99999) /*For mobile devices*/
 
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); /*For mobile devices*/
-
-    document.execCommand("copy");
-    setAlert(true);
-    handleClose();
+    document.execCommand("copy")
+    setAlert(true)
+    handleCloseInviteBox()
     setTimeout(() => {
-      setAlert(false);
-    }, 3000);
-  };
+      setAlert(false)
+    }, 3000)
+  }
 
-  const open3 = Boolean(anchorEl2);
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  const open = Boolean(anchorEl)
+  const id = open ? "simple-popover" : undefined
   return (
     <div>
       <Header roomId={props.match.params.roomId} history={props.history} />
@@ -93,15 +76,12 @@ const SingleRoom = (props) => {
             onClose={() => setAlert(false)}
             severity="info"
           >
-            {/* <AlertTitle>Success</AlertTitle> */}
             Invite code was copied to clipboard!
-            {/* <strong>{props.roomCode}</strong> */}
           </Alert>
         </Slide>
       ) : null}
       <div className="main-container">
         <div className="left-box">
-          {/* <button onClick={click}>Toggle Day / Night</button> */}
           <div className="messages-container">
             <div className="users-container">
               <Typography color="textSecondary">Users</Typography>
@@ -127,13 +107,13 @@ const SingleRoom = (props) => {
                       </ListItemIcon>
                       <ListItemText primary={user.name} />
                     </ListItem>
-                  );
+                  )
                 })}
                 <Button
                   style={{
                     padding: "5px",
                   }}
-                  onClick={handleOpen}
+                  onClick={handleOpenInviteBox}
                 >
                   <ListItem>
                     <ListItemIcon>
@@ -152,7 +132,7 @@ const SingleRoom = (props) => {
                   id={id}
                   open={open}
                   anchorEl={anchorEl}
-                  onClose={handleClose}
+                  onClose={handleCloseInviteBox}
                   anchorOrigin={{
                     vertical: "top",
                     horizontal: "right",
@@ -173,7 +153,7 @@ const SingleRoom = (props) => {
                         id="room-code"
                       ></input>
                       <Button
-                        onClick={() => copyText()}
+                        onClick={() => currentRoomCode()}
                         variant="outlined"
                         id="search-button"
                       >
@@ -193,20 +173,20 @@ const SingleRoom = (props) => {
       </div>
       <Footer roomCode={props.roomCode} />
     </div>
-  );
-};
+  )
+}
 
 const stateToProps = (state) => ({
   access_token: state.access_token,
   userData: state.userData,
   refresh_token: state.refresh_token,
   roomCode: state.roomCode,
-});
+})
 
 const dispatchToProps = (dispatch) => ({
   getAccessToken: (code) => dispatch(getAccessToken(code)),
   setSpotifyCode: (code) => dispatch(setSpotifyCode(code)),
   getUserData: (token) => dispatch(getUserData(token)),
-});
+})
 
-export default connect(stateToProps, dispatchToProps)(SingleRoom);
+export default connect(stateToProps, dispatchToProps)(SingleRoom)

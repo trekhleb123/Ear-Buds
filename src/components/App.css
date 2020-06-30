@@ -99,6 +99,10 @@ body.dark-mode .makeStyles-bubble-249 {
   color: white;
 }
 
+body.dark-mode .makeStyles-bubble-310 {
+  color: white;
+}
+
 body.dark-mode .MuiPaper-root {
   color: white;
 }
@@ -452,10 +456,8 @@ button {
 
 .single-carousel {
   flex: 1;
-  /* margin: 40px; */
-  /* margin: 5% 10% 5% 10%; */
   margin: 24px;
-  /* margin: 12px 24px 12px 24px; */
+  width: 1rem;
 }
 
 .playlist-name {
@@ -495,7 +497,4 @@ div {
 .MuiLinearProgress-barColorSecondary {
   color: pink;
   background-color: pink;
-}
-
-#carousel-header {
 }
