@@ -70,7 +70,6 @@ export async function createRoom(token, username, refreshToken, image) {
   const code =
     Math.random().toString(36).substring(2, 7) +
     Math.random().toString(36).substring(2, 7)
-  console.log("in handle submit", code)
   const newRoom = await db.collection("Rooms").add({
     name: "room1",
     roomCode: code,
@@ -192,7 +191,7 @@ export async function playbackUpdate(token, roomId, playingStatus, username) {
     })
 }
 
-export async function changeQueue(roomId, epInfo, epId, username) {
+export async function changeQueue(roomId, epInfo, epId, username, showId) {
   getCurrentRoomData(roomId)
     .then((roomData) => {
       roomData.queued.epId = epId

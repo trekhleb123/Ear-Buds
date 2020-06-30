@@ -56,7 +56,13 @@ const SearchBar = (props) => {
     const value = event.target.value
 
     getEpisode(value, token).then((res) =>
-      changeQueue(props.roomId, res, value, props.userData.display_name)
+      changeQueue(
+        props.roomId,
+        res,
+        value,
+        props.userData.display_name,
+        result[0]
+      )
     )
   }
 

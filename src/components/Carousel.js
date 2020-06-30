@@ -13,7 +13,8 @@ const MyCarousel = (props) => {
         props.match.params.roomId,
         res,
         podcast.id,
-        props.userData.display_name
+        props.userData.display_name,
+        0
       )
     )
   }

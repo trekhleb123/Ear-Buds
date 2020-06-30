@@ -5,7 +5,7 @@ import { useDocumentData } from "react-firebase-hooks/firestore";
 import { isEqual } from "lodash";
 import Volume from "./Volume";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import { PlayCircleFilled, PauseCircleFilled, Sync } from "@material-ui/icons";
+import { PlayCircleFilled, PauseCircleFilled } from "@material-ui/icons";
 import { db, playbackUpdate, playbackStart } from "../firebase/firebase";
 import {
   pausePlayback,
@@ -14,8 +14,8 @@ import {
   getEpisode,
   getDevices,
   transferDevice,
-  seekPodcast,
   subscribe,
+  checkSubscription,
 } from "../api/spotifyApi";
 import Sdk from "./Sdk";
 import Card from "@material-ui/core/Card";
@@ -26,7 +26,6 @@ import DevicesIcon from "@material-ui/icons/Devices";
 import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Popover from "@material-ui/core/Popover";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
@@ -37,7 +36,6 @@ import IconButton from "@material-ui/core/IconButton";
 import InfoIcon from "@material-ui/icons/Info";
 import Tooltip from "@material-ui/core/Tooltip";
 import OverflowTip from "./OverflowTip";
-import PlaylistAddRoundedIcon from "@material-ui/icons/PlaylistAddRounded";
 
 let counter = 0;
 
@@ -58,9 +56,9 @@ const Player = (props) => {
     ],
   };
   let [selectedEp, setSelectedEp] = useState(blank);
-  let [timer, setTimer] = useState(null);
   let [playingEp, setPlayingEp] = useState(blank);
   let [playingStatus, setPlayingStatus] = useState(false);
+  let [subStatus, setSubStatus] = useState(true);
 
   let [timeElapsed, setTimeElapsed] = useState(0);
   let [devices, setDevices] = useState([]);
@@ -95,7 +93,6 @@ const Player = (props) => {
     if (!isEqual(value, previousValue)) {
       if (value) {
         const playTimeElapsed = Date.now() - value.playing.timestamp;
-        const queueTimeElapsed = Date.now() - value.queued.timestamp;
 
         //USER QUEUES UP NEW PODCAST OR ENTERS ROOM WHILE PODCAST IS QUEUED
         if (
@@ -121,7 +118,9 @@ const Player = (props) => {
             .then(() => setSelectedEp(blank))
             .then(() => getEpisode(value.playing.epId, props.token))
             .then((res) => setPlayingEp(res))
-            .then(() => setPlayingStatus(true));
+            .then(() => setPlayingStatus(true))
+            .then(() => checkSubscription(props.token, value.playing.showId))
+            .then((res) => setSubStatus(res));
 
           //USER RESUMES PODCAST WHILE PREVIOUSLY LISTENING TO PODCAST
         } else if (
@@ -147,10 +146,13 @@ const Player = (props) => {
           value.playing.status === false &&
           value.playing.uri !== playingEp.uri
         ) {
-          getEpisode(value.playing.epId, props.token).then((res) => {
-            res.uri = "";
-            setPlayingEp(res);
-          });
+          getEpisode(value.playing.epId, props.token)
+            .then((res) => {
+              res.uri = "";
+              setPlayingEp(res);
+            })
+            .then(() => checkSubscription(props.token, value.playing.showId))
+            .then((res) => setSubStatus(res));
         }
       }
     }
@@ -162,23 +164,16 @@ const Player = (props) => {
     }
   }, [props.position]);
 
-  const increment = () => {
-    console.log("Incrementing", counter);
-    counter++;
-  };
   useEffect(() => {
     if (activeDevId.length < 10) setActiveDevId(props.deviceId);
   });
 
   const handleDevicePopover = (event) => {
     setAnchorEl(event.currentTarget);
-    getDevices(props.token)
-      .then((res) => setDevices(res))
-      .then(() => console.log(devices));
+    getDevices(props.token).then((res) => setDevices(res));
   };
 
   const handleDeviceSelection = (id) => {
-    console.log("this is the ID", activeDevId, id);
     setActiveDevId(id);
     transferDevice(props.token, id);
   };
@@ -269,9 +264,6 @@ const Player = (props) => {
                   <Button size="small" variant="outlined" onClick={start}>
                     Start
                   </Button>
-                  {/* <IconButton onClick={start}>
-                    <PlayCircleFilled size="medium" className="accent-icon" />
-                  </IconButton> */}
                 </Tooltip>
               </div>
             )}
@@ -307,24 +299,19 @@ const Player = (props) => {
                 </Typography>
               </CardContent>
             </div>
-            {playingEp.uri && (
+
+            {playingEp.uri && !subStatus && (
               <div className="on-deck-button-container">
-                <Tooltip title="Follow Podcast">
+                <Tooltip title="Subscribe to Show">
                   <Button
                     variant="outlined"
-                    onClick={() => subscribe(props.token, value.playing.epId)}
+                    onClick={() => {
+                      subscribe(props.token, value.playing.showId);
+                    }}
                     size="small"
                   >
                     Subscribe
                   </Button>
-                  {/* <IconButton
-                    onClick={() => subscribe(props.token, value.playing.epId)}
-                  >
-                    <PlaylistAddRoundedIcon
-                      size="medium"
-                      className="accent-icon"
-                    />
-                  </IconButton> */}
                 </Tooltip>
               </div>
             )}

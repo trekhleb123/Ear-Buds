@@ -1,9 +1,11 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
+import Routes from "../routes"
+import SearchBar from "./SearchBar"
 import "./App.css"
 import { spotifyLogin } from "../spotifyLogin"
 import { getAccessToken, setSpotifyCode, getUserData } from "../redux/store"
 import { connect } from "react-redux"
-
+import Rooms from "./Rooms"
 import Button from "@material-ui/core/Button"
 import bitmap from "./bitmap.png"
 

@@ -48,23 +48,11 @@ export const setDeviceId = (code) => {
 };
 
 export const setPosition = (position) => {
-  console.log("poz", position);
   return {
     type: SET_POSITION,
     position,
   };
 };
-
-// export const getDeviceId = (refreshToken) => {
-//   return async (dispatch) => {
-//     try {
-//       const newToken = await getNewToken(refreshToken)
-//       dispatch(setAccessToken(newToken))
-//     } catch (err) {
-//       console.error(err)
-//     }
-//   }
-// }
 
 export const setRoomCode = (roomCode) => {
   return {
@@ -77,7 +65,6 @@ export const getAccessToken = (code) => {
   return async (dispatch) => {
     try {
       const res = await loginHelper(code);
-      console.log(res);
       dispatch(setAccessToken(res.access_token));
       dispatch(setRefreshToken(res.refresh_token));
     } catch (err) {
@@ -111,9 +98,7 @@ export const getUserData = (token) => {
           getDevices(token);
         })
         .then((devices) => {
-          console.log("DEVICES", devices);
           userData.devices = devices;
-          console.log("data", userData);
           dispatch(setUserData(userData));
         });
     } catch (err) {
