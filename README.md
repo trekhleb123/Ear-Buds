@@ -44,6 +44,9 @@ Your app is ready to be deployed!
 
 ## Authors
 [Alona Trekhlib](https://github.com/trekhleb123)
+• Solely implemented messaging functionality, handled all CRUD operations when
+connecting to Firestore, used Spotify API to login, list and play podcasts, set up Redux
+store, added dark mode styling
 
 [Shreya Wadhwa](https://github.com/swadhwa369)
 
